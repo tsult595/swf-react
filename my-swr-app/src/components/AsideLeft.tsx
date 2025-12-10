@@ -146,7 +146,7 @@ const AsideInfoWebSiteLink = styled.a`
   height: 40px;
 
   margin-top: 25px;
-  
+
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
@@ -178,8 +178,6 @@ const FollowUsText = styled.p`
 
 
 function AsideLeft() {
-
-
   return (
     <AsideLeftContainer>
         <AsideButtonWrapper>
@@ -211,7 +209,6 @@ function AsideLeft() {
         </AsideButtonWrapper>
         
         <AsideInfo>
-          
             <RuleItem>
                 Sacrificed items will be after upgrade start
             </RuleItem>
@@ -241,8 +238,6 @@ function AsideLeft() {
               <AsideInfoWebSiteLink>
                 <img  src={Discord} alt="Discord" />
               </AsideInfoWebSiteLink>
-
-           
             </AsideInfoWebSites>
         </AsideInfo>
     </AsideLeftContainer>
