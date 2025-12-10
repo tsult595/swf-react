@@ -16,33 +16,37 @@ import AsideBackGround from '../assets/auction_menu_background.png';
 
 const AsideLeftContainer = styled.div`
    padding: 40px;
+
    display: flex;
    flex-direction: column;
    align-items: center;
+
    width: 282px;
    height: 100vh;
    background-image: url(${AsideBackGround});
 `;
 
-const ColorWord = styled.span`
-    color: #C5D4E3;
-`;
+// const ColorWord = styled.span`
+//     color: #C5D4E3;
+// `;
 
 const AsideButtonLeft = styled.div`
   width: 30px;
   height: 54px;
+
   background-image: url(${PrimaryLeftDefault});
   background-size: 100% 100%;
   background-repeat: no-repeat;
-  flex-shrink: 0;
+
+ 
 `;
 
 const AsideButtonCenter = styled.div`
+ background-image: url(${PrimaryCenterDefault});
+ background-size: 100% 100%;
+ background-repeat: no-repeat;
+
   flex: 1;
-  height: 54px;
-  background-image: url(${PrimaryCenterDefault});
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -51,15 +55,17 @@ const AsideButtonCenter = styled.div`
 const AsideButtonRight = styled.div`
   width: 30px;
   height: 54px;
+
   background-image: url(${PrimaryRightDefault});
   background-size: 100% 100%;
   background-repeat: no-repeat;
-  flex-shrink: 0;
+  
 `;
 
 const AsideButtonContainer = styled.div`
    width: 196px;
    height: 54px;
+
    display: flex;
    align-items: stretch;
    cursor: pointer;
@@ -84,16 +90,18 @@ const ButtonText = styled.span`
 const AsideButtonWrapper = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: center;
+
   gap: 50px;
   width: 100%;
   height: 45%;
-  align-items: center;
   margin-bottom: 30px;
 `;
 
 const AsideButtonDivider = styled.div`
   width: 192px;
   height: 57px;
+
   background-image: url(${Divider});
   background-size: contain;
   background-repeat: no-repeat;
@@ -103,8 +111,10 @@ const AsideButtonDivider = styled.div`
 
 const AsideInfo = styled.ul`
   width: 100%;
+
   padding: 13px;
   margin: 0;
+
   list-style: none;
   font-family: 'Open Sans', sans-serif;
   font-weight: 200;
@@ -127,13 +137,16 @@ const AsideInfoWebSites = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   margin-top: 1px;
 `;
 
 const AsideInfoWebSiteLink = styled.a`
   width: 40px;
   height: 40px;
+
   margin-top: 25px;
+  
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;

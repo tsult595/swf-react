@@ -1,0 +1,70 @@
+import styled from 'styled-components';
+import type { LikedHeroesProps } from '../../../types/HeroTypes';
+
+
+const UpperNamingModul = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 0 40px;
+  
+  width: 100%;
+  margin-top: 20px;
+`;
+
+const HeroName = styled.h2`
+  color: #ffffff;
+
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 200;
+  font-size: 18px;
+  text-align: left;
+  
+  margin: 0;
+`;
+
+const HeroStatus = styled.div<{ $status: string }>`
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  
+  span:first-child {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 14px;
+    text-transform: capitalize;
+  }
+  
+  span:last-child {
+    padding: 6px 16px;
+    background-color: ${props => {
+      switch(props.$status) {
+        case 'Active': return '#4caf50';
+        case 'Finished': return '#2196f3';
+        case 'Cancelled': return '#c41e3a';
+        default: return '#757575';
+      }
+    }};
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 4px;
+    text-transform: capitalize;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+`;
+
+
+const UpperNamingComponent = ({hero} : LikedHeroesProps) => {
+  return (
+      <UpperNamingModul>
+          <HeroName>{hero.name}</HeroName>
+          <HeroStatus $status={hero.status}>
+            <span>Auction status</span>
+            <span>{hero.status}</span>
+          </HeroStatus>
+        </UpperNamingModul>
+  )
+}
+
+export default UpperNamingComponent

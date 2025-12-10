@@ -14,9 +14,11 @@ const MainHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   width: 100vw;
   height: 90px;
   padding: 32px;
+
   background-image: url(${HeaderBackGround});
   background-size: cover;
   background-position: center;
@@ -26,16 +28,18 @@ const MainHeader = styled.div`
 const MainHeaderLeft = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: center; 
 `;
 
 const MainHeaderButton = styled.button`
   width: 112px;
   height: 80px;
+
   background-image: url(${ButtonHeaderDefault});
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+
   color: rgba(127,137,152);
   font-size: 18px;
   border: none;
@@ -62,15 +66,16 @@ const MainHeaderButtonText = styled.h1`
 const MainHeaderButtonTextFrameLeft = styled.div`
     width: 25px;
     height: 100%;
+
     background-image: url(${MainHeaderButtonTextFrameLeftImg});
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
 `;
 const MainHeaderButtonTextFrameRight = styled.div`
-   
     width: 25px;
     height: 100%;
+
     background-image: url(${MainHeaderButtonTextFrameRightImg});
     background-size: contain;
     background-repeat: no-repeat;
@@ -80,6 +85,7 @@ const MainHeaderButtonTextFrameRight = styled.div`
 const MainHeaderGameName = styled.div`
   width: 360px;
   height: 80px;
+
   background-image: url(${GameName});
   background-size: contain;
   background-repeat: no-repeat;
@@ -96,6 +102,7 @@ const MainHeaderGameName = styled.div`
 const MainHeaderOptionsButtonRight = styled.div`
   width: 229px;
   height: 61px;
+  
   background-image: url(${HeaderLeftDefault});
   background-size: contain;
   background-repeat: no-repeat;

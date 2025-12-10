@@ -9,95 +9,25 @@ import heroFrameMiddle from '../assets/character_border_blue.png';
 import ButtonMainImgDefault from '../assets/toggle_button_default.png';
 import ButtonMainImgHover from '../assets/toggle_button_hover.png';
 import ButtonMainImgTogled from '../assets/toggle_button_toggled.png';
-import imgOne from '../assets/download (1).jpg';
-import imgTwo from '../assets/download.jpg';
-import imgThree from '../assets/images (1).jpg';
-import imgFour from '../assets/images (2).jpg';
-import imgFive from '../assets/images (3).jpg';
-import imgSix from '../assets/download.jpg';
+import { HeroApi } from '../api/MockHero'; 
+import type { Hero } from '../types/HeroTypes';
 import { useState } from 'react';
 
-const mockHeroes = [
-  {
-     id: 1,
-    name: 'Dragon Mageq',
-    image : imgOne,
-    rarity: 'High',
-    level: 30,
-    price: 300,
-    bid : 75,
-    status: 'Active'
-  },
-  {
-    id: 2,
-    name: 'Dragon Magess',
-    rarity: 'Common',
-    image : imgTwo,
-    level: 30,
-    price: 300,
-    bid : 75,
-    status: 'Active'
-  },
-  {
-    id: 3,
-    name: 'Dragon Magek',
-    image : imgThree,
-    rarity: 'Common',
-    level: 30,
-    price: 300,
-    bid : 75,
-    status: 'Cancelled'
-  },
-  {
-    id: 4,
-    name: 'Dragon Mage',
-    rarity: 'Middle',
-    image : imgFour,
-    level: 30,
-    price: 300,
-    bid : 75,
-    status: 'Active'
-  },
-  {
-    id: 5,
-    name: 'Dragon Mage',
-    rarity: 'Middle',
-    image : imgFive,
-    level: 30,
-    price: 300,
-    bid : 75,
-    status: 'Cancelled'
-  },
-  {
-    id: 6,
-    name: 'Goblin Rogue',
-    rarity: 'Common',
-    image : imgSix,
-    price: 120,
-    bid : 50,
-    status: 'Active'
-  },
-  {
-    id: 7,
-    name: 'Goblin Rogue',
-    rarity: 'High',
-    image : imgOne,
-    price: 120,
-    bid : 50,
-    status: 'Active'
-  }
-];
 
-const Background = styled.div`
+
+const HomePageBackground = styled.div`
   width: 100vw;
   height: 100vh;
+  
   background-image: 
   linear-gradient(rgba(0, 0, 0, 0.89), rgba(0, 0, 0, 0.83)),
   url(${backgroundImage});
   background-size: cover;
   background-position: center;
+
   display: flex;
   flex-direction: column;
+
   overflow: hidden;
 `;
 
@@ -110,6 +40,7 @@ const ContentWrapper = styled.div`
 const MainContent = styled.main`
   flex: 1;
   padding-left: 50px;
+
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -117,18 +48,22 @@ const MainContent = styled.main`
 
 const MainContentButtonsWrapper = styled.div`
   display: flex;
-  width: 100%;
-  height: 100px;
-  gap: 40px;
-  background-color: rgb(0, 0, 0);
-  padding: 10px 0;
-  padding-top: 22px;
   flex-shrink: 0;
+  gap: 40px;
+
+  width: 100%;
+  height: 90px;
+  
+  background-color: rgb(0, 0, 0);
+
+  padding: 10px 0;
+  padding-top: 15px;
 `;
 
 const MainContentButtons = styled.button`
   width: 167px;
   height: 42px;
+
   color: white;
   background-image: url(${ButtonMainImgDefault});
   background-size: 100% 100%;
@@ -150,10 +85,13 @@ const MainContentButtons = styled.button`
 const MainHeroesWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
+
   width: 100%;
+ 
   margin-top: 20px;
   gap: 40px;
   padding-bottom: 50px;
+
   overflow-y: auto;
   overflow-x: hidden;
   
@@ -185,8 +123,10 @@ const MainHeroesWrapper = styled.div`
 const MainHeroCard = styled.div`
   width: 260px;
   height: 479px;
+
   display: flex;
   flex-direction: column;
+
   transition: all 0.3s;
   border-radius: 10px;
   cursor: pointer;
@@ -223,6 +163,7 @@ const MainHeroCardLower = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+
   height: fit-content;
   width: 100%;
   
@@ -236,6 +177,7 @@ const MainHeroCardLower = styled.div`
 const StatusBadge = styled.span<{ $status: string }>`
   width: fit-content;
   height: fit-content;
+
   padding: 4px 8px;
   background-color: ${props => props.$status === 'Active' ? '#4caf50' : '#f44336'};
   border-radius: 4px;
@@ -296,23 +238,29 @@ const ButtonText = styled.h3`
   letter-spacing: 0.05rem;
   text-transform: uppercase;
   color: #8b929aff;
-  margin: 0;
+
+  
 `;
 
 const HeroImage = styled.img`
   width: 100%;
   height: 100%;
+
   object-fit: cover;
 `;
 
 const ModalOverlay = styled.div<{ $isOpen: boolean }>`
   position: fixed;
+
   top: 0;
   left: 0;
+
   width: 100vw;
   height: 100vh;
+
   background-color: rgba(0, 0, 0, 0.7);
   display: ${props => props.$isOpen ? 'flex' : 'none'};
+  
   align-items: center;
   justify-content: center;
   z-index: 1000;
@@ -320,10 +268,10 @@ const ModalOverlay = styled.div<{ $isOpen: boolean }>`
 `;
 
 function HomePage() {
-  const [selectedHero, setSelectedHero] = useState<typeof mockHeroes[0] | null>(null);
+  const [selectedHero, setSelectedHero] = useState<Hero | null>(null); 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleHeroClick = (hero: typeof mockHeroes[0]) => {
+  const handleHeroClick = (hero: Hero) => {
     setSelectedHero(hero);
     setIsModalOpen(true);
   };
@@ -334,7 +282,7 @@ function HomePage() {
   };
 
   return (
-    <Background>
+    <HomePageBackground>
       <Header />
       <ContentWrapper>
         <AsideLeft />
@@ -351,7 +299,7 @@ function HomePage() {
             </MainContentButtons>
           </MainContentButtonsWrapper>
           <MainHeroesWrapper>
-            {mockHeroes.map((hero) => (
+            {HeroApi.map((hero) => (
               <MainHeroCard key={hero.id} onClick={() => handleHeroClick(hero)}>
                 <MainHeroCardInner>
                   <MainHeroCardUpper>
@@ -389,7 +337,7 @@ function HomePage() {
           )}
         </div>
       </ModalOverlay>
-    </Background>
+    </HomePageBackground>
   );
 }
 
