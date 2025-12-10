@@ -1,7 +1,7 @@
 export interface Hero {
   id: number;
   name: string;
-  image: string;
+  fileName: string;
   rarity: string;
   level: number;
   price: number;
@@ -10,6 +10,15 @@ export interface Hero {
 }
 
 export interface LikedHeroesProps {
-  hero?: Hero; 
+  hero: Hero; 
   onClose: () => void;
+}
+
+export interface FavoriteHeroesProps {
+  heroes: Hero[];
+  onClose: () => void;
+}
+
+export interface ClosingProps {
+    onClose: () => void;
 }

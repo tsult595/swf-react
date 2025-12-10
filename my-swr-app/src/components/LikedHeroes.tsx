@@ -65,7 +65,7 @@ const LikedHeroes = ({ hero, onClose }: LikedHeroesProps) => {
  
   return (
     <Container>
-      <HeaderComponent onClose={onClose} />
+      <HeaderComponent  onClose={onClose} />
       <ScrollWrapper>
         <UpperNamingComponent hero={hero} onClose={onClose} />
         <MainHeroComponent hero={hero} onClose={onClose} />

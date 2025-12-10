@@ -1,7 +1,7 @@
 import HeaderBorderLeft from '../../../assets/popup_title_left_side.png';
 import HeaderBorderRight from '../../../assets/popup_title_right_side.png';
 import HeaderBorderCenter from '../../../assets/popup_title_fill.png';
-import type { LikedHeroesProps } from '../../../types/HeroTypes';
+import type { ClosingProps} from '../../../types/HeroTypes';
 import SocialsFrameHover from '../../../assets/small_button_hover.png';
 import SocialFrameActive from '../../../assets/small_button_pressed.png';
 import CloseIcon from '../../../../public/assets/close_icon.svg';
@@ -104,7 +104,7 @@ const AsideInfoWebSiteLink = styled.a`
   }
 `;
 
-const HeaderComponent = ({ onClose } : LikedHeroesProps) => {
+const HeaderComponent = ({ onClose } : ClosingProps) => {
   return (
      <LikedHeroesHeader>
         <HeaderSectionLeft />

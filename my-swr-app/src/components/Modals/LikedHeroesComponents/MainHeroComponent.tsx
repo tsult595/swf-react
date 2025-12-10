@@ -165,7 +165,7 @@ const getFrameByRarity = (rarity: string) => {
 };
 
 
-const MainHeroComponent = ({hero , onClose} : LikedHeroesProps ) => {
+const MainHeroComponent = ({hero} : LikedHeroesProps ) => {
         const [openSections, setOpenSections] = useState({
         auction: true,
         nft: true,
@@ -187,7 +187,7 @@ const MainHeroComponent = ({hero , onClose} : LikedHeroesProps ) => {
     <MainHeroSection>
           <HeroSideCardContainer>
             <HeroSideCardFrame $rarity={hero.rarity}>
-              <HeroSideCardImage src={hero.image} alt={hero.name} />
+              <HeroSideCardImage src={`/src/assets/characterAvatars/${hero.fileName}`} alt={hero.name} />
             </HeroSideCardFrame>
             <ModalHeroInfoUl>
               <ModalHeroInfoItemLi>The item will be sold by best price at the time ending</ModalHeroInfoItemLi>

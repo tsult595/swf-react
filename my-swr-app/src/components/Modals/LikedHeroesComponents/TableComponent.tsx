@@ -103,7 +103,7 @@ const PriceCell = styled.span`
   }
 `;
 
-const TableComponent = ({ hero , onClose }: LikedHeroesProps) => {
+const TableComponent = ({ hero}: LikedHeroesProps) => {
       const [openSections, setOpenSections] = useState({
         auction: true,
         nft: true,

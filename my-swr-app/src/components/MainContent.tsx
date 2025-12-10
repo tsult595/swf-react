@@ -8,7 +8,20 @@ import heroFrameMiddle from '../assets/character_border_blue.png';
 import ButtonMainImgDefault from '../assets/toggle_button_default.png'
 import ButtonMainImgHover from '../assets/toggle_button_hover.png'; 
 import ButtonMainImgTogled from '../assets/toggle_button_toggled.png'; 
-import LikedHeroes from './LikedHeroes'; 
+import LikedHeroes from './LikedHeroes';
+import FavoriteHeroes from './FavoriteHeroes';
+import { Heart } from 'lucide-react';
+
+
+// import bulbazavr from `../assets/characterAvatars/${HeroApi[0].fileName}`;
+// import pickachu  from `../assets/characterAvatars/${HeroApi[1].fileName}`;
+// import catFish from `../assets/characterAvatars/${HeroApi[2].fileName}`;
+// import ballPokemon from `../assets/characterAvatars/${HeroApi[3].fileName}`;
+// import blastuas  from `../assets/characterAvatars/${HeroApi[4].fileName}`;
+// import duckPokemon from `../assets/characterAvatars/${HeroApi[5].fileName}`;
+// import charmander from `../assets/characterAvatars/${HeroApi[6].fileName}`; 
+
+
 
 const MainContentWrapper = styled.main` 
   flex: 1;
@@ -232,9 +245,50 @@ const ModalOverlay = styled.div<{ $isOpen: boolean }>`
   z-index: 1000;
 `;
 
+const HeartButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s;
+  
+  &:hover {
+    transform: scale(1.2);
+  }
+  
+  &:active {
+    transform: scale(0.9);
+  }
+`;
+
 function MainContent() {
   const [selectedHero, setSelectedHero] = useState<Hero | null>(null); 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectToFavorite, setSelectToFavorite] = useState<Hero[]>([]);
+  const [showFavorites, setShowFavorites] = useState(false);
+
+
+    const handleAddToFavorite = (hero: Hero, e: React.MouseEvent) => {
+    e.stopPropagation(); 
+    
+    setSelectToFavorite((prevFavorites) => {
+      const isAlreadyFavorite = prevFavorites.some(fav => fav.id === hero.id);
+      
+      if (isAlreadyFavorite) {
+       
+        return prevFavorites.filter(fav => fav.id !== hero.id);
+      } else {
+        
+        return [...prevFavorites, hero];
+      }
+    });
+  };
+
+   const isFavorite = (heroId: number) => {
+    return selectToFavorite.some(hero => hero.id === heroId);
+  };
 
   const handleHeroClick = (hero: Hero) => {
     setSelectedHero(hero);
@@ -256,6 +310,11 @@ function MainContent() {
           <MainContentButtons>
             <ButtonText>Items</ButtonText>
           </MainContentButtons>
+            <MainContentButtons onClick={() => setShowFavorites(true)}>
+              <ButtonText>
+                Favorites ({selectToFavorite.length})
+              </ButtonText>
+            </MainContentButtons>
           <MainContentButtons>
             <ButtonText>Consumables</ButtonText>
           </MainContentButtons>
@@ -269,11 +328,18 @@ function MainContent() {
                 </MainHeroCardUpper>
                 <MainHeroCardLower>
                   <p>ID: {hero.id}</p>
+                     <HeartButton onClick={(e) => handleAddToFavorite(hero, e)}> 
+                    <Heart 
+                      size={20} 
+                      color={isFavorite(hero.id) ? "red" : "#fff"} 
+                      fill={isFavorite(hero.id) ? "red" : "none"} 
+                    />
+                  </HeartButton>
                   <StatusBadge $status={hero.status}>{hero.status}</StatusBadge>
                 </MainHeroCardLower>
                 <HeroFrame $rarity={hero.rarity}>
-                  {hero.image ? (
-                    <HeroImage src={hero.image} alt={hero.name} />
+                  {hero.fileName ? (
+                    <HeroImage src={`/src/assets/characterAvatars/${hero.fileName}`} alt={hero.name} />
                   ) : (
                     <span style={{ color: 'white' }}>No Image</span>
                   )}
@@ -288,11 +354,20 @@ function MainContent() {
         </MainHeroesWrapper>
       </MainContentWrapper>
 
+       <ModalOverlay $isOpen={showFavorites} onClick={() => setShowFavorites(false)}>
+        <div onClick={(e) => e.stopPropagation()}>
+          <FavoriteHeroes 
+            heroes={selectToFavorite} 
+            onClose={() => setShowFavorites(false)}
+          />
+        </div>
+      </ModalOverlay>
+
       <ModalOverlay $isOpen={isModalOpen} onClick={handleCloseModal}> 
         <div onClick={(e) => e.stopPropagation()}>
           {selectedHero && (
             <LikedHeroes 
-              hero={selectedHero} 
+              hero={selectedHero}
               onClose={handleCloseModal}
             />
           )}
