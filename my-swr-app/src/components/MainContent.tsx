@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import type { Hero } from '../types/HeroTypes';
 import { useState } from 'react';
-import { HeroApi } from '../api/MockHero'; 
+ 
 import heroFrame from '../assets/character_border_common.png'; 
 import heroFrameHigh from '../assets/character_border_violet.png'; 
 import heroFrameMiddle from '../assets/character_border_blue.png'; 
@@ -11,6 +11,8 @@ import ButtonMainImgTogled from '../assets/toggle_button_toggled.png';
 import LikedHeroes from './LikedHeroes';
 import FavoriteHeroes from './FavoriteHeroes';
 import { Heart } from 'lucide-react';
+import useSWR from 'swr'; 
+import { fetcher } from '../utils/ApiFetcher';
 
 
 // import bulbazavr from `../assets/characterAvatars/${HeroApi[0].fileName}`;
@@ -21,7 +23,40 @@ import { Heart } from 'lucide-react';
 // import duckPokemon from `../assets/characterAvatars/${HeroApi[5].fileName}`;
 // import charmander from `../assets/characterAvatars/${HeroApi[6].fileName}`; 
 
+const LoadingWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 400px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 18px;
+`;
 
+const ErrorWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 400px;
+  color: #ff4757;
+  font-size: 18px;
+  gap: 10px;
+  
+  button {
+    padding: 10px 20px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    
+    &:hover {
+      background: #764ba2;
+    }
+  }
+`;
 
 const MainContentWrapper = styled.main` 
   flex: 1;
@@ -269,6 +304,11 @@ function MainContent() {
   const [selectToFavorite, setSelectToFavorite] = useState<Hero[]>([]);
   const [showFavorites, setShowFavorites] = useState(false);
 
+    const { data: heroes, error, isLoading, mutate } = useSWR<Hero[]>('/heroes', fetcher, {
+    revalidateOnFocus: false,
+    dedupingInterval: 60000, 
+  });
+
 
     const handleAddToFavorite = (hero: Hero, e: React.MouseEvent) => {
     e.stopPropagation(); 
@@ -310,17 +350,35 @@ function MainContent() {
           <MainContentButtons>
             <ButtonText>Items</ButtonText>
           </MainContentButtons>
-            <MainContentButtons onClick={() => setShowFavorites(true)}>
-              <ButtonText>
-                Favorites ({selectToFavorite.length})
-              </ButtonText>
-            </MainContentButtons>
+          <MainContentButtons onClick={() => setShowFavorites(true)}>
+            <ButtonText>
+              Favorites ({selectToFavorite.length})
+            </ButtonText>
+          </MainContentButtons>
           <MainContentButtons>
             <ButtonText>Consumables</ButtonText>
           </MainContentButtons>
         </MainContentButtonsWrapper>
+
         <MainHeroesWrapper>
-          {HeroApi.map((hero) => (
+        
+          {isLoading && (
+            <LoadingWrapper>
+              <div>Loading heroes...</div>
+            </LoadingWrapper>
+          )}
+
+         
+          {error && (
+            <ErrorWrapper>
+              <div>❌ Failed to load heroes</div>
+              <div>Please check if server is running on port 3001</div>
+              <button onClick={() => mutate()}>Retry</button>
+            </ErrorWrapper>
+          )}
+
+         
+          {!isLoading && !error && heroes && heroes.map((hero) => (
             <MainHeroCard key={hero.id} onClick={() => handleHeroClick(hero)}>
               <MainHeroCardInner>
                 <MainHeroCardUpper>
@@ -328,7 +386,7 @@ function MainContent() {
                 </MainHeroCardUpper>
                 <MainHeroCardLower>
                   <p>ID: {hero.id}</p>
-                     <HeartButton onClick={(e) => handleAddToFavorite(hero, e)}> 
+                  <HeartButton onClick={(e) => handleAddToFavorite(hero, e)}> 
                     <Heart 
                       size={20} 
                       color={isFavorite(hero.id) ? "red" : "#fff"} 
@@ -339,7 +397,10 @@ function MainContent() {
                 </MainHeroCardLower>
                 <HeroFrame $rarity={hero.rarity}>
                   {hero.fileName ? (
-                    <HeroImage src={`/src/assets/characterAvatars/${hero.fileName}`} alt={hero.name} />
+                    <HeroImage 
+                      src={`/src/assets/characterAvatars/${hero.fileName}`} 
+                      alt={hero.name} 
+                       />
                   ) : (
                     <span style={{ color: 'white' }}>No Image</span>
                   )}
@@ -354,7 +415,7 @@ function MainContent() {
         </MainHeroesWrapper>
       </MainContentWrapper>
 
-       <ModalOverlay $isOpen={showFavorites} onClick={() => setShowFavorites(false)}>
+      <ModalOverlay $isOpen={showFavorites} onClick={() => setShowFavorites(false)}>
         <div onClick={(e) => e.stopPropagation()}>
           <FavoriteHeroes 
             heroes={selectToFavorite} 
@@ -368,7 +429,7 @@ function MainContent() {
           {selectedHero && (
             <LikedHeroes 
               hero={selectedHero}
-              onClose={handleCloseModal}
+               onClose={handleCloseModal}
             />
           )}
         </div>

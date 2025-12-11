@@ -6,21 +6,17 @@ const UpperNamingModul = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-
-  padding: 0 40px;
-  
+  background: #000000ff;
+  padding: 20px 40px;
   width: 100%;
-  margin-top: 20px;
 `;
 
 const HeroName = styled.h2`
   color: #ffffff;
-
   font-family: 'Open Sans', sans-serif;
   font-weight: 200;
   font-size: 18px;
   text-align: left;
-  
   margin: 0;
 `;
 

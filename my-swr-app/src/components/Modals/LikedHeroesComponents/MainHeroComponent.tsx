@@ -2,8 +2,10 @@ import styled from 'styled-components';
 import heroFrameHigh from '../../../assets/character_border_violet.png';
 import heroFrameMiddle from '../../../assets/character_border_blue.png';
 import heroFrame from '../../../assets/character_border_common.png';
-import type { LikedHeroesProps } from '../../../types/HeroTypes';
+import type { LikedHeroesProps , Hero } from '../../../types/HeroTypes';
 import { useState } from 'react';
+import useSWR from 'swr';
+import { fetcher } from '../../../utils/ApiFetcher';
 
 const MainHeroSection = styled.div`
   width: 100%;
@@ -13,7 +15,7 @@ const MainHeroSection = styled.div`
 
   display: flex;
 
-  background: rgba(53, 48, 48, 0.15);
+  background: black;
 `;
 
 const HeroSideCardContainer = styled.div`
@@ -73,7 +75,7 @@ const ModalHeroInfoItemLi = styled.li`
 const HeroFeaturesContainer = styled.div`
   width: 68%;
   height: fit-content;
-
+  background: #000000ff;
   display: grid;
   grid-template-columns: 1fr 1fr;
 
@@ -108,7 +110,7 @@ const SectionHeader = styled.div<{ $isOpen: boolean }>`
 
 
 const FeatureSection = styled.div<{ $isOpen: boolean }>`
-  background: #13171f;
+  background: rgb(18,20,26);
   border: 1px solid #1f242c;
 
   border-radius: 6px;
@@ -174,6 +176,15 @@ const MainHeroComponent = ({hero} : LikedHeroesProps ) => {
         table : true
       });
     
+    const { data: fullHero} = useSWR<Hero>(
+    hero ? `/heroes/${hero.id}` : null,
+    fetcher,
+    {
+      fallbackData: hero, 
+      revalidateOnFocus: false,
+    }
+  );
+      
        const toggleSection = (section: keyof typeof openSections) => {
         setOpenSections(prev => ({
           ...prev,
@@ -183,11 +194,21 @@ const MainHeroComponent = ({hero} : LikedHeroesProps ) => {
          if (!hero) {
         return null;
       }
+     
+       const displayHero = fullHero || hero;
+
   return (
     <MainHeroSection>
           <HeroSideCardContainer>
-            <HeroSideCardFrame $rarity={hero.rarity}>
-              <HeroSideCardImage src={`/src/assets/characterAvatars/${hero.fileName}`} alt={hero.name} />
+            <HeroSideCardFrame $rarity={displayHero.rarity}>
+            <HeroSideCardImage 
+            src={`/src/assets/characterAvatars/${hero.fileName}`} 
+            alt={hero.name}
+            onError={(e) => {
+              console.error('Image load error:', hero.fileName);
+              e.currentTarget.style.display = 'none';
+            }}
+          />
             </HeroSideCardFrame>
             <ModalHeroInfoUl>
               <ModalHeroInfoItemLi>The item will be sold by best price at the time ending</ModalHeroInfoItemLi>
@@ -277,13 +298,13 @@ const MainHeroComponent = ({hero} : LikedHeroesProps ) => {
                 <InfoRow>
                   <span>Wins</span>
                   <HeroFeatureStatusDiv>
-                  <span>0</span>
+                  <span>{displayHero.wins || 0}</span>
                   </HeroFeatureStatusDiv>
                 </InfoRow>
                 <InfoRow>
                   <span>Loses</span>
                   <HeroFeatureStatusDiv>
-                  <span>0</span>
+                  <span>{displayHero.loses || 0}</span>
                   </HeroFeatureStatusDiv>
                 </InfoRow>
               </InfoFeature>
@@ -298,15 +319,23 @@ const MainHeroComponent = ({hero} : LikedHeroesProps ) => {
               </SectionHeader>
               <InfoFeature $isOpen={openSections.create}>
                 <InfoRow>
-                  <span>Creator</span>
+                  <span>Creators</span>
                   <HeroFeatureStatusDiv>
-                  <span>0x709...79C8</span>
+                 <span>{displayHero.creator || '0x709...79C8'}</span>
                   </HeroFeatureStatusDiv>
                 </InfoRow>
                 <InfoRow>
                   <span>Create date</span>
                   <HeroFeatureStatusDiv>
-                  <span>Dec 1, 2025</span>
+                   <span>
+                  {displayHero.createDate
+                    ? new Date(displayHero.createDate).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                      })
+                    : 'Dec 11, 2025'}
+                </span>
                   </HeroFeatureStatusDiv>
                 </InfoRow>
               </InfoFeature>

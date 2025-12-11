@@ -1,12 +1,29 @@
+
 export interface Hero {
   id: number;
   name: string;
   fileName: string;
-  rarity: string;
+  rarity: 'Common' | 'Middle' | 'High';
   level: number;
   price: number;
   bid: number;
-  status: string;
+  status: 'Active' | 'Cancelled';
+  highestBidder?: string;
+  yourBid?: number;
+  wins?: number;
+  loses?: number;
+  creator?: string;
+  createDate?: string;
+}
+
+export interface LotHistory {
+  id: number;
+  heroId: number;
+  type: string;
+  from: string;
+  to: string;
+  price: number;
+  date: string;
 }
 
 export interface LikedHeroesProps {
@@ -20,5 +37,5 @@ export interface FavoriteHeroesProps {
 }
 
 export interface ClosingProps {
-    onClose: () => void;
+  onClose: () => void;
 }

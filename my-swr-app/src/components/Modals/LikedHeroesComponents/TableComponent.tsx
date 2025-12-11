@@ -1,19 +1,22 @@
 import styled from 'styled-components';
 import { useState } from 'react';
-import type {LikedHeroesProps} from '../../../types/HeroTypes';
-
+import useSWR from 'swr';
+import type { LikedHeroesProps } from '../../../types/HeroTypes';
+import type { LotHistory } from '../../../types/HeroTypes';
+import { fetcher } from '../../../utils/ApiFetcher';
 
 
 const HistoryTableWrapper = styled.div<{ $isOpen: boolean }>`
   display: ${props => props.$isOpen ? 'block' : 'none'}; 
+  overflow: hidden;
+  transition: all 0.3s ease;
 `;
-
 
 const LotHistorySection = styled.div`
   width: 100%;
+  margin: 0 auto;
   padding: 30px;
-  background: rgba(0, 0, 0, 0.15);
- 
+    background: #000000ff;
 `;
 
 const HistoryTable = styled.table`
@@ -61,7 +64,6 @@ const HistoryTableHeader = styled.th`
   font-size: 14px;
   font-weight: 400;
   padding: 12px 16px;
-
   text-align: left;
   
   &:first-child {
@@ -96,6 +98,7 @@ const PriceCell = styled.span`
   display: flex;
   align-items: center;
   gap: 6px;
+  justify-content: flex-end;
   
   &::after {
     content: '🪙';
@@ -103,30 +106,67 @@ const PriceCell = styled.span`
   }
 `;
 
-const TableComponent = ({ hero}: LikedHeroesProps) => {
-      const [openSections, setOpenSections] = useState({
-        auction: true,
-        nft: true,
-        experience: true,
-        create: true,
-        table : true
-      });
-      const toggleSection = (section: keyof typeof openSections) => {
-    setOpenSections(prev => ({
-      ...prev,
-      [section]: !prev[section]
-    }));
+const LoadingText = styled.div`
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  padding: 20px;
+  font-size: 14px;
+`;
+
+const ErrorText = styled.div`
+  color: #ff4757;
+  text-align: center;
+  padding: 20px;
+  font-size: 14px;
+`;
+
+const EmptyText = styled.div`
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  padding: 20px;
+  font-size: 14px;
+`;
+
+const TableComponent = ({ hero }: LikedHeroesProps) => {
+  const [isOpen, setIsOpen] = useState(true);
+
+
+  const { data: history, error, isLoading } = useSWR<LotHistory[]>(
+    hero ? `/heroes/${hero.id}/history` : null,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 60000,
+    }
+  );
+
+  const toggleSection = () => {
+    setIsOpen(prev => !prev);
   };
+
   return (
     <LotHistorySection>
-          <HistoryHeader
-            $isOpen={openSections.table}
-            onClick={() => toggleSection('table')}
-              >
-          
-            <h3>Lot History</h3>
-          </HistoryHeader>
-          <HistoryTableWrapper $isOpen={openSections.table}>
+      <HistoryHeader
+        $isOpen={isOpen}
+        onClick={toggleSection}
+      >
+        <h3>Lot History</h3>
+      </HistoryHeader>
+      
+      <HistoryTableWrapper $isOpen={isOpen}>
+    
+        {isLoading && <LoadingText>Loading history...</LoadingText>}
+        
+
+        {error && <ErrorText>Failed to load history. Please try again.</ErrorText>}
+        
+        
+        {!isLoading && !error && history && history.length === 0 && (
+          <EmptyText>No history available for this hero</EmptyText>
+        )}
+        
+      
+        {!isLoading && !error && history && history.length > 0 && (
           <HistoryTable>
             <HistoryTableHead>
               <HistoryTableRow>
@@ -139,21 +179,33 @@ const TableComponent = ({ hero}: LikedHeroesProps) => {
               </HistoryTableRow>
             </HistoryTableHead>
             <HistoryTableBody>
-              <HistoryTableRow>
-                <HistoryTableCell>0</HistoryTableCell>
-                <HistoryTableCell>Created auction</HistoryTableCell>
-                <HistoryTableCell>0x709...79C8</HistoryTableCell>
-                <HistoryTableCell>Auction</HistoryTableCell>
-                <HistoryTableCell>
-                  <PriceCell>{hero.price}</PriceCell>
-                </HistoryTableCell>
-                <HistoryTableCell>12/01/2025, 5:31 AM</HistoryTableCell>
-              </HistoryTableRow>
+              {history.map((item, index) => (
+                <HistoryTableRow key={item.id}>
+                  <HistoryTableCell>{index}</HistoryTableCell>
+                  <HistoryTableCell>{item.type}</HistoryTableCell>
+                  <HistoryTableCell>{item.from}</HistoryTableCell>
+                  <HistoryTableCell>{item.to}</HistoryTableCell>
+                  <HistoryTableCell>
+                    <PriceCell>{item.price}</PriceCell>
+                  </HistoryTableCell>
+                  <HistoryTableCell>
+                    {new Date(item.date).toLocaleDateString('en-US', {
+                      month: '2-digit',
+                      day: '2-digit',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: true
+                    })}
+                  </HistoryTableCell>
+                </HistoryTableRow>
+              ))}
             </HistoryTableBody>
           </HistoryTable>
-          </HistoryTableWrapper>
-        </LotHistorySection>
-  )
-}
+        )}
+      </HistoryTableWrapper>
+    </LotHistorySection>
+  );
+};
 
-export default TableComponent
+export default TableComponent;
