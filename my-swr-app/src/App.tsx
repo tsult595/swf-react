@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { createGlobalStyle } from 'styled-components';
 import { SWRConfig } from 'swr';
 import HomePage from './components/HomePage'; 
+import MainComponentChat from './components/MainComponentChat';
 
 
 
@@ -46,6 +47,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/home-page" element={<HomePage />} />
+            <Route path="/chat" element={<MainComponentChat />} />
 
           </Routes>
         </BrowserRouter>

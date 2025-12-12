@@ -25,6 +25,15 @@ export interface LotHistory {
   price: number;
   date: string;
 }
+export interface Message {
+  id?: string;
+  channel: 'global' | 'guild' | 'battle';
+  username: string;
+  userId: string;
+  text: string;
+  type?: 'system' | 'user'; 
+  timestamp: Date;
+}
 
 export interface LikedHeroesProps {
   hero: Hero; 
@@ -32,10 +41,11 @@ export interface LikedHeroesProps {
 }
 
 export interface FavoriteHeroesProps {
-  heroes: Hero[];
+
   onClose: () => void;
 }
 
 export interface ClosingProps {
   onClose: () => void;
 }
+

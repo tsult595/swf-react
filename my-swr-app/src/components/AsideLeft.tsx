@@ -26,9 +26,7 @@ const AsideLeftContainer = styled.div`
    background-image: url(${AsideBackGround});
 `;
 
-// const ColorWord = styled.span`
-//     color: #C5D4E3;
-// `;
+
 
 const AsideButtonLeft = styled.div`
   width: 30px;

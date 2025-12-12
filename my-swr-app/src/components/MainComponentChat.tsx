@@ -1,0 +1,316 @@
+import styled, { css } from 'styled-components';
+import { useState } from 'react';
+import { Send, Scroll } from 'lucide-react';
+import useSWR from 'swr'; 
+import type { Message } from '../types/HeroTypes'; 
+import AsideBackGround from '../assets/auction_menu_background.png';
+import HeaderBackGround from '../assets/page_header_background.png';
+
+const FrameBorderModalMain = css`
+  border-style: solid;
+  border-image-width: 40px;
+  border-image-source: url('/assets/frame_16_background.png');
+  border-image-slice: 40 fill;
+  border-image-repeat: round;
+`;
+
+const ChatContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #1a1410 0%, #2d1810 100%);
+  display: flex;
+  flex-direction: column;
+  font-family: 'Cinzel', serif;
+  position: relative;
+  ${FrameBorderModalMain}
+  padding: 20px;
+`;
+
+const ChatHeader = styled.div`
+  background-image: url(${HeaderBackGround});
+  border: 3px solid #57503aff;
+  border-radius: 10px 10px 0 0;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  
+  h2 {
+    color: #d4af37;
+    margin: 0;
+    font-size: 24px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    letter-spacing: 2px;
+  }
+`;
+
+const MessagesContainer = styled.div`
+  flex: 1;
+  background-image: url(${AsideBackGround});
+  height: auto;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  
+  &::-webkit-scrollbar {
+    width: 12px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: rgba(45, 24, 16, 0.5);
+    border-radius: 10px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #8b4513 0%, #654321 100%);
+    border-radius: 10px;
+    border: 2px solid #d4af37;
+    
+    &:hover {
+      background: linear-gradient(180deg, #d4af37 0%, #8b4513 100%);
+    }
+  }
+`;
+
+const MessageWrapper = styled.div<{ $isOwn?: boolean; $type?: string }>`
+  display: flex;
+  flex-direction: column;
+  align-items: ${props => props.$isOwn ? 'flex-end' : 'flex-start'};
+  animation: fadeIn 0.3s ease-in;
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+`;
+
+const MessageBubble = styled.div<{ $isOwn?: boolean; $type?: string }>`
+  background: ${props => {
+    if (props.$isOwn) return 'linear-gradient(135deg, #37433dff 0%, #2f684dff 100%)';
+    return 'linear-gradient(135deg, #744210 0%, #5a3410 100%)';
+  }};
+  border: 2px solid ${props => {
+    if (props.$isOwn) return '#585f3eff';
+    return '#d4af37';
+  }};
+  border-radius: ${props => props.$isOwn ? '15px 15px 0 15px' : '15px 15px 15px 0'};
+  padding: 12px 18px;
+  max-width: 60%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    ${props => props.$isOwn ? `
+      right: -10px;
+      bottom: 0;
+      border-width: 0 0 10px 10px;
+      border-color: transparent transparent #545337ff transparent;
+    ` : `
+      left: -10px;
+      bottom: 0;
+      border-width: 0 10px 10px 0;
+      border-color: transparent #5a3410 transparent transparent;
+    `}
+  }
+`;
+
+const MessageHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+`;
+
+const Username = styled.span<{ $type?: string }>`
+  font-weight: bold;
+  color: #8e8346ff;
+  font-size: 14px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+`;
+
+const MessageText = styled.p`
+  color: #f7fafc;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  word-wrap: break-word;
+`;
+
+const Timestamp = styled.span`
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 11px;
+  margin-top: 4px;
+  font-family: 'Arial', sans-serif;
+`;
+
+const InputContainer = styled.div`
+  background: linear-gradient(135deg, #8b4513 0%, #654321 100%);
+  border: 3px solid #2f2e2aff;
+  border-radius: 0 0 10px 10px;
+  padding: 15px 20px;
+  display: flex;
+  background-image: url(${HeaderBackGround});
+  gap: 10px;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.5);
+`;
+
+const Input = styled.input`
+  flex: 1;
+  background: rgba(26, 20, 16, 0.8);
+  border: 2px solid #252524ff;
+  border-radius: 8px;
+  padding: 12px 18px;
+  color: #f7fafc;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.3s;
+  
+  &::placeholder {
+    color: rgba(212, 175, 55, 0.5);
+  }
+  
+  &:focus {
+    border-color: #ffd700;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+  }
+`;
+
+const SendButton = styled.button`
+  background: linear-gradient(135deg, #d4af37 0%, #b8941e 100%);
+  border: 2px solid #ffd700;
+  border-radius: 8px;
+  padding: 12px 24px;
+  color: #2d1810;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(212, 175, 55, 0.4);
+    background: linear-gradient(135deg, #ffd700 0%, #d4af37 100%);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+`;
+
+const MainComponentChat = () => {
+  const [inputValue, setInputValue] = useState('');
+  const [activeTab] = useState<'global' | 'guild' | 'battle'>('global'); //  канал
+
+  const currentUserId = 'user123';
+  const currentUsername = 'Tima';
+
+  
+  const { data: messages = [], mutate: mutateMessages } = useSWR<Message[]>(
+    `/messages/${activeTab}`,
+    (url) => fetch(`http://localhost:3001/api${url}`).then(r => r.json()),
+    {
+      refreshInterval: 3000,
+      revalidateOnFocus: true
+    }
+  );
+
+  
+  const handleSendMessage = async () => {
+    if (!inputValue.trim()) return;
+    
+    try {
+      const newMessage = {
+        channel: activeTab,
+        username: currentUsername,
+        userId: currentUserId,
+        text: inputValue,
+      };
+      
+      const response = await fetch('http://localhost:3001/api/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newMessage)
+      });
+      
+      if (response.ok) {
+        const savedMessage = await response.json();
+        mutateMessages([...messages, savedMessage], false);
+        mutateMessages();
+        setInputValue('');
+      }
+    } catch (error) {
+      console.error('Failed to send message:', error);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSendMessage();
+    }
+  };
+
+  return (
+    <ChatContainer>
+      <ChatHeader>
+        <Scroll size={28} color="#665d3fff" />
+        <h2>Chat</h2>
+      </ChatHeader>
+
+      <MessagesContainer>
+        {messages.map((message) => {
+          const isOwn = message.userId === currentUserId;
+          
+          return (
+            <MessageWrapper key={message.id} $isOwn={isOwn}>
+              <MessageBubble $isOwn={isOwn} $type={message.type}>
+                <MessageHeader>
+                  <Username $type={message.type}>{message.username}</Username>
+                  <Timestamp>
+                    {new Date(message.timestamp).toLocaleTimeString('ru-RU', { 
+                      hour: '2-digit', 
+                      minute: '2-digit' 
+                    })}
+                  </Timestamp>
+                </MessageHeader>
+                <MessageText>{message.text}</MessageText>
+              </MessageBubble>
+            </MessageWrapper>
+          );
+        })}
+      </MessagesContainer>
+
+      <InputContainer>
+        <Input
+          type="text"
+          placeholder="Введите сообщение..."
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyUp={handleKeyPress}
+        />
+        <SendButton onClick={handleSendMessage}>
+          <Send size={18} />
+          Отправить
+        </SendButton>
+      </InputContainer>
+    </ChatContainer>
+  );
+};
+
+export default MainComponentChat;
