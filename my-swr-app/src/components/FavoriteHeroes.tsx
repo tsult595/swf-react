@@ -9,6 +9,7 @@ import { Heart } from 'lucide-react';
 import { removeFromFavorites } from '../api/favoritesApi';
 import useSWR, { mutate as globalMutate } from 'swr'; 
 
+
 const FrameBorderModalMain = css`
   border-style: solid;
   border-image-width: 33px;
