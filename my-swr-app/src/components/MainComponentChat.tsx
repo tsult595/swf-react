@@ -2,9 +2,11 @@ import styled, { css } from 'styled-components';
 import { useState } from 'react';
 import { Send, Scroll } from 'lucide-react';
 import useSWR from 'swr'; 
-import type { Message } from '../types/HeroTypes'; 
 import AsideBackGround from '../assets/auction_menu_background.png';
 import HeaderBackGround from '../assets/page_header_background.png';
+import type { Message } from '../types/MessageTypes';
+import { sendMessage } from '../api/messageApi';
+
 
 const FrameBorderModalMain = css`
   border-style: solid;
@@ -16,14 +18,14 @@ const FrameBorderModalMain = css`
 
 const ChatContainer = styled.div`
   width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #1a1410 0%, #2d1810 100%);
+  height: 85%;
   display: flex;
   flex-direction: column;
   font-family: 'Cinzel', serif;
-  position: relative;
+ 
   ${FrameBorderModalMain}
   padding: 20px;
+  overflow: hidden;
 `;
 
 const ChatHeader = styled.div`
@@ -54,6 +56,7 @@ const MessagesContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 15px;
+  min-height: 0;
   
   &::-webkit-scrollbar {
     width: 12px;
@@ -80,7 +83,7 @@ const MessageWrapper = styled.div<{ $isOwn?: boolean; $type?: string }>`
   flex-direction: column;
   align-items: ${props => props.$isOwn ? 'flex-end' : 'flex-start'};
   animation: fadeIn 0.3s ease-in;
-  
+  flex-shrink: 0;
   @keyframes fadeIn {
     from {
       opacity: 0;
@@ -158,6 +161,7 @@ const Timestamp = styled.span`
 `;
 
 const InputContainer = styled.div`
+  flex-shrink: 0;
   background: linear-gradient(135deg, #8b4513 0%, #654321 100%);
   border: 3px solid #2f2e2aff;
   border-radius: 0 0 10px 10px;
@@ -236,27 +240,21 @@ const MainComponentChat = () => {
     if (!inputValue.trim()) return;
     
     try {
-      const newMessage = {
+      // 👇 Вызываем функцию из messageApi.ts
+      const savedMessage = await sendMessage({
         channel: activeTab,
         username: currentUsername,
         userId: currentUserId,
-        text: inputValue,
-      };
-      
-      const response = await fetch('http://localhost:3001/api/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newMessage)
+        text: inputValue.trim(), // 👈 trim() для удаления пробелов
       });
       
-      if (response.ok) {
-        const savedMessage = await response.json();
-        mutateMessages([...messages, savedMessage], false);
-        mutateMessages();
-        setInputValue('');
-      }
+      // 👇 Обновляем список сообщений
+      mutateMessages([...messages, savedMessage], false);
+      mutateMessages();
+      setInputValue('');
     } catch (error) {
       console.error('Failed to send message:', error);
+      alert('Не удалось отправить сообщение'); // 👈 Показываем ошибку пользователю
     }
   };
 
@@ -266,6 +264,7 @@ const MainComponentChat = () => {
     }
   };
 
+  
   return (
     <ChatContainer>
       <ChatHeader>
@@ -303,6 +302,7 @@ const MainComponentChat = () => {
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyUp={handleKeyPress}
+          
         />
         <SendButton onClick={handleSendMessage}>
           <Send size={18} />

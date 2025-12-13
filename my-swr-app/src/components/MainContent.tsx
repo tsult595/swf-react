@@ -99,7 +99,7 @@ const MainHeroesWrapper = styled.div`
   padding-bottom: 50px;
   overflow-y: auto;
   overflow-x: hidden;
-  
+  margin-left: 40px;
   
   &::-webkit-scrollbar {
     width: 12px;
@@ -307,13 +307,17 @@ function MainContent() {
 
   const { data: favorites, mutate: mutateFavorites } = useSWR<Hero[]>(
     `/favorites/${userId}`,
-    () => fetch(`http://localhost:3001/api/favorites/${userId}`).then(r => r.json()),
+    () => 
+      {console.log('Fetching favorites'); return fetch(`http://localhost:3001/api/favorites/${userId}`).then(r => r.json());},
+    
     {
       revalidateOnFocus: false,
       refreshInterval: 0, 
+      
     }
   );
 
+  
   const handleAddToFavorite = async (hero: Hero, e: React.MouseEvent) => {
     e.stopPropagation();
     

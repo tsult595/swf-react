@@ -24,7 +24,7 @@ const ContentWrapper = styled.div`
   display: flex;
   flex: 1;
   overflow: hidden;
-  gap: 40px;
+  
 `;
 
 function HomePage() {
