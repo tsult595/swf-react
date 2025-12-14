@@ -1,7 +1,7 @@
-import backgroundImage from '../assets/background.png';
-import Header from './Header';
-import AsideLeft from './AsideLeft';
-import MainContent from './MainContent'; 
+import backgroundImage from '../../assets/background.png';
+import Header from '../components/HomePageHeader';
+import AsideLeft from '../components/HomePageAsideLeft';
+import MainContent from '../components/HomePageMainContent'; 
 import styled from 'styled-components';
 
 const HomePageBackground = styled.div`

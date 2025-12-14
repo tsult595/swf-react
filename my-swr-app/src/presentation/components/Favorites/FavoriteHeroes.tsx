@@ -1,12 +1,12 @@
 import styled, { css } from 'styled-components';
-import type { FavoriteHeroesProps, Hero } from '../types/HeroTypes';
-import SocialsFrameHover from '../assets/small_button_hover.png';
-import SocialFrameActive from '../assets/small_button_pressed.png';
-import heroFrame from '../assets/character_border_common.png'; 
-import heroFrameHigh from '../assets/character_border_violet.png'; 
-import heroFrameMiddle from '../assets/character_border_blue.png'; 
+import type { FavoriteHeroesProps, Hero } from '../../../Domain/Entities/HeroTypes';
+import SocialsFrameHover from '../../../assets/small_button_hover.png';
+import SocialFrameActive from '../../../assets/small_button_pressed.png';
+import heroFrame from '../../../assets/character_border_common.png'; 
+import heroFrameHigh from '../../../assets/character_border_violet.png'; 
+import heroFrameMiddle from '../../../assets/character_border_blue.png'; 
 import { Heart } from 'lucide-react';
-import { removeFromFavorites } from '../api/favoritesApi';
+import { removeFromFavorites } from '../../../data/api/favoritesApi';
 import useSWR, { mutate as globalMutate } from 'swr'; 
 
 

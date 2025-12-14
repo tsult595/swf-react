@@ -2,10 +2,10 @@ import styled, { css } from 'styled-components';
 import { useState } from 'react';
 import { Send, Scroll } from 'lucide-react';
 import useSWR from 'swr'; 
-import AsideBackGround from '../assets/auction_menu_background.png';
-import HeaderBackGround from '../assets/page_header_background.png';
-import type { Message } from '../types/MessageTypes';
-import { sendMessage } from '../api/messageApi';
+import AsideBackGround from '../../../assets/auction_menu_background.png';
+import HeaderBackGround from '../../../assets/page_header_background.png';
+import type { Message } from '../../../Domain/Entities/MessageTypes';
+import { sendMessage } from '../../../data/api/messageApi';
 
 
 const FrameBorderModalMain = css`

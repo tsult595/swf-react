@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { createGlobalStyle } from 'styled-components';
 import { SWRConfig } from 'swr';
-import HomePage from './components/HomePage'; 
-import MainComponentChat from './components/MainComponentChat';
+import HomePage from './presentation/Pages/HomePage'; 
+import MainComponentChat from './presentation/components/Chat/MainComponentChat';
 
 
 

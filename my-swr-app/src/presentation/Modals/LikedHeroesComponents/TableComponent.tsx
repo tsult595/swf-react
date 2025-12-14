@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 import { useState } from 'react';
 import useSWR from 'swr';
-import type { LikedHeroesProps } from '../../../types/HeroTypes';
-import type { LotHistory } from '../../../types/HeroTypes';
+import type { LikedHeroesProps } from '../../../Domain/Entities/HeroTypes';
+import type { LotHistory } from '../../../Domain/Entities/HeroTypes';
 import { fetcher } from '../../../utils/ApiFetcher';
 
 

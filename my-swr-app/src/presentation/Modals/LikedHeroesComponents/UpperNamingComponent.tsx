@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import type { LikedHeroesProps } from '../../../types/HeroTypes';
+import type { LikedHeroesProps } from '../../../Domain/Entities/HeroTypes';
 
 
 const UpperNamingModul = styled.div`

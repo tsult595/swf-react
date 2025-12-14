@@ -1,20 +1,20 @@
 import styled from 'styled-components';
-import type { Hero } from '../types/HeroTypes';
+import type { Hero } from '../../Domain/Entities/HeroTypes';
 import { useState } from 'react';
  
-import heroFrame from '../assets/character_border_common.png'; 
-import heroFrameHigh from '../assets/character_border_violet.png'; 
-import heroFrameMiddle from '../assets/character_border_blue.png'; 
-import ButtonMainImgDefault from '../assets/toggle_button_default.png'
-import ButtonMainImgHover from '../assets/toggle_button_hover.png'; 
-import ButtonMainImgTogled from '../assets/toggle_button_toggled.png'; 
-import LikedHeroes from './LikedHeroes';
-import FavoriteHeroes from './FavoriteHeroes';
-import MainComponentChat from './MainComponentChat'; // 👈 Добавили импорт
+import heroFrame from '../../assets/character_border_common.png'; 
+import heroFrameHigh from '../../assets/character_border_violet.png'; 
+import heroFrameMiddle from '../../assets/character_border_blue.png'; 
+import ButtonMainImgDefault from '../../assets/toggle_button_default.png'
+import ButtonMainImgHover from '../../assets/toggle_button_hover.png'; 
+import ButtonMainImgTogled from '../../assets/toggle_button_toggled.png'; 
+import LikedHeroes from './Liked/LikedHeroes';
+import FavoriteHeroes from './Favorites/FavoriteHeroes';
+import MainComponentChat from '../components/Chat/MainComponentChat'; 
 import { Heart } from 'lucide-react';
 import useSWR, { mutate as globalMutate } from 'swr';
-import { fetcher } from '../utils/ApiFetcher';
-import { addToFavorites , removeFromFavorites } from '../api/favoritesApi';
+import { fetcher } from '../../utils/ApiFetcher';
+import { addToFavorites , removeFromFavorites } from '../../data/api/favoritesApi';
 
 const LoadingWrapper = styled.div`
   display: flex;

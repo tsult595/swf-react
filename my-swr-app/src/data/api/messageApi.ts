@@ -1,5 +1,5 @@
 const API_URL = 'http://localhost:3001/api';
-import type { Message  } from '../types/MessageTypes';
+import type { Message  } from '../../Domain/Entities/MessageTypes';
 
 
 export type SendMessageImport = Omit<Message, 'id' | 'timestamp' | 'type'>;

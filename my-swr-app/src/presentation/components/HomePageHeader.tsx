@@ -1,14 +1,14 @@
 import styled from 'styled-components';
 
-import HeaderBackGround from '../assets/page_header_background.png';
-import GameName from '../assets/logo.png';
-import ButtonHeaderDefault from '../assets/page_header_menu_button_default.png';
-import ButtonHeaderHover from '../assets/page_header_menu_button_hover.png';
-import HeaderLeftDefault from '../assets/page_header_connect_button_default.png';
-import HeaderLeftHover from '../assets/page_header_connect_button_hover.png';
-import ButtonHeaderpressed from '../assets/page_header_menu_button_pressed.png';
-import MainHeaderButtonTextFrameLeftImg from '../assets/page_header_left_menu_item.png';
-import MainHeaderButtonTextFrameRightImg from '../assets/page_header_right_menu_item.png';
+import HeaderBackGround from '../../assets/page_header_background.png';
+import GameName from '../../assets/logo.png';
+import ButtonHeaderDefault from '../../assets/page_header_menu_button_default.png';
+import ButtonHeaderHover from '../../assets/page_header_menu_button_hover.png';
+import HeaderLeftDefault from '../../assets/page_header_connect_button_default.png';
+import HeaderLeftHover from '../../assets/page_header_connect_button_hover.png';
+import ButtonHeaderpressed from '../../assets/page_header_menu_button_pressed.png';
+import MainHeaderButtonTextFrameLeftImg from '../../assets/page_header_left_menu_item.png';
+import MainHeaderButtonTextFrameRightImg from '../../assets/page_header_right_menu_item.png';
 
 const MainHeader = styled.div`
   display: flex;
