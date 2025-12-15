@@ -1,11 +1,9 @@
 import styled, { css } from 'styled-components';
 import { useState } from 'react';
 import { Send, Scroll } from 'lucide-react';
-import useSWR from 'swr'; 
 import AsideBackGround from '../../../assets/auction_menu_background.png';
 import HeaderBackGround from '../../../assets/page_header_background.png';
-import type { Message } from '../../../Domain/Entities/MessageTypes';
-import { sendMessage } from '../../../data/api/messageApi';
+import {useMessage} from '../../hooks/useMessage';
 
 
 const FrameBorderModalMain = css`
@@ -220,50 +218,16 @@ const SendButton = styled.button`
 
 const MainComponentChat = () => {
   const [inputValue, setInputValue] = useState('');
-  const [activeTab] = useState<'global' | 'guild' | 'battle'>('global'); //  канал
-
+  const [activeTab] = useState<'global' | 'guild' | 'battle'>('global'); 
   const currentUserId = 'user123';
   const currentUsername = 'Tima';
-
+  const {
+  messages,
+  // mutateMessages,
+  handleSendMessage,
+  handleKeyPress,
+} = useMessage(activeTab, inputValue, setInputValue, currentUserId, currentUsername);
   
-  const { data: messages = [], mutate: mutateMessages } = useSWR<Message[]>(
-    `/messages/${activeTab}`,
-    (url) => fetch(`http://localhost:3001/api${url}`).then(r => r.json()),
-    {
-      refreshInterval: 3000,
-      revalidateOnFocus: true
-    }
-  );
-
-  
-  const handleSendMessage = async () => {
-    if (!inputValue.trim()) return;
-    
-    try {
-      // 👇 Вызываем функцию из messageApi.ts
-      const savedMessage = await sendMessage({
-        channel: activeTab,
-        username: currentUsername,
-        userId: currentUserId,
-        text: inputValue.trim(), // 👈 trim() для удаления пробелов
-      });
-      
-      // 👇 Обновляем список сообщений
-      mutateMessages([...messages, savedMessage], false);
-      mutateMessages();
-      setInputValue('');
-    } catch (error) {
-      console.error('Failed to send message:', error);
-      alert('Не удалось отправить сообщение'); // 👈 Показываем ошибку пользователю
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSendMessage();
-    }
-  };
-
   
   return (
     <ChatContainer>

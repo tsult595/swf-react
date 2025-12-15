@@ -12,9 +12,9 @@ import LikedHeroes from './Liked/LikedHeroes';
 import FavoriteHeroes from './Favorites/FavoriteHeroes';
 import MainComponentChat from '../components/Chat/MainComponentChat'; 
 import { Heart } from 'lucide-react';
-import useSWR, { mutate as globalMutate } from 'swr';
-import { fetcher } from '../../utils/ApiFetcher';
-import { addToFavorites , removeFromFavorites } from '../../data/api/favoritesApi';
+
+import { useFavorites } from '../hooks/useFavorites';
+import { useHeroes } from '../hooks/useHeroes';
 
 const LoadingWrapper = styled.div`
   display: flex;
@@ -293,66 +293,44 @@ function MainContent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
   const [activeTab, setActiveTab] = useState<'characters' | 'items' | 'chat'>('characters'); 
-  
   const userId = 'user123';
+  const { favorites,  toggleFavorite, isFavorite } = useFavorites(userId);
+  const { data: heroes, error, isLoading: isHeroesLoading, mutate } = useHeroes();
 
-  const { data: heroes, error, isLoading, mutate: mutateHeroes } = useSWR<Hero[]>(
-    '/heroes',
-    fetcher,
-    {
-      revalidateOnFocus: false,
-      dedupingInterval: 60000,
-    }
-  );
-
-  const { data: favorites, mutate: mutateFavorites } = useSWR<Hero[]>(
-    `/favorites/${userId}`,
-    () => 
-      {console.log('Fetching favorites'); return fetch(`http://localhost:3001/api/favorites/${userId}`).then(r => r.json());},
+  //   e.stopPropagation();
     
-    {
-      revalidateOnFocus: false,
-      refreshInterval: 0, 
+  //   try {
+  //     const currentFavorites = favorites || [];  
+  //     const isFavorite = currentFavorites.some(fav => fav.id === hero.id);
       
-    }
-  );
-
-  
-  const handleAddToFavorite = async (hero: Hero, e: React.MouseEvent) => {
-    e.stopPropagation();
-    
-    try {
-      const currentFavorites = favorites || [];  
-      const isFavorite = currentFavorites.some(fav => fav.id === hero.id);
-      
-      if (isFavorite) {
-        const newFavorites = currentFavorites.filter(fav => fav.id !== hero.id);
-        mutateFavorites(newFavorites, false);
-        globalMutate(`/favorites/${userId}`, newFavorites, false);
+  //     if (isFavorite) {
+  //       const newFavorites = currentFavorites.filter(fav => fav.id !== hero.id);
+  //       mutateFavorites(newFavorites, false);
+  //       globalMutate(`/favorites/${userId}`, newFavorites, false);
         
-        await removeFromFavorites(userId, hero.id);
-        console.log(`✅ Removed ${hero.name} from favorites`);
-      } else {
-        const newFavorites = [...(favorites || []), hero];
-        mutateFavorites(newFavorites, false);
-        globalMutate(`/favorites/${userId}`, newFavorites, false);
+  //       await removeFromFavorites(userId, hero.id);
+  //       console.log(`✅ Removed ${hero.name} from favorites`);
+  //     } else {
+  //       const newFavorites = [...(favorites || []), hero];
+  //       mutateFavorites(newFavorites, false);
+  //       globalMutate(`/favorites/${userId}`, newFavorites, false);
         
-        await addToFavorites(userId, hero.id);
-        console.log(`✅ Added ${hero.name} to favorites`);
-      }
+  //       await addToFavorites(userId, hero.id);
+  //       console.log(`✅ Added ${hero.name} to favorites`);
+  //     }
       
-      mutateFavorites();
-      globalMutate(`/favorites/${userId}`);
-    } catch (error) {
-      console.error('❌ Error toggling favorite:', error);
-      mutateFavorites();
-      globalMutate(`/favorites/${userId}`);
-    }
-  };
+  //     mutateFavorites();
+  //     globalMutate(`/favorites/${userId}`);
+  //   } catch (error) {
+  //     console.error('❌ Error toggling favorite:', error);
+  //     mutateFavorites();
+  //     globalMutate(`/favorites/${userId}`);
+  //   }
+  // };
 
-  const isFavorite = (heroId: number) => {
-    return favorites?.some(hero => hero.id === heroId) ?? false;
-  };
+  // const isFavorite = (heroId: number) => {
+  //   return favorites?.some(hero => hero.id === heroId) ?? false;
+  // };
 
   const handleHeroClick = (hero: Hero) => {
     setSelectedHero(hero);
@@ -396,7 +374,7 @@ function MainContent() {
       
         {activeTab === 'characters' && (
           <MainHeroesWrapper>
-            {isLoading && (
+            {isHeroesLoading && (
               <LoadingWrapper>
                 <div>Loading heroes...</div>
               </LoadingWrapper>
@@ -406,11 +384,11 @@ function MainContent() {
               <ErrorWrapper>
                 <div>❌ Failed to load heroes</div>
                 <div>Please check if server is running on port 3001</div>
-                <button onClick={() => mutateHeroes()}>Retry</button>
+                <button onClick={() => mutate()}>Retry</button>
               </ErrorWrapper>
             )}
 
-            {!isLoading && !error && heroes && heroes.map((hero) => (
+            {!isHeroesLoading && !error && heroes && heroes.map((hero) => (
               <MainHeroCard key={hero.id} onClick={() => handleHeroClick(hero)}>
                 <MainHeroCardInner>
                   <MainHeroCardUpper>
@@ -418,7 +396,7 @@ function MainContent() {
                   </MainHeroCardUpper>
                   <MainHeroCardLower>
                     <p>ID: {hero.id}</p>
-                    <HeartButton onClick={(e) => handleAddToFavorite(hero, e)}> 
+                    <HeartButton onClick={(e) => toggleFavorite(hero, e)}> 
                       <Heart 
                         size={20} 
                         color={isFavorite(hero.id) ? "red" : "#fff"} 

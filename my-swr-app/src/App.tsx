@@ -3,6 +3,7 @@ import { createGlobalStyle } from 'styled-components';
 import { SWRConfig } from 'swr';
 import HomePage from './presentation/Pages/HomePage'; 
 import MainComponentChat from './presentation/components/Chat/MainComponentChat';
+import MainWelcomePage from './presentation/Pages/MainWelcomePage';
 
 
 
@@ -48,7 +49,8 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/home-page" element={<HomePage />} />
             <Route path="/chat" element={<MainComponentChat />} />
-
+            <Route path="/welcome" element={<MainWelcomePage />} />
+            
           </Routes>
         </BrowserRouter>
       </SWRConfig>

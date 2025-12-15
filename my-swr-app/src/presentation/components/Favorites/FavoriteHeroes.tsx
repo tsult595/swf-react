@@ -1,13 +1,13 @@
 import styled, { css } from 'styled-components';
-import type { FavoriteHeroesProps, Hero } from '../../../Domain/Entities/HeroTypes';
+import type { FavoriteHeroesProps} from '../../../Domain/Entities/HeroTypes';
 import SocialsFrameHover from '../../../assets/small_button_hover.png';
 import SocialFrameActive from '../../../assets/small_button_pressed.png';
 import heroFrame from '../../../assets/character_border_common.png'; 
 import heroFrameHigh from '../../../assets/character_border_violet.png'; 
 import heroFrameMiddle from '../../../assets/character_border_blue.png'; 
 import { Heart } from 'lucide-react';
-import { removeFromFavorites } from '../../../data/api/favoritesApi';
-import useSWR, { mutate as globalMutate } from 'swr'; 
+
+import { useFavorites } from '../../hooks/useFavorites';
 
 
 const FrameBorderModalMain = css`
@@ -192,47 +192,11 @@ const HeartButton = styled.button`
 
 const FavoriteHeroes = ({ onClose }: FavoriteHeroesProps) => { 
   const userId = 'user123';
-
- 
-  const { data: heroes, mutate: mutateFavorites } = useSWR<Hero[]>(
-    `/favorites/${userId}`,
-    () => fetch(`http://localhost:3001/api/favorites/${userId}`).then(r => r.json()),
-    {
-      revalidateOnFocus: false,
-      refreshInterval: 0,
-    }
-  );
-
-  const handleRemoveFromFavorite = async (hero: Hero, e: React.MouseEvent) => {
-    e.stopPropagation(); 
-    
-    try {
-      const currentHeroes = heroes || [];
-      
-     
-      const newFavorites = currentHeroes.filter(h => h.id !== hero.id);
-      mutateFavorites(newFavorites, false);
-      
-     
-      globalMutate(`/favorites/${userId}`, newFavorites, false);
-
-      
-      await removeFromFavorites(userId, hero.id);
-      console.log(`✅ Removed ${hero.name} from favorites`);
-      
-      
-      mutateFavorites();
-      globalMutate(`/favorites/${userId}`);
-    } catch (error) {
-      console.error('❌ Error removing from favorites:', error);
-     
-      mutateFavorites();
-      globalMutate(`/favorites/${userId}`);
-    }
-  };
+const { favorites, isLoading, toggleFavorite } = useFavorites(userId);
 
 
-  if (!heroes) {
+
+  if (!Array.isArray(favorites) || isLoading) {
     return (
       <Container>
         <Header>
@@ -244,7 +208,7 @@ const FavoriteHeroes = ({ onClose }: FavoriteHeroesProps) => {
     );
   }
 
-  if (heroes.length === 0) {
+  if (favorites.length === 0) {
     return (
       <Container>
         <Header>
@@ -259,24 +223,23 @@ const FavoriteHeroes = ({ onClose }: FavoriteHeroesProps) => {
   return (
     <Container>
       <Header>
-        <Title>Favorite Heroes ({heroes.length})</Title>
+        <Title>Favorite Heroes ({favorites.length})</Title>
         <CloseButton onClick={onClose}>✖</CloseButton>
       </Header>
       <HeroCardWrapper>
-        {heroes.map((hero) => (
+        {favorites.map((hero) => (
           <HeroCard key={hero.id}>
             <HeroFrame $rarity={hero.rarity}>
               <HeroImage 
                 src={`/src/assets/characterAvatars/${hero.fileName}`} 
                 alt={hero.name}
                 onError={(e) => {
-                  console.error('Image load error:', hero.fileName);
                   e.currentTarget.style.display = 'none';
                 }}
               />
             </HeroFrame>
             <HeroInfo> 
-              <HeartButton onClick={(e) => handleRemoveFromFavorite(hero, e)}> 
+              <HeartButton onClick={(e) => toggleFavorite(hero, e)}> 
                 <Heart 
                   size={20} 
                   color="red" 
@@ -298,3 +261,4 @@ const FavoriteHeroes = ({ onClose }: FavoriteHeroesProps) => {
 };
 
 export default FavoriteHeroes;
+

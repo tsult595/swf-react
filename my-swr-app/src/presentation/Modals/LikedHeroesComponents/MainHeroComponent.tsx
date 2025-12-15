@@ -185,8 +185,8 @@ const MainHeroComponent = ({hero} : LikedHeroesProps ) => {
     }
   );
       
-       const toggleSection = (section: keyof typeof openSections) => {
-        setOpenSections(prev => ({
+  const toggleSection = (section: keyof typeof openSections) => {
+    setOpenSections(prev => ({
           ...prev,
           [section]: !prev[section]
         }));
@@ -195,7 +195,7 @@ const MainHeroComponent = ({hero} : LikedHeroesProps ) => {
         return null;
       }
      
-       const displayHero = fullHero || hero;
+ const displayHero = fullHero || hero;
 
   return (
     <MainHeroSection>
