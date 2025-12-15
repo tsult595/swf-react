@@ -4,7 +4,7 @@ import { SWRConfig } from 'swr';
 import HomePage from './presentation/Pages/HomePage'; 
 import MainComponentChat from './presentation/components/Chat/MainComponentChat';
 import MainWelcomePage from './presentation/Pages/MainWelcomePage';
-
+import { useAnonymousUser } from './presentation/hooks/useAnonymousUser';
 
 
 const GlobalStyle = createGlobalStyle`
@@ -36,6 +36,7 @@ const localStorageProvider = () => {
 };
 
 function App() {
+   useAnonymousUser();
   return (
     <>
       <GlobalStyle />

@@ -4,7 +4,7 @@ import { Send, Scroll } from 'lucide-react';
 import AsideBackGround from '../../../assets/auction_menu_background.png';
 import HeaderBackGround from '../../../assets/page_header_background.png';
 import {useMessage} from '../../hooks/useMessage';
-
+import { getOrCreateUserId } from '../../../utils/userId';
 
 const FrameBorderModalMain = css`
   border-style: solid;
@@ -95,14 +95,10 @@ const MessageWrapper = styled.div<{ $isOwn?: boolean; $type?: string }>`
 `;
 
 const MessageBubble = styled.div<{ $isOwn?: boolean; $type?: string }>`
-  background: ${props => {
-    if (props.$isOwn) return 'linear-gradient(135deg, #37433dff 0%, #2f684dff 100%)';
-    return 'linear-gradient(135deg, #744210 0%, #5a3410 100%)';
-  }};
-  border: 2px solid ${props => {
-    if (props.$isOwn) return '#585f3eff';
-    return '#d4af37';
-  }};
+  background: ${props => props.$isOwn
+    ? 'linear-gradient(135deg, #37433dff 0%, #2f684dff 100%)'
+    : 'linear-gradient(135deg, #744210 0%, #d43f3f 100%)'}; // <-- изменённый цвет для чужих сообщений
+  border: 2px solid ${props => props.$isOwn ? '#585f3eff' : '#d43f3f'};
   border-radius: ${props => props.$isOwn ? '15px 15px 0 15px' : '15px 15px 15px 0'};
   padding: 12px 18px;
   max-width: 60%;
@@ -219,7 +215,7 @@ const SendButton = styled.button`
 const MainComponentChat = () => {
   const [inputValue, setInputValue] = useState('');
   const [activeTab] = useState<'global' | 'guild' | 'battle'>('global'); 
-  const currentUserId = 'user123';
+ const currentUserId = getOrCreateUserId();
   const currentUsername = 'Tima';
   const {
   messages,
@@ -231,6 +227,7 @@ const MainComponentChat = () => {
   
   return (
     <ChatContainer>
+      <h1>{currentUserId}</h1>
       <ChatHeader>
         <Scroll size={28} color="#665d3fff" />
         <h2>Chat</h2>
@@ -244,7 +241,7 @@ const MainComponentChat = () => {
             <MessageWrapper key={message.id} $isOwn={isOwn}>
               <MessageBubble $isOwn={isOwn} $type={message.type}>
                 <MessageHeader>
-                  <Username $type={message.type}>{message.username}</Username>
+                  <Username $type={message.userId}>{message.userId}</Username>
                   <Timestamp>
                     {new Date(message.timestamp).toLocaleTimeString('ru-RU', { 
                       hour: '2-digit', 
