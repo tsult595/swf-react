@@ -1,11 +1,11 @@
-// 👇 Основной интерфейс (полное сообщение из БД)
 export interface Message {
   id: number;                              
   // channel: 'global' | 'guild' | 'battle';
   username: string;
   userId: string;
   text: string;
-  // type: 'normal' | 'system' | 'battle';    
+  type: 'normal' | 'private';
+  recipientId?: string;   
   timestamp: string;                       
 }
 

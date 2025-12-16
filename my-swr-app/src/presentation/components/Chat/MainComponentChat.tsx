@@ -217,6 +217,21 @@ const SendButton = styled.button`
   }
 `;
 
+const PrivateButton = styled.button`
+  width: 25px;
+  height: 25px;
+  margin-left: 16px;
+  background: #dfa7a7ff;
+  border-radius: 15%;
+`;
+
+const SelectedSpan = styled.span`
+  color: #ffd700;
+  margin-right: 12px;
+  margin-top: 10px;
+  
+`;
+
 
 const MainComponentChat = () => {
   const [currentUserId, setCurrentUserId] = useState<string>('');
@@ -224,12 +239,19 @@ const MainComponentChat = () => {
   const { messages, sendMessage } = useChatSocket(currentUserId, currentUsername);
   const [inputValue, setInputValue] = useState('');
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
+  const [selectedRecipientId, setSelectedRecipientId] = useState<string | null>(null);
+
+
 
 const handleSendMessage = () => {
-  if (!inputValue.trim()) return;
-  sendMessage(inputValue);
-  setInputValue('');
-};
+    if (!inputValue.trim()) return;
+    sendMessage({
+      text: inputValue,
+      recipientId: selectedRecipientId || undefined,
+      type: selectedRecipientId ? 'private' : 'normal',
+    });
+    setInputValue('');
+  };
 
 const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
   if (e.key === 'Enter') {
@@ -267,12 +289,41 @@ const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
 
       <MessagesContainer ref={messagesContainerRef}>
         {messages.map((message) => {
+            if (
+            message.type === 'private' &&
+            message.recipientId !== currentUserId &&
+            message.userId !== currentUserId
+          ) {
+            return null;
+          }
           const isOwn = message.userId === currentUserId;
+          const isPrivate = message.type === 'private';
           return (
             <MessageWrapper key={message.id} $isOwn={isOwn}>
               <MessageBubble $isOwn={isOwn}>
                 <MessageHeader>
-                  <Username $type={message.userId}>{message.userId}</Username>
+                  <Username
+                  $type={message.userId}
+                    style={{
+                      cursor: message.userId !== currentUserId ? 'pointer' : 'default',
+                      textDecoration: selectedRecipientId === message.userId ? 'underline' : 'none',
+                      color: selectedRecipientId === message.userId ? '#ffd700' : undefined
+                    }}
+                    onClick={() => {
+                      if (message.userId !== currentUserId) {
+                        setSelectedRecipientId(
+                          selectedRecipientId === message.userId ? null : message.userId
+                        );
+                      }
+                    }}
+                  >
+                    {message.userId}
+                    {isPrivate && (
+                      <span style={{ marginLeft: 4, color: '#ffd700', fontSize: 12 }}>
+                        (private)
+                      </span>
+                    )}
+                  </Username>
                   <Timestamp>
                     {new Date(message.timestamp).toLocaleTimeString('ru-RU', {
                       hour: '2-digit',
@@ -289,9 +340,19 @@ const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
       </MessagesContainer>
 
       <InputContainer>
+        {selectedRecipientId && (
+          <SelectedSpan>
+            Приватный чат с: {selectedRecipientId}
+            <PrivateButton onClick={() => setSelectedRecipientId(null)}>X</PrivateButton>
+          </SelectedSpan>
+        )}
         <Input
           type="text"
-          placeholder="Введите сообщение..."
+          placeholder={
+            selectedRecipientId
+              ? `Приватно для ${selectedRecipientId}`
+              : 'Введите сообщение...'
+          }
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyUp={handleKeyPress}

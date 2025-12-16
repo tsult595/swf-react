@@ -13,7 +13,7 @@ export function useChatSocket(currentUserId: string, currentUsername: string) {
     const socket = io(SOCKET_URL);
     socketRef.current = socket;
 
-    // Получить все сообщения при подключении
+    
     socket.emit('get all messages');
     socket.on('all messages', (msgs: Message[]) => {
       setMessages(msgs);
@@ -21,7 +21,6 @@ export function useChatSocket(currentUserId: string, currentUsername: string) {
 
     socket.on('chat message', (msg: Message) => {
       setMessages((prev) => {
-        // Добавлять только если такого id ещё нет
         if (prev.some((m) => m.id === msg.id)) return prev;
         return [...prev, msg];
       });
@@ -32,13 +31,21 @@ export function useChatSocket(currentUserId: string, currentUsername: string) {
     };
   }, [currentUserId]);
 
-  const sendMessage = (text: string) => {
+  type SendMessageArgs = {
+    text: string;
+    recipientId?: string;
+    type?: 'normal' | 'private';
+  };
+
+  const sendMessage = ({ text, recipientId, type }: SendMessageArgs) => {
     if (!text.trim() || !socketRef.current) return;
     const msg: Message = {
       id: Date.now(),
       username: currentUsername,
       userId: currentUserId,
       text,
+      type: type || 'normal',
+      recipientId,
       timestamp: new Date().toISOString(),
     };
     socketRef.current.emit('chat message', msg);
