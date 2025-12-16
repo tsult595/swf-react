@@ -23,7 +23,7 @@ export const useMessage = (
 
     try {
       const savedMessage = await sendMessage({
-        channel: activeTab,
+        // channel: activeTab,
         username: currentUsername,
         userId: currentUserId,
         text: inputValue.trim(),

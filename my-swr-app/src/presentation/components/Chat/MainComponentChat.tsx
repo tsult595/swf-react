@@ -1,11 +1,14 @@
 import styled, { css } from 'styled-components';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect , useRef} from 'react';
 import { Send, Scroll } from 'lucide-react';
 import AsideBackGround from '../../../assets/auction_menu_background.png';
 import HeaderBackGround from '../../../assets/page_header_background.png';
-import { io, Socket } from 'socket.io-client';
+// import { io, Socket } from 'socket.io-client';
 import { generatePersonalizedUserId } from '../../../utils/userId';
-import type { Message } from '../../../Domain/Entities/MessageTypes';
+// import type { Message } from '../../../Domain/Entities/MessageTypes';
+import { useChatSocket } from '../../hooks/useChatSocket';
+
+
 
 const FrameBorderModalMain = css`
   border-style: solid;
@@ -24,7 +27,7 @@ const ChatContainer = styled.div`
  
   ${FrameBorderModalMain}
   padding: 20px;
-  overflow: hidden;
+ 
 `;
 
 const ChatHeader = styled.div`
@@ -48,6 +51,7 @@ const ChatHeader = styled.div`
 
 const MessagesContainer = styled.div`
   flex: 1;
+  overflow-y: auto;
   background-image: url(${AsideBackGround});
   height: auto;
   padding: 20px;
@@ -213,15 +217,25 @@ const SendButton = styled.button`
   }
 `;
 
-const SOCKET_URL = "http://localhost:3001";
 
 const MainComponentChat = () => {
-  const [inputValue, setInputValue] = useState('');
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [activeTab] = useState<'global' | 'guild' | 'battle'>('global');
   const [currentUserId, setCurrentUserId] = useState<string>('');
   const currentUsername = 'Tima';
-  const socketRef = useRef<Socket | null>(null);
+  const { messages, sendMessage } = useChatSocket(currentUserId, currentUsername);
+  const [inputValue, setInputValue] = useState('');
+  const messagesContainerRef = useRef<HTMLDivElement | null>(null);
+
+const handleSendMessage = () => {
+  if (!inputValue.trim()) return;
+  sendMessage(inputValue);
+  setInputValue('');
+};
+
+const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  if (e.key === 'Enter') {
+    handleSendMessage();
+  }
+};
 
   useEffect(() => {
     async function getUserId() {
@@ -234,56 +248,29 @@ const MainComponentChat = () => {
     }
     getUserId();
   }, []);
-
+ 
   useEffect(() => {
-    if (!currentUserId) return;
-    const socket = io(SOCKET_URL);
-    socketRef.current = socket;
+  const container = messagesContainerRef.current;
+  if (container) {
+    container.scrollTop = container.scrollHeight;
+  }
+}, [messages]);
 
-    socket.on('chat message', (msg) => {
-      setMessages((prev) => [...prev, msg]);
-    });
-
-    return () => {
-      socket.disconnect();
-    };
-  }, [currentUserId]);
-
-  const handleSendMessage = () => {
-    if (!inputValue.trim() || !socketRef.current) return;
-    const msg: Message = {
-      id: Date.now(),
-      channel: activeTab,
-      username: currentUsername,
-      userId: currentUserId,
-      text: inputValue,
-      type: 'normal',
-      timestamp: new Date().toISOString(),
-    };
-    socketRef.current.emit('chat message', msg);
-    setInputValue('');
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleSendMessage();
-    }
-  };
 
   return (
     <ChatContainer>
-      <h1>{currentUserId}</h1>
+    
       <ChatHeader>
         <Scroll size={28} color="#665d3fff" />
         <h2>Chat</h2>
       </ChatHeader>
 
-      <MessagesContainer>
+      <MessagesContainer ref={messagesContainerRef}>
         {messages.map((message) => {
           const isOwn = message.userId === currentUserId;
           return (
             <MessageWrapper key={message.id} $isOwn={isOwn}>
-              <MessageBubble $isOwn={isOwn} $type={message.type}>
+              <MessageBubble $isOwn={isOwn}>
                 <MessageHeader>
                   <Username $type={message.userId}>{message.userId}</Username>
                   <Timestamp>
@@ -298,6 +285,7 @@ const MainComponentChat = () => {
             </MessageWrapper>
           );
         })}
+     
       </MessagesContainer>
 
       <InputContainer>

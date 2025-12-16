@@ -26,12 +26,12 @@ export interface LotHistory {
   date: string;
 }
 export interface Message {
-  id?: string;
-  channel: 'global' | 'guild' | 'battle';
+  id?: number;
+  // channel: 'global' | 'guild' | 'battle';
   username: string;
   userId: string;
   text: string;
-  type: 'normal' | 'system' | 'battle'; 
+  // type: 'normal' | 'system' | 'battle'; 
   timestamp: Date;
 }
 

@@ -297,40 +297,6 @@ function MainContent() {
   const { favorites,  toggleFavorite, isFavorite } = useFavorites(userId);
   const { data: heroes, error, isLoading: isHeroesLoading, mutate } = useHeroes();
 
-  //   e.stopPropagation();
-    
-  //   try {
-  //     const currentFavorites = favorites || [];  
-  //     const isFavorite = currentFavorites.some(fav => fav.id === hero.id);
-      
-  //     if (isFavorite) {
-  //       const newFavorites = currentFavorites.filter(fav => fav.id !== hero.id);
-  //       mutateFavorites(newFavorites, false);
-  //       globalMutate(`/favorites/${userId}`, newFavorites, false);
-        
-  //       await removeFromFavorites(userId, hero.id);
-  //       console.log(`✅ Removed ${hero.name} from favorites`);
-  //     } else {
-  //       const newFavorites = [...(favorites || []), hero];
-  //       mutateFavorites(newFavorites, false);
-  //       globalMutate(`/favorites/${userId}`, newFavorites, false);
-        
-  //       await addToFavorites(userId, hero.id);
-  //       console.log(`✅ Added ${hero.name} to favorites`);
-  //     }
-      
-  //     mutateFavorites();
-  //     globalMutate(`/favorites/${userId}`);
-  //   } catch (error) {
-  //     console.error('❌ Error toggling favorite:', error);
-  //     mutateFavorites();
-  //     globalMutate(`/favorites/${userId}`);
-  //   }
-  // };
-
-  // const isFavorite = (heroId: number) => {
-  //   return favorites?.some(hero => hero.id === heroId) ?? false;
-  // };
 
   const handleHeroClick = (hero: Hero) => {
     setSelectedHero(hero);
