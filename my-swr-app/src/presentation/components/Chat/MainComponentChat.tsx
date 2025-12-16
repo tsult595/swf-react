@@ -1,10 +1,10 @@
 import styled, { css } from 'styled-components';
-import { useState } from 'react';
+import { useState , useEffect } from 'react';
 import { Send, Scroll } from 'lucide-react';
 import AsideBackGround from '../../../assets/auction_menu_background.png';
 import HeaderBackGround from '../../../assets/page_header_background.png';
-import {useMessage} from '../../hooks/useMessage';
-import { getOrCreateUserId } from '../../../utils/userId';
+import { io, Socket } from 'socket.io-client';
+import { getOrCreateUserId, generatePersonalizedUserId } from '../../../utils/userId';
 
 const FrameBorderModalMain = css`
   border-style: solid;
@@ -212,19 +212,62 @@ const SendButton = styled.button`
   }
 `;
 
+const SOCKET_URL = "http://localhost:3002";
+
 const MainComponentChat = () => {
   const [inputValue, setInputValue] = useState('');
-  const [activeTab] = useState<'global' | 'guild' | 'battle'>('global'); 
- const currentUserId = getOrCreateUserId();
+  const [messages, setMessages] = useState<any[]>([]);
+  const [activeTab] = useState<'global' | 'guild' | 'battle'>('global');
+  const [currentUserId, setCurrentUserId] = useState<string>('');
   const currentUsername = 'Tima';
-  const {
-  messages,
-  // mutateMessages,
-  handleSendMessage,
-  handleKeyPress,
-} = useMessage(activeTab, inputValue, setInputValue, currentUserId, currentUsername);
-  
-  
+  const socketRef = useRef<Socket | null>(null);
+
+  useEffect(() => {
+    async function getUserId() {
+      let userId = localStorage.getItem('userId');
+      if (!userId) {
+        userId = await generatePersonalizedUserId();
+        localStorage.setItem('userId', userId);
+      }
+      setCurrentUserId(userId);
+    }
+    getUserId();
+  }, []);
+
+  useEffect(() => {
+    if (!currentUserId) return;
+    const socket = io(SOCKET_URL);
+    socketRef.current = socket;
+
+    socket.on('chat message', (msg) => {
+      setMessages((prev) => [...prev, msg]);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [currentUserId]);
+
+  const handleSendMessage = () => {
+    if (!inputValue.trim() || !socketRef.current) return;
+    const msg = {
+      id: Date.now().toString(),
+      userId: currentUserId,
+      username: currentUsername,
+      text: inputValue,
+      timestamp: new Date().toISOString(),
+      type: activeTab,
+    };
+    socketRef.current.emit('chat message', msg);
+    setInputValue('');
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSendMessage();
+    }
+  };
+
   return (
     <ChatContainer>
       <h1>{currentUserId}</h1>
@@ -236,16 +279,15 @@ const MainComponentChat = () => {
       <MessagesContainer>
         {messages.map((message) => {
           const isOwn = message.userId === currentUserId;
-          
           return (
             <MessageWrapper key={message.id} $isOwn={isOwn}>
               <MessageBubble $isOwn={isOwn} $type={message.type}>
                 <MessageHeader>
                   <Username $type={message.userId}>{message.userId}</Username>
                   <Timestamp>
-                    {new Date(message.timestamp).toLocaleTimeString('ru-RU', { 
-                      hour: '2-digit', 
-                      minute: '2-digit' 
+                    {new Date(message.timestamp).toLocaleTimeString('ru-RU', {
+                      hour: '2-digit',
+                      minute: '2-digit',
                     })}
                   </Timestamp>
                 </MessageHeader>
@@ -263,7 +305,6 @@ const MainComponentChat = () => {
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyUp={handleKeyPress}
-          
         />
         <SendButton onClick={handleSendMessage}>
           <Send size={18} />
