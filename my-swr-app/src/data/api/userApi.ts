@@ -1,6 +1,8 @@
+import type { UserInfo } from "../../Domain/Entities/UserType";
+
 const API_URL = 'http://localhost:3001/api';
 
-export const createUser = async (user: { id: string; userAgent: string; }) => {
+export const createUser = async (user: UserInfo) => {
 
   const response = await fetch(`${API_URL}/users`, {
     method: 'POST',

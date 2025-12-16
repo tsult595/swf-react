@@ -1,15 +1,14 @@
 import { useEffect } from 'react';
 import { getOrCreateUserId } from '../../utils/userId';
 import { createUser } from '../../data/api/userApi';
+import type { UserInfo } from '../../Domain/Entities/UserType';
 
-function getUserInfo() {
-
+function getUserInfo(): Omit<UserInfo, 'id'> {
   return {
     userAgent: navigator.userAgent,
     language: navigator.language,
     platform: navigator.platform,
-    location: navigator.geolocation,
-     
+    location: null, 
   };
 }
 console.log('User Info:', getUserInfo());
@@ -17,9 +16,7 @@ console.log('User Info:', getUserInfo());
 export function useAnonymousUser() {
   useEffect(() => {
     const userId = getOrCreateUserId();
-    createUser({
-      id: userId,
-      ...getUserInfo(),
-    }).catch(console.error);
+    const user: UserInfo = { id: userId, ...getUserInfo() };
+    createUser(user).catch(console.error);
   }, []);
 }
