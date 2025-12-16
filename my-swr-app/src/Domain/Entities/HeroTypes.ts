@@ -31,7 +31,7 @@ export interface Message {
   username: string;
   userId: string;
   text: string;
-  type?: 'system' | 'user'; 
+  type: 'normal' | 'system' | 'battle'; 
   timestamp: Date;
 }
 

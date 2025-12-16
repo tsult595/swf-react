@@ -1,10 +1,11 @@
 import styled, { css } from 'styled-components';
-import { useState , useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Send, Scroll } from 'lucide-react';
 import AsideBackGround from '../../../assets/auction_menu_background.png';
 import HeaderBackGround from '../../../assets/page_header_background.png';
 import { io, Socket } from 'socket.io-client';
-import { getOrCreateUserId, generatePersonalizedUserId } from '../../../utils/userId';
+import { generatePersonalizedUserId } from '../../../utils/userId';
+import type { Message } from '../../../Domain/Entities/MessageTypes';
 
 const FrameBorderModalMain = css`
   border-style: solid;
@@ -212,11 +213,11 @@ const SendButton = styled.button`
   }
 `;
 
-const SOCKET_URL = "http://localhost:3002";
+const SOCKET_URL = "http://localhost:3001";
 
 const MainComponentChat = () => {
   const [inputValue, setInputValue] = useState('');
-  const [messages, setMessages] = useState<any[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [activeTab] = useState<'global' | 'guild' | 'battle'>('global');
   const [currentUserId, setCurrentUserId] = useState<string>('');
   const currentUsername = 'Tima';
@@ -250,13 +251,14 @@ const MainComponentChat = () => {
 
   const handleSendMessage = () => {
     if (!inputValue.trim() || !socketRef.current) return;
-    const msg = {
-      id: Date.now().toString(),
-      userId: currentUserId,
+    const msg: Message = {
+      id: Date.now(),
+      channel: activeTab,
       username: currentUsername,
+      userId: currentUserId,
       text: inputValue,
+      type: 'normal',
       timestamp: new Date().toISOString(),
-      type: activeTab,
     };
     socketRef.current.emit('chat message', msg);
     setInputValue('');
