@@ -1,6 +1,7 @@
 import styled, { css } from 'styled-components';
 import { useState, useEffect , useRef} from 'react';
-import { Send, Scroll } from 'lucide-react';
+import ChatModalComponent from '../../Modals/ChatModalComponent/ChatModalComponent';
+import { Send, Scroll, Heading1 } from 'lucide-react';
 import AsideBackGround from '../../../assets/auction_menu_background.png';
 import HeaderBackGround from '../../../assets/page_header_background.png';
 // import { io, Socket } from 'socket.io-client';
@@ -257,18 +258,28 @@ const MainComponentChat = () => {
   const [inputValue, setInputValue] = useState('');
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
   const [selectedRecipientId, setSelectedRecipientId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [clanChatId, setClanChatId] = useState<string | null>(null); // id или имя клана
  
 
 
 const handleSendMessage = () => {
-    if (!inputValue.trim()) return;
+  if (!inputValue.trim()) return;
+  if (clanChatId) {
+    sendMessage({
+      text: inputValue,
+      recipientId: clanChatId,
+      type: 'clanChat',
+    });
+  } else {
     sendMessage({
       text: inputValue,
       recipientId: selectedRecipientId || undefined,
       type: selectedRecipientId ? 'private' : 'normal',
     });
-    setInputValue('');
-  };
+  }
+  setInputValue('');
+};
 
 const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
   if (e.key === 'Enter') {
@@ -297,92 +308,133 @@ const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
 
 
   return (
-    <ChatContainer>
-    
-      <ChatHeader>
-        <Scroll size={28} color="#665d3fff" />
-        <CreateGroupButton>Создать свой клан</CreateGroupButton>
-        <CreateGroupButton>Мой клан</CreateGroupButton>
-        <h2>Chat</h2>
-      </ChatHeader>
+    <>
+      <ChatContainer>
+        <ChatHeader>
+          <Scroll size={28} color="#665d3fff" />
+          <CreateGroupButton onClick={() => setIsModalOpen(true)}>
+            Создать свой клан
+          </CreateGroupButton>
+          <CreateGroupButton onClick={() => {
+            // Здесь подставьте реальный clanId (или clanName), например, первый клан пользователя
+            // Для примера: 'my-clan-id'
+            setClanChatId('my-clan-id');
+            setSelectedRecipientId(null);
+          }}>
+            Мой клан 
+          </CreateGroupButton>
+          <h2>Chat</h2>
+        </ChatHeader>
 
-      <MessagesContainer ref={messagesContainerRef}>
-        {messages.map((message) => {
-            if (
-            message.type === 'private' &&
-            message.recipientId !== currentUserId &&
-            message.userId !== currentUserId
-          ) {
-            return null;
-          }
-          const isOwn = message.userId === currentUserId;
-          const isPrivate = message.type === 'private';
-          return (
-            <MessageWrapper key={message.id} $isOwn={isOwn}>
-              <MessageBubble $isOwn={isOwn}>
-                <MessageHeader>
-                  <Username
-                  $type={message.userId}
-                    style={{
-                      cursor: message.userId !== currentUserId ? 'pointer' : 'default',
-                      textDecoration: selectedRecipientId === message.userId ? 'underline' : 'none',
-                      color: selectedRecipientId === message.userId ? '#ffd700' : undefined
-                    }}
-                    onClick={() => {
-                      if (message.userId !== currentUserId) {
-                        setSelectedRecipientId(
-                          selectedRecipientId === message.userId ? null : message.userId
-                        );
-                      }
-                    }}
-                  >
-                    {message.userId}
-                    {isPrivate && (
-                      <span style={{ marginLeft: 4, color: '#ffd700', fontSize: 12 }}>
-                        (private)
-                      </span>
-                    )}
-                  </Username>
-                  <Timestamp>
-                    {new Date(message.timestamp).toLocaleTimeString('ru-RU', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </Timestamp>
-                </MessageHeader>
-                <MessageText>{message.text}</MessageText>
-              </MessageBubble>
-            </MessageWrapper>
-          );
-        })}
-     
-      </MessagesContainer>
+        <MessagesContainer ref={messagesContainerRef}>
+          {messages.map((message) => {
+          
+            if (clanChatId) {
+              if (message.type !== 'clanChat' || message.recipientId !== clanChatId) return null;
+            } else {
+           
+              if (
+                message.type === 'private' &&
+                message.recipientId !== currentUserId &&
+                message.userId !== currentUserId
+              ) {
+                return null;
+              }
+            }
+            const isOwn = message.userId === currentUserId;
+            const isPrivate = message.type === 'private';
+            const isClan = message.type === 'clanChat';
+            return (
+              <MessageWrapper key={message.id} $isOwn={isOwn}>
+                <MessageBubble $isOwn={isOwn}>
+                  <MessageHeader>
+                    <Username
+                      $type={message.userId}
+                      style={{
+                        cursor: !clanChatId && message.userId !== currentUserId ? 'pointer' : 'default',
+                        textDecoration: selectedRecipientId === message.userId ? 'underline' : 'none',
+                        color: selectedRecipientId === message.userId ? '#ffd700' : undefined
+                      }}
+                      onClick={() => {
+                        if (!clanChatId && message.userId !== currentUserId) {
+                          setSelectedRecipientId(
+                            selectedRecipientId === message.userId ? null : message.userId
+                          );
+                        }
+                      }}
+                    >
+                      {message.userId}
+                      {isPrivate && (
+                        <span style={{ marginLeft: 4, color: '#ffd700', fontSize: 12 }}>
+                          (private)
+                         <h1>{clanName}</h1>
+                        </span>
+                      )}
+                      {isClan && (
+                        <span style={{ marginLeft: 4, color: '#00e676', fontSize: 12 }}>
+                          (clan)
+                        </span>
+                      )}
+                    </Username>
+                    <Timestamp>
+                      {new Date(message.timestamp).toLocaleTimeString('ru-RU', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </Timestamp>
+                  </MessageHeader>
+                  <MessageText>{message.text}</MessageText>
+                </MessageBubble>
+              </MessageWrapper>
+            );
+          })}
+        </MessagesContainer>
 
-      <InputContainer>
-        {selectedRecipientId && (
-          <SelectedSpan>
-            Приватный чат с: {selectedRecipientId}
-            <PrivateButton onClick={() => setSelectedRecipientId(null)}>X</PrivateButton>
-          </SelectedSpan>
-        )}
-        <Input
-          type="text"
-          placeholder={
-            selectedRecipientId
-              ? `Приватно для ${selectedRecipientId}`
-              : 'Введите сообщение...'
-          }
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          onKeyUp={handleKeyPress}
+        <InputContainer>
+          {clanChatId ? (
+            <SelectedSpan>
+              Клановый чат: {clanChatId}
+              <PrivateButton onClick={() => setClanChatId(null)}>X</PrivateButton>
+            </SelectedSpan>
+          ) : selectedRecipientId && (
+            <SelectedSpan>
+              Приватный чат с: {selectedRecipientId}
+              <PrivateButton onClick={() => setSelectedRecipientId(null)}>X</PrivateButton>
+            </SelectedSpan>
+          )}
+          <Input
+            type="text"
+            placeholder={
+              clanChatId
+                ? `Клановый чат: ${clanChatId}`
+                : selectedRecipientId
+                  ? `Приватно для ${selectedRecipientId}`
+                  : 'Введите сообщение...'
+            }
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyUp={handleKeyPress}
+          />
+          <SendButton onClick={handleSendMessage}>
+            <Send size={18} />
+            Отправить
+          </SendButton>
+        </InputContainer>
+      </ChatContainer>
+      {isModalOpen && (
+        <ChatModalComponent
+          onClose={() => setIsModalOpen(false)}
+          onCreateClan={(clanName, userIds) => {
+            // Здесь интегрируйте свою логику создания клана
+            // После создания клана можно сразу открыть клановый чат:
+            setClanChatId(clanName); // или clanId, если сервер возвращает id
+            setSelectedRecipientId(null);
+            setIsModalOpen(false);
+          }}
         />
-        <SendButton onClick={handleSendMessage}>
-          <Send size={18} />
-          Отправить
-        </SendButton>
-      </InputContainer>
-    </ChatContainer>
-  );
+      )}
+    </>
+  )
 };
 
 export default MainComponentChat;

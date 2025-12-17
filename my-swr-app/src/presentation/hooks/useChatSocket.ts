@@ -34,7 +34,7 @@ export function useChatSocket(currentUserId: string, currentUsername: string) {
   type SendMessageArgs = {
     text: string;
     recipientId?: string;
-    type?: 'normal' | 'private';
+    type?: 'normal' | 'private' | 'clanChat';
   };
 
   const sendMessage = ({ text, recipientId, type }: SendMessageArgs) => {

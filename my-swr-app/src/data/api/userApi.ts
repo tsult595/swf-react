@@ -13,9 +13,15 @@ export const createUser = async (user: UserInfo) => {
   return response.json();
 };
 
-// export const getUser = async (userId: string) => {
-//   const response = await fetch(`${API_URL}/users/${userId}`);
-//   if (!response.ok) throw new Error('Failed to fetch user');
-//   return response.json();
-// };
+export const getUser = async (userId: string) => {
+  const response = await fetch(`${API_URL}/users/${userId}`);
+  if (!response.ok) throw new Error('Failed to fetch user');
+  return response.json();
+};
+
+export const getAllUsers = async (): Promise<UserInfo[]> => {
+  const response = await fetch(`${API_URL}/users`);
+  if (!response.ok) throw new Error('Failed to fetch users');
+  return response.json();
+};
 

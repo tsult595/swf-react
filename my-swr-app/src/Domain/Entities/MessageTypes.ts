@@ -4,7 +4,7 @@ export interface Message {
   username: string;
   userId: string;
   text: string;
-  type: 'normal' | 'private';
+  type: 'normal' | 'private' | 'clanChat';
   recipientId?: string;   
   timestamp: string;                       
 }

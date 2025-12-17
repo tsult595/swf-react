@@ -7,7 +7,7 @@ export interface UserType {
 export type UserInfo = {
   id: string;
   nickname?: string;
-  companions?: string[];
+  clans?: string[];
   userAgent: string;
   language: string;
   platform: string;
