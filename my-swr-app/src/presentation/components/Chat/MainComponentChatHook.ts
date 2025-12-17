@@ -1,41 +1,24 @@
-// import { useEffect, useState } from 'react';
-// import { generatePersonalizedUserId } from '../../../utils/userId'
-// import { sendMessage } from '../../../data/api/messageApi';
+// // hooks/useUserId.ts
+// import { useState, useEffect } from 'react';
+// import { generatePersonalizedUserId } from '../../../utils/userId';
 
-// export function MainComponentChatHook() {
+// export function useUserId() {
 //   const [currentUserId, setCurrentUserId] = useState<string>('');
-//   const currentUsername = 'Tima';
-//   const [inputValue, setInputValue] = useState('');
-//   const handleSendMessage = () => {
-//   if (!inputValue.trim()) return;
-//   sendMessage(inputValue);
-//   setInputValue('');
-//   };
-
-// const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-//   if (e.key === 'Enter') {
-//     handleSendMessage();
-//   }
-// };
 
 //   useEffect(() => {
-//     async function getUserId() {
+//     async function loadUserId() {
 //       let userId = localStorage.getItem('userId');
+      
 //       if (!userId) {
 //         userId = await generatePersonalizedUserId();
 //         localStorage.setItem('userId', userId);
 //       }
+      
 //       setCurrentUserId(userId);
 //     }
-//     getUserId();
-//   }, []);
 
-//   return {
-//     currentUserId,
-//     currentUsername,
-//     inputValue,
-//     setInputValue,
-//     handleSendMessage,
-//     handleKeyPress
-//   };
+//     loadUserId();
+//   }, []); // пустой массив — выполнится один раз при монтировании
+
+//   return currentUserId; // возвращаем только ID, или можно объект { userId, isLoading }
 // }

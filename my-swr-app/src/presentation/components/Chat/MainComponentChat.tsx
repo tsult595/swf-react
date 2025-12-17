@@ -10,6 +10,7 @@ import { useChatSocket } from '../../hooks/useChatSocket';
 
 
 
+
 const FrameBorderModalMain = css`
   border-style: solid;
   border-image-width: 40px;
@@ -37,6 +38,7 @@ const ChatHeader = styled.div`
   padding: 15px 20px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 15px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
   
@@ -225,6 +227,21 @@ const PrivateButton = styled.button`
   border-radius: 15%;
 `;
 
+const CreateGroupButton = styled.button`
+  background: linear-gradient(135deg, #d4af37 0%, #b8941e 100%);
+  border: 2px solid #ffd700;
+  border-radius: 8px;
+  padding: 12px 24px;
+  color: #2d1810;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+`;
+
 const SelectedSpan = styled.span`
   color: #ffd700;
   margin-right: 12px;
@@ -240,7 +257,7 @@ const MainComponentChat = () => {
   const [inputValue, setInputValue] = useState('');
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
   const [selectedRecipientId, setSelectedRecipientId] = useState<string | null>(null);
-
+ 
 
 
 const handleSendMessage = () => {
@@ -284,6 +301,8 @@ const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     
       <ChatHeader>
         <Scroll size={28} color="#665d3fff" />
+        <CreateGroupButton>Создать свой клан</CreateGroupButton>
+        <CreateGroupButton>Мой клан</CreateGroupButton>
         <h2>Chat</h2>
       </ChatHeader>
 
