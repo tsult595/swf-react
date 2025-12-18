@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      fast-xml-parser:
+        specifier: ^5.3.3
+        version: 5.3.3
       lucide-react:
         specifier: ^0.557.0
         version: 0.557.0(react@19.2.1)
@@ -885,6 +888,10 @@ packages:
   fast-levenshtein@2.0.6:
     resolution: {integrity: sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==}
 
+  fast-xml-parser@5.3.3:
+    resolution: {integrity: sha512-2O3dkPAAC6JavuMm8+4+pgTk+5hoAs+CjZ+sWcQLkX9+/tHRuTkQh/Oaifr8qDmZ8iEHb771Ea6G8CdwkrgvYA==}
+    hasBin: true
+
   fdir@6.5.0:
     resolution: {integrity: sha512-tIbYtZbucOs0BRGqPJkshJUYdL+SDH7dVM8gjy+ERp3WAUjLEFJE+02kanyHtwjWOnwrKYBiwAmM0p4kLJAnXg==}
     engines: {node: '>=12.0.0'}
@@ -1222,6 +1229,9 @@ packages:
   strip-json-comments@3.1.1:
     resolution: {integrity: sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==}
     engines: {node: '>=8'}
+
+  strnum@2.1.2:
+    resolution: {integrity: sha512-l63NF9y/cLROq/yqKXSLtcMeeyOfnSQlfMSlzFt/K73oIaD8DGaQWd7Z34X9GPiKqP5rbSh84Hl4bOlLcjiSrQ==}
 
   styled-components@6.1.19:
     resolution: {integrity: sha512-1v/e3Dl1BknC37cXMhwGomhO8AkYmN41CqyX9xhUDxry1ns3BFQy2lLDRQXJRdVVWB9OHemv/53xaStimvWyuA==}
@@ -2163,6 +2173,10 @@ snapshots:
 
   fast-levenshtein@2.0.6: {}
 
+  fast-xml-parser@5.3.3:
+    dependencies:
+      strnum: 2.1.2
+
   fdir@6.5.0(picomatch@4.0.3):
     optionalDependencies:
       picomatch: 4.0.3
@@ -2451,6 +2465,8 @@ snapshots:
   steno@4.0.2: {}
 
   strip-json-comments@3.1.1: {}
+
+  strnum@2.1.2: {}
 
   styled-components@6.1.19(react-dom@19.2.1(react@19.2.1))(react@19.2.1):
     dependencies:
