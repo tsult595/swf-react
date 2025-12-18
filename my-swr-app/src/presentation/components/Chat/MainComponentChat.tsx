@@ -1,7 +1,8 @@
 import styled, { css } from 'styled-components';
 import { useState, useEffect , useRef} from 'react';
 import ChatModalComponent from '../../Modals/ChatModalComponent/ChatModalComponent';
-import { Send, Scroll, Heading1 } from 'lucide-react';
+import ChatModifyComponentModul from '../../Modals/ChatModalComponent/ChatModifyComponentModul';
+import { Send, Scroll } from 'lucide-react';
 import AsideBackGround from '../../../assets/auction_menu_background.png';
 import HeaderBackGround from '../../../assets/page_header_background.png';
 // import { io, Socket } from 'socket.io-client';
@@ -259,8 +260,10 @@ const MainComponentChat = () => {
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
   const [selectedRecipientId, setSelectedRecipientId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModifyModalOpen, setIsModifyModalOpen] = useState(false);
   const [clanChatId, setClanChatId] = useState<string | null>(null); // id или имя клана
- 
+  const [clanName, setClanName] = useState<string | null>(null);
+  
 
 
 const handleSendMessage = () => {
@@ -315,13 +318,8 @@ const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
           <CreateGroupButton onClick={() => setIsModalOpen(true)}>
             Создать свой клан
           </CreateGroupButton>
-          <CreateGroupButton onClick={() => {
-            // Здесь подставьте реальный clanId (или clanName), например, первый клан пользователя
-            // Для примера: 'my-clan-id'
-            setClanChatId('my-clan-id');
-            setSelectedRecipientId(null);
-          }}>
-            Мой клан 
+          <CreateGroupButton onClick={() => setIsModifyModalOpen(true)}>
+            Мой клан  
           </CreateGroupButton>
           <h2>Chat</h2>
         </ChatHeader>
@@ -367,7 +365,7 @@ const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
                       {isPrivate && (
                         <span style={{ marginLeft: 4, color: '#ffd700', fontSize: 12 }}>
                           (private)
-                         <h1>{clanName}</h1>
+                         
                         </span>
                       )}
                       {isClan && (
@@ -393,8 +391,8 @@ const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
         <InputContainer>
           {clanChatId ? (
             <SelectedSpan>
-              Клановый чат: {clanChatId}
-              <PrivateButton onClick={() => setClanChatId(null)}>X</PrivateButton>
+              Клановый чат: {clanName || clanChatId}
+              <PrivateButton onClick={() => { setClanChatId(null); setClanName(null); }}>X</PrivateButton>
             </SelectedSpan>
           ) : selectedRecipientId && (
             <SelectedSpan>
@@ -424,12 +422,22 @@ const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
       {isModalOpen && (
         <ChatModalComponent
           onClose={() => setIsModalOpen(false)}
-          onCreateClan={(clanName, userIds) => {
-            // Здесь интегрируйте свою логику создания клана
-            // После создания клана можно сразу открыть клановый чат:
-            setClanChatId(clanName); // или clanId, если сервер возвращает id
+          onCreateClan={(createdClanName) => {
+            setClanChatId(createdClanName);
             setSelectedRecipientId(null);
             setIsModalOpen(false);
+          }}
+        />
+      )}
+      {isModifyModalOpen && (
+        <ChatModifyComponentModul
+          userId={currentUserId}
+          onClose={() => setIsModifyModalOpen(false)}
+          onOpenChat={({ clanId, clanName }) => {
+            setClanChatId(clanId);
+            setClanName(clanName);
+            setIsModifyModalOpen(false);
+            setSelectedRecipientId(null);
           }}
         />
       )}
