@@ -42,7 +42,7 @@ export function useChatSocket(currentUserId: string, currentUsername: string) {
   const sendMessage = ({ text, recipientId, type }: SendMessageArgs) => {
     if (!text.trim() || !socketRef.current) return;
     const msg: Message = {
-      id: Date.now().toString(),
+      id: Date.now(),
       username: currentUsername,
       userId: currentUserId,
       text,

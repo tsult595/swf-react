@@ -352,6 +352,11 @@ const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
       ) {
         Swal.fire('Вы были добавлены в клан!');
         setSeenNotifications((prev) => new Set(prev).add(String(msg.id)));
+        // Refetch clans to update clanIds
+        getClansByUserId(currentUserId).then((clans) => {
+          const ids = Array.isArray(clans) ? clans.map((c: ClanDocument) => c.id || c._id).filter(Boolean) as string[] : [];
+          setClanIds(ids);
+        }).catch((e) => console.error('Failed to refetch clans on add', e));
       }
     });
   }, [messages, currentUserId, seenNotifications]);
@@ -398,7 +403,7 @@ const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
               <MessageWrapper key={message.id} $isOwn={isOwn}>
                 <MessageBubble $isOwn={isOwn}>
                   <MessageHeader>
-                    {isClan && message.recipientId && clanMap[message.recipientId] && <ClanLabel>[{clanMap[message.recipientId]}]</ClanLabel>}
+                    {isClan && (clanName || (message.recipientId && clanMap[message.recipientId])) && <ClanLabel>[{clanName || clanMap[message.recipientId]}]</ClanLabel>}
                     <Username
                       $type={message.userId}
                       style={{
@@ -487,11 +492,19 @@ const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
         <ChatModifyComponentModul
           userId={currentUserId}
           onClose={() => setIsModifyModalOpen(false)}
-          onOpenChat={({ clanId, clanName }) => {
+          onOpenChat={async ({ clanId, clanName }) => {
             setClanChatId(clanId);
             setClanName(clanName);
             setIsModifyModalOpen(false);
             setSelectedRecipientId(null);
+            // Refetch clans to update clanIds
+            try {
+              const clans = await getClansByUserId(currentUserId);
+              const ids = Array.isArray(clans) ? clans.map((c: ClanDocument) => c.id || c._id).filter(Boolean) as string[] : [];
+              setClanIds(ids);
+            } catch (e) {
+              console.error('Failed to refetch clans', e);
+            }
           }}
         />
       )}
