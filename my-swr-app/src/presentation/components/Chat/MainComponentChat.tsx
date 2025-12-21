@@ -354,6 +354,9 @@ const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
               ) {
                 return null;
               }
+              if (message.type === 'clanChat' && !clanIds.includes(message.recipientId)) {
+                return null;
+              }
             }
             const isOwn = message.userId === currentUserId;
             const isPrivate = message.type === 'private';

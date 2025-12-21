@@ -156,6 +156,7 @@ const ChatModifyComponentModul = ({ userId, onClose, onOpenChat }: ChatModifyCom
         const isMember = clan.members.includes(u.id);
         const isOwner = clan.ownerId === u.id;
         const isCurrentUser = userId === u.id;
+        const isCurrentUserOwner = clan.ownerId === userId;
         return (
           <MemberItem
             key={u.id}
@@ -175,9 +176,10 @@ const ChatModifyComponentModul = ({ userId, onClose, onOpenChat }: ChatModifyCom
             {isMember && !isOwner && isCurrentUser && (
               <RemoveButton style={{ marginLeft: 12 }} onClick={e => { e.stopPropagation(); if (clan.id || clan._id) handleRemoveUser((clan.id || clan._id) as string, u.id); }}>Покинуть</RemoveButton>
             )}
-            {isMember && isOwner && isCurrentUser && null}
-            {isMember && !isOwner && !isCurrentUser && null}
-            {!isMember && (
+            {isMember && isCurrentUserOwner && !isCurrentUser && (
+              <RemoveButton style={{ marginLeft: 12 }} onClick={e => { e.stopPropagation(); if (clan.id || clan._id) handleRemoveUser((clan.id || clan._id) as string, u.id); }}>Удалить</RemoveButton>
+            )}
+            {!isMember && isCurrentUserOwner && (
               <Button style={{ marginLeft: 12, background: '#00e676', color: '#232323' }} onClick={e => { e.stopPropagation(); if (clan.id || clan._id) handleAddUser((clan.id || clan._id) as string, u.id); }}>Добавить</Button>
             )}
           </MemberItem>
@@ -204,7 +206,7 @@ const ChatModifyComponentModul = ({ userId, onClose, onOpenChat }: ChatModifyCom
                   if (clanId) onOpenChat({ clanId: clanId as string, clanName: clan.name });
                 }}>{clan.name}</span>
                 <div>
-                  <Button style={{ marginLeft: 8 }} onClick={() => setSelectedClan(clan)}>Управление</Button>
+                  {isOwner && <Button style={{ marginLeft: 8 }} onClick={() => setSelectedClan(clan)}>Управление</Button>}
                   {isOwner ? (
                     <Button style={{ marginLeft: 8, background: '#d43f3f', color: '#fff' }} onClick={() => {
                       const clanId = clan.id || clan._id;

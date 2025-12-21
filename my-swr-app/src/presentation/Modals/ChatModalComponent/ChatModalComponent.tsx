@@ -3,7 +3,7 @@ import { useState } from 'react';
 import useSWR from 'swr';
 import type { UserInfo } from '../../../Domain/Entities/UserType';
 import { getAllUsers } from '../../../data/api/userApi';
-import { createClan, removeUserFromClan } from '../../../data/api/clanApi';
+import { createClan } from '../../../data/api/clanApi';
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -70,21 +70,6 @@ const UserItem = styled.div<{ selected: boolean }>`
   }
 `;
 
-const RemoveButton = styled.button`
-  background: #d43f3f;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  padding: 4px 10px;
-  margin-left: 12px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: background 0.2s;
-  &:hover {
-    background: #a81c1c;
-  }
-`;
-
 const Button = styled.button`
   background: linear-gradient(135deg, #ffd700 0%, #b8941e 100%);
   color: #232323;
@@ -116,25 +101,11 @@ const ChatModalComponent = ({ onClose, onCreateClan }: ChatModalComponentProps) 
 
   // clanId должен быть передан через пропсы или получен из состояния, если редактируется существующий клан
   // Для примера возьмём clanName как clanId, если нет отдельного id
-  const [removingUserId, setRemovingUserId] = useState<string | null>(null);
 
   const toggleUser = (id: string) => {
     setSelectedUsers((prev) =>
       prev.includes(id) ? prev.filter((uid) => uid !== id) : [...prev, id]
     );
-  };
-
-  const handleRemoveUser = async (userId: string) => {
-    if (!clanName) return;
-    setRemovingUserId(userId);
-    try {
-      await removeUserFromClan(clanName, userId); // если есть clanId, подставь его
-      setSelectedUsers((prev) => prev.filter((uid) => uid !== userId));
-    } catch (e) {
-      alert('Ошибка при удалении пользователя из клана');
-    } finally {
-      setRemovingUserId(null);
-    }
   };
 
 
@@ -181,17 +152,6 @@ const ChatModalComponent = ({ onClose, onCreateClan }: ChatModalComponentProps) 
               onClick={() => toggleUser(user.id)}
             >
               <span>{user.nickname || user.id}</span>
-              {selectedUsers.includes(user.id) && (
-                <RemoveButton
-                  onClick={e => {
-                    e.stopPropagation();
-                    handleRemoveUser(user.id);
-                  }}
-                  disabled={removingUserId === user.id}
-                >
-                  {removingUserId === user.id ? 'Удаление...' : 'Удалить'}
-                </RemoveButton>
-              )}
             </UserItem>
           ))}
         </UserList>
