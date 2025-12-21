@@ -32,6 +32,9 @@ importers:
       styled-components:
         specifier: ^6.1.19
         version: 6.1.19(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
+      sweetalert2:
+        specifier: ^11.26.15
+        version: 11.26.15
       swr:
         specifier: ^2.3.7
         version: 2.3.7(react@19.2.1)
@@ -1547,6 +1550,9 @@ packages:
     resolution: {integrity: sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==}
     engines: {node: '>=8'}
 
+  sweetalert2@11.26.15:
+    resolution: {integrity: sha512-TUOVg0yXhCjLu/Hn6Wid+dg63dBGqKIPGIcw1ESnozfAg6mMqHfaHmp3R6yBgUNiW0t7q9lzqCuDRekheZSe5Q==}
+
   swr@2.3.7:
     resolution: {integrity: sha512-ZEquQ82QvalqTxhBVv/DlAg2mbmUjF4UgpPg9wwk4ufb9rQnZXh1iKyyKBqV6bQGu1Ie7L1QwSYO07qFIa1p+g==}
     peerDependencies:
@@ -1804,7 +1810,7 @@ snapshots:
 
   '@emnapi/runtime@1.7.1':
     dependencies:
-      tslib: 2.6.2
+      tslib: 2.8.1
     optional: true
 
   '@emotion/is-prop-valid@1.2.2':
@@ -3028,6 +3034,8 @@ snapshots:
   supports-color@7.2.0:
     dependencies:
       has-flag: 4.0.0
+
+  sweetalert2@11.26.15: {}
 
   swr@2.3.7(react@19.2.1):
     dependencies:

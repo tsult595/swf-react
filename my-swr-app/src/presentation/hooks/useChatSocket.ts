@@ -13,13 +13,15 @@ export function useChatSocket(currentUserId: string, currentUsername: string) {
     const socket = io(SOCKET_URL);
     socketRef.current = socket;
 
-    
+    socket.emit('register', currentUserId);
+    console.log('registering user:', currentUserId);
     socket.emit('get all messages');
     socket.on('all messages', (msgs: Message[]) => {
       setMessages(msgs);
     });
 
     socket.on('chat message', (msg: Message) => {
+      console.log('received chat message', msg);
       setMessages((prev) => {
         if (prev.some((m) => m.id === msg.id)) return prev;
         return [...prev, msg];
@@ -48,7 +50,9 @@ export function useChatSocket(currentUserId: string, currentUsername: string) {
       recipientId,
       timestamp: new Date().toISOString(),
     };
+    console.log('emitting chat message', msg);
     socketRef.current.emit('chat message', msg);
+    setMessages((prev) => [...prev, msg]);
   };
 
   return {

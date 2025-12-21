@@ -88,7 +88,7 @@ const Button = styled.button`
 
 interface ChatModalComponentProps {
   onClose: () => void;
-  onCreateClan: (clanName: string, userIds: string[]) => void;
+  onCreateClan: (clanId: string, clanName: string) => void;
 }
 
 const fetcher = () => getAllUsers();
@@ -118,8 +118,8 @@ const ChatModalComponent = ({ onClose, onCreateClan }: ChatModalComponentProps) 
         if (!ownerId) throw new Error('UserId not found');
         // Гарантируем, что ownerId есть в списке участников
         const allMembers = selectedUsers.includes(ownerId) ? selectedUsers : [ownerId, ...selectedUsers];
-        await createClan(clanName.trim(), allMembers, ownerId);
-        onCreateClan(clanName.trim(), allMembers);
+        const clan = await createClan(clanName.trim(), allMembers, ownerId);
+        onCreateClan(clan.id || clan._id, clan.name);
         onClose();
       } catch (e) {
         alert('Ошибка при создании клана');
