@@ -1,5 +1,6 @@
 import styled, { css } from 'styled-components';
-import { useState, useEffect , useRef} from 'react';
+import { useState, useEffect , useRef } from 'react';
+import { getClansByUserId } from '../../../data/api/clanApi';
 import ChatModalComponent from '../../Modals/ChatModalComponent/ChatModalComponent';
 import ChatModifyComponentModul from '../../Modals/ChatModalComponent/ChatModifyComponentModul';
 import { Send, Scroll } from 'lucide-react';
@@ -255,7 +256,8 @@ const SelectedSpan = styled.span`
 const MainComponentChat = () => {
   const [currentUserId, setCurrentUserId] = useState<string>('');
   const currentUsername = 'Tima';
-  const { messages, sendMessage } = useChatSocket(currentUserId, currentUsername);
+  const [clanIds, setClanIds] = useState<string[]>([]);
+  const { messages, sendMessage } = useChatSocket(currentUserId, currentUsername, clanIds);
   const [inputValue, setInputValue] = useState('');
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
   const [selectedRecipientId, setSelectedRecipientId] = useState<string | null>(null);
@@ -272,13 +274,19 @@ const handleSendMessage = () => {
     sendMessage({
       text: inputValue,
       recipientId: clanChatId,
+      clanId: clanChatId, // обязательно для кланового чата
       type: 'clanChat',
+    });
+  } else if (selectedRecipientId) {
+    sendMessage({
+      text: inputValue,
+      recipientId: selectedRecipientId,
+      type: 'private',
     });
   } else {
     sendMessage({
       text: inputValue,
-      recipientId: selectedRecipientId || undefined,
-      type: selectedRecipientId ? 'private' : 'normal',
+      type: 'normal',
     });
   }
   setInputValue('');
@@ -291,15 +299,23 @@ const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
 };
 
   useEffect(() => {
-    async function getUserId() {
+    async function getUserIdAndClans() {
       let userId = localStorage.getItem('userId');
       if (!userId) {
         userId = await generatePersonalizedUserId();
         localStorage.setItem('userId', userId);
       }
       setCurrentUserId(userId);
+      // Получаем кланы пользователя и сохраняем их id
+      try {
+        const clans = await getClansByUserId(userId);
+        const ids = Array.isArray(clans) ? clans.map((c: any) => c.id || c._id).filter(Boolean) : [];
+        setClanIds(ids);
+      } catch (e) {
+        setClanIds([]);
+      }
     }
-    getUserId();
+    getUserIdAndClans();
   }, []);
  
   useEffect(() => {

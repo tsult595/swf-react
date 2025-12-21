@@ -30,11 +30,11 @@ const FrameBorderModalMain = css`
   border-image-repeat: round;
 `;
 
-const WelcomePageHoverSection = styled.div<{ visible: boolean }>`
+const WelcomePageHoverSection = styled.div<{ $visible: boolean }>`
   width: 90%;
   height: fit-content;
-  opacity: ${({ visible }) => (visible ? 1 : 0)};
-  pointer-events: ${({ visible }) => (visible ? 'auto' : 'none')};
+  opacity: ${({ $visible }) => ($visible ? 1 : 0)};
+  pointer-events: ${({ $visible }) => ($visible ? 'auto' : 'none')};
   user-select: none;
   background: rgba(99, 203, 67, 0.95);
   color: #fff;
@@ -116,7 +116,7 @@ const WelcomePageHome = () => {
       onMouseLeave={() => setShowHover(false)}
     >
       <WelcomePageHoverSection
-        visible={showHover}
+        $visible={showHover}
         onMouseEnter={() => setShowHover(false)}
       >
         <WelcomePageTitleHome>
