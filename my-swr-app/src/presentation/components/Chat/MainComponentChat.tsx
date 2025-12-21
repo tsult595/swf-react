@@ -1,7 +1,6 @@
 import styled, { css } from 'styled-components';
 import { useState, useEffect , useRef } from 'react';
 import { getClansByUserId } from '../../../data/api/clanApi';
-import type { ClanDocument } from '../../../Domain/Entities/ClanTypes';
 import { Send, Scroll } from 'lucide-react';
 import AsideBackGround from '../../../assets/auction_menu_background.png';
 import HeaderBackGround from '../../../assets/page_header_background.png';
@@ -11,7 +10,8 @@ import { generatePersonalizedUserId } from '../../../utils/userId';
 import { useChatSocket } from '../../hooks/useChatSocket';
 import ChatModalComponent from '../../Modals/ChatModalComponent/ChatModalComponent';
 import ChatModifyComponentModul from '../../Modals/ChatModalComponent/ChatModifyComponentModul';
-import Swal from 'sweetalert2';
+import Swal from 'sweetalert2';import useSWR from 'swr';
+import { getAllClans } from '../../../data/api/clanApi';
 
 
 
@@ -151,6 +151,16 @@ const Username = styled.span<{ $type?: string }>`
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
 `;
 
+const ClanLabel = styled.span`
+  font-weight: bold;
+  color: #ff6b35;
+  font-size: 12px;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-right: 5px;
+`;
+
 const MessageText = styled.p`
   color: #f7fafc;
   margin: 0;
@@ -267,6 +277,11 @@ const MainComponentChat = () => {
   const [isModifyModalOpen, setIsModifyModalOpen] = useState(false);
   const [clanChatId, setClanChatId] = useState<string | null>(null); // id или имя клана
   const [clanName, setClanName] = useState<string | null>(null);
+  const { data: allClans } = useSWR('http://localhost:3001/api/clans', getAllClans);
+  const clanMap = allClans && Array.isArray(allClans) ? allClans.reduce((acc: Record<string, string>, clan: ClanDocument) => {
+    acc[clan._id || clan.id] = clan.name;
+    return acc;
+  }, {}) : {};
   const [seenNotifications, setSeenNotifications] = useState<Set<string>>(new Set());
   
 
@@ -383,6 +398,7 @@ const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
               <MessageWrapper key={message.id} $isOwn={isOwn}>
                 <MessageBubble $isOwn={isOwn}>
                   <MessageHeader>
+                    {isClan && message.recipientId && clanMap[message.recipientId] && <ClanLabel>[{clanMap[message.recipientId]}]</ClanLabel>}
                     <Username
                       $type={message.userId}
                       style={{
@@ -463,14 +479,6 @@ const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
             setClanChatId(clanId);
             setClanName(clanName);
             setSelectedRecipientId(null);
-            // Refetch clans to update clanIds
-            try {
-              const clans = await getClansByUserId(currentUserId);
-              const ids = Array.isArray(clans) ? clans.map((c: ClanDocument) => c.id || c._id).filter(Boolean) as string[] : [];
-              setClanIds(ids);
-            } catch (e) {
-              console.error('Failed to refetch clans', e);
-            }
             setIsModalOpen(false);
           }}
         />

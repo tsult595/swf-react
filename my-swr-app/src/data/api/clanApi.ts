@@ -11,9 +11,9 @@ export async function getClansByUserId(userId: string) {
 }
 
 
-export async function getMyClans(userId: string): Promise<ClanDocument[]> {
-  const res = await fetch(`${API_URL}/user/${userId}`);
-  if (!res.ok) throw new Error('Failed to fetch clans');
+export async function getAllClans(): Promise<ClanDocument[]> {
+  const res = await fetch(`${API_URL}`);
+  if (!res.ok) throw new Error('Failed to fetch all clans');
   return res.json();
 }
 

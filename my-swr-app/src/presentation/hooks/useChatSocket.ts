@@ -42,7 +42,7 @@ export function useChatSocket(currentUserId: string, currentUsername: string) {
   const sendMessage = ({ text, recipientId, type }: SendMessageArgs) => {
     if (!text.trim() || !socketRef.current) return;
     const msg: Message = {
-      id: Date.now(),
+      id: Date.now().toString(),
       username: currentUsername,
       userId: currentUserId,
       text,
@@ -51,8 +51,10 @@ export function useChatSocket(currentUserId: string, currentUsername: string) {
       timestamp: new Date().toISOString(),
     };
     console.log('emitting chat message', msg);
+    if (type === 'private') {
+      setMessages((prev) => [...prev, msg]);
+    }
     socketRef.current.emit('chat message', msg);
-    setMessages((prev) => [...prev, msg]);
   };
 
   return {
