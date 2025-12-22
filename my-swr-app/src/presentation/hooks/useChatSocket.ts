@@ -9,6 +9,7 @@ const SOCKET_URL = 'http://localhost:3001';
 export function useChatSocket(currentUserId: string, currentUsername: string) {
   const [messages, setMessages] = useState<Message[]>([]);
   const socketRef = useRef<Socket | null>(null);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     if (!currentUserId) return;
@@ -19,13 +20,18 @@ export function useChatSocket(currentUserId: string, currentUsername: string) {
     console.log('registering user:', currentUserId);
     socket.emit('get all messages');
     socket.on('all messages', (msgs: Message[]) => {
-      setMessages(msgs);
+      if (!loaded) {
+        setMessages(msgs);
+        setLoaded(true);
+      }
     });
 
     socket.on('chat message', (msg: Message) => {
       console.log('received chat message', msg);
+      console.log('checking userId equal:', msg.userId === currentUserId, 'msg.userId:', msg.userId, 'currentUserId:', currentUserId);
       setMessages((prev) => {
-        if (prev.some((m) => m.id === msg.id) || msg.userId === currentUserId) return prev; // Не добавлять дубликаты и свои сообщения
+        if (msg.userId === currentUserId) return prev; // Не добавлять свои сообщения из сокета
+        if (prev.some((m) => m.id === msg.id)) return prev;
         return [...prev, msg];
       });
     });
@@ -42,7 +48,7 @@ export function useChatSocket(currentUserId: string, currentUsername: string) {
   };
 
   const sendMessage = ({ text, recipientId, type }: SendMessageArgs) => {
-    if (!text.trim() || !socketRef.current) return;
+    if (!text.trim() || !socketRef.current || !currentUserId) return;
     const msg: Message = {
       id: Date.now().toString(),
       username: currentUsername,

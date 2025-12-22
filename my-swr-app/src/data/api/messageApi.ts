@@ -2,7 +2,7 @@ const API_URL = 'http://localhost:3001/api';
 import type { Message  } from '../../Domain/Entities/MessageTypes';
 
 
-export type SendMessageImport = Omit<Message, 'id' | 'timestamp'>;
+export type SendMessageImport = Omit<Message, 'timestamp'>;
 
 export const sendMessage = async (data: SendMessageImport): Promise<Message> => {
   const response = await fetch(`${API_URL}/send_message`, {
