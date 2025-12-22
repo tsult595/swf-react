@@ -89,11 +89,12 @@ const Button = styled.button`
 interface ChatModalComponentProps {
   onClose: () => void;
   onCreateClan: (clanId: string, clanName: string) => void;
+  sendMessage: (args: { text: string; recipientId: string; type: 'private' }) => void;
 }
 
 const fetcher = () => getAllUsers();
 
-const ChatModalComponent = ({ onClose, onCreateClan }: ChatModalComponentProps) => {
+const ChatModalComponent = ({ onClose, onCreateClan, sendMessage }: ChatModalComponentProps) => {
   const [clanName, setClanName] = useState('');
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
@@ -119,6 +120,16 @@ const ChatModalComponent = ({ onClose, onCreateClan }: ChatModalComponentProps) 
         // Гарантируем, что ownerId есть в списке участников
         const allMembers = selectedUsers.includes(ownerId) ? selectedUsers : [ownerId, ...selectedUsers];
         const clan = await createClan(clanName.trim(), allMembers, ownerId);
+        // Отправляем сообщения участникам
+        allMembers.forEach((memberId) => {
+          if (memberId !== ownerId) { // Не отправлять себе
+            sendMessage({
+              text: `Вы были добавлены в клан ${clanName.trim()}!`,
+              recipientId: memberId,
+              type: 'private',
+            });
+          }
+        });
         onCreateClan(clan.id || clan._id, clan.name);
         onClose();
       } catch (e) {

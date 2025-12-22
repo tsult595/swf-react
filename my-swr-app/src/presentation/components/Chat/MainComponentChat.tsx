@@ -1,6 +1,7 @@
 import styled, { css } from 'styled-components';
 import { useState, useEffect , useRef } from 'react';
 import { getClansByUserId } from '../../../data/api/clanApi';
+import { getAllClanMessages, getAllPrivateMessages } from '../../../data/api/messageApi';
 import { Send, Scroll } from 'lucide-react';
 import AsideBackGround from '../../../assets/auction_menu_background.png';
 import HeaderBackGround from '../../../assets/page_header_background.png';
@@ -13,6 +14,7 @@ import ChatModifyComponentModul from '../../Modals/ChatModalComponent/ChatModify
 import Swal from 'sweetalert2';import useSWR from 'swr';
 import { getAllClans } from '../../../data/api/clanApi';
 import type { ClanDocument } from '../../../Domain/Entities/ClanTypes';
+
 
 
 
@@ -269,7 +271,7 @@ const MainComponentChat = () => {
   const [currentUserId, setCurrentUserId] = useState<string>('');
   const currentUsername = 'Tima';
   const [clanIds, setClanIds] = useState<string[]>([]);
-  const { messages, sendMessage } = useChatSocket(currentUserId, currentUsername);
+  const { messages, sendMessage, setMessages } = useChatSocket(currentUserId, currentUsername);
   const [inputValue, setInputValue] = useState('');
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
   const [selectedRecipientId, setSelectedRecipientId] = useState<string | null>(null);
@@ -284,7 +286,38 @@ const MainComponentChat = () => {
   }, {}) : {};
   const [seenNotifications, setSeenNotifications] = useState<Set<string>>(new Set());
   
+  useEffect(() => {
+  if (clanChatId) {
+    getAllClanMessages(clanChatId).then((msgs) => {
+      // Добавить в messages, фильтруя дубликаты
+      setMessages((prev) => [...prev, ...msgs.filter(m => !prev.some(p => p.id === m.id))]);
+    });
+  }
+}, [clanChatId]);
 
+useEffect(() => {
+  if (selectedRecipientId) {
+    getAllPrivateMessages(currentUserId).then((msgs) => {
+      // Фильтровать только приватные с selectedRecipientId
+      const filtered = msgs.filter(m => m.recipientId === selectedRecipientId || m.userId === selectedRecipientId);
+      setMessages((prev) => [...prev, ...filtered.filter(m => !prev.some(p => p.id === m.id))]);
+    });
+  }
+}, [selectedRecipientId]);
+
+  useEffect(() => {
+    if (clanChatId && !clanIds.includes(clanChatId)) {
+      setClanChatId(null);
+      setClanName(null);
+    }
+  }, [clanIds, clanChatId]);
+
+  useEffect(() => {
+    setMessages(prev => prev.filter(msg => {
+      if (msg.type === 'clanChat' && msg.recipientId && !clanIds.includes(msg.recipientId)) return false;
+      return true;
+    }));
+  }, [clanIds]);
 
 const handleSendMessage = () => {
   if (!inputValue.trim()) return;
@@ -329,6 +362,7 @@ const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
         const ids = Array.isArray(clans) ? clans.map((c: ClanDocument) => c.id || c._id).filter(Boolean) as string[] : [];
         setClanIds(ids);
       } catch (e) {
+        console.error('Failed to fetch clans', e);
         setClanIds([]);
       }
     }
@@ -480,7 +514,7 @@ const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
       {isModalOpen && (
         <ChatModalComponent
           onClose={() => setIsModalOpen(false)}
-         
+          sendMessage={sendMessage}
           onCreateClan={async (clanId: string, clanName: string) => {
             setClanChatId(clanId);
             setClanName(clanName);
@@ -493,6 +527,18 @@ const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
         <ChatModifyComponentModul
           userId={currentUserId}
           onClose={() => setIsModifyModalOpen(false)}
+          sendMessage={sendMessage}
+          onClanUpdate={(action?: 'add' | 'remove', clanId?: string) => {
+            if (action === 'remove' && clanId) {
+              setClanIds(prev => prev.filter(id => id !== clanId));
+            } else if (action === 'add' && clanId) {
+              setClanIds(prev => prev.includes(clanId) ? prev : [...prev, clanId]);
+            }
+            getClansByUserId(currentUserId).then((clans) => {
+              const ids = Array.isArray(clans) ? clans.map((c: ClanDocument) => c.id || c._id).filter(Boolean) as string[] : [];
+              setClanIds(ids);
+            }).catch((e) => console.error('Failed to refetch clans on update', e));
+          }}
           onOpenChat={async ({ clanId, clanName }) => {
             setClanChatId(clanId);
             setClanName(clanName);

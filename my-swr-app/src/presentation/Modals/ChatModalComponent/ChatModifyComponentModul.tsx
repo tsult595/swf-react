@@ -113,10 +113,12 @@ interface ChatModifyComponentModulProps {
   userId: string;
   onClose: () => void;
   onOpenChat: (data: { clanId: string, clanName: string }) => void;
+  sendMessage: (args: { text: string; recipientId: string; type: 'private' }) => void;
+  onClanUpdate: (action: 'add' | 'remove', clanId: string) => void;
 }
 
 
-const ChatModifyComponentModul = ({ userId, onClose, onOpenChat }: ChatModifyComponentModulProps) => {
+const ChatModifyComponentModul = ({ userId, onClose, onOpenChat, sendMessage, onClanUpdate }: ChatModifyComponentModulProps) => {
   const [clans, setClans] = useState<ClanDocument[]>([]);
   const [allUsers, setAllUsers] = useState<UserInfo[]>([]);
   const [selectedClan, setSelectedClan] = useState<ClanDocument | null>(null);
@@ -132,21 +134,26 @@ const ChatModifyComponentModul = ({ userId, onClose, onOpenChat }: ChatModifyCom
     console.log('handleAddUser', { clanId, userId });
     if (!clanId) return;
     await addUserToClan(clanId, userId);
+    sendMessage({
+      text: `Вы были добавлены в клан ${selectedClan.name}!`,
+      recipientId: userId,
+      type: 'private',
+    });
+    onClanUpdate('add', clanId);
     setSelectedClan(selectedClan && {
       ...selectedClan,
       members: [...selectedClan.members, userId],
     });
   };
 
-  const handleRemoveUser = async (_clanId: string, userId: string) => {
-    const clanId = selectedClan?.id || selectedClan?._id;
+  const handleRemoveUser = async (clanId: string, userId: string) => {
     console.log('handleRemoveUser', { clanId, userId });
-    if (!clanId) return;
     await removeUserFromClan(clanId, userId);
-    setSelectedClan(selectedClan && {
+    onClanUpdate('remove', clanId);
+    setSelectedClan(selectedClan && (selectedClan.id || selectedClan._id) === clanId ? {
       ...selectedClan,
       members: selectedClan.members.filter(id => id !== userId),
-    });
+    } : selectedClan);
   };
 
 
@@ -220,6 +227,9 @@ const ChatModifyComponentModul = ({ userId, onClose, onOpenChat }: ChatModifyCom
                       if (clanId && window.confirm('Покинуть клан?')) {
                         handleRemoveUser(clanId as string, userId);
                         setClans(clans.filter(c => (c.id || c._id) !== clanId));
+                        if (selectedClan && (selectedClan.id || selectedClan._id) === clanId) {
+                          setSelectedClan(null);
+                        }
                       }
                     }}>Покинуть</Button>
                   ) : null}
