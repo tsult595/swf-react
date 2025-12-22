@@ -12,7 +12,7 @@ import ChatModalComponent from '../../Modals/ChatModalComponent/ChatModalCompone
 import ChatModifyComponentModul from '../../Modals/ChatModalComponent/ChatModifyComponentModul';
 import Swal from 'sweetalert2';import useSWR from 'swr';
 import { getAllClans } from '../../../data/api/clanApi';
-
+import type { ClanDocument } from '../../../Domain/Entities/ClanTypes';
 
 
 
@@ -403,7 +403,7 @@ const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
               <MessageWrapper key={message.id} $isOwn={isOwn}>
                 <MessageBubble $isOwn={isOwn}>
                   <MessageHeader>
-                    {isClan && (clanName || (message.recipientId && clanMap[message.recipientId])) && <ClanLabel>[{clanName || clanMap[message.recipientId]}]</ClanLabel>}
+                    {isClan && (clanName || (message.recipientId && clanMap[message.recipientId])) && <ClanLabel>[{clanName || clanMap[message.recipientId as string]}]</ClanLabel>}
                     <Username
                       $type={message.userId}
                       style={{
@@ -480,6 +480,7 @@ const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
       {isModalOpen && (
         <ChatModalComponent
           onClose={() => setIsModalOpen(false)}
+         
           onCreateClan={async (clanId: string, clanName: string) => {
             setClanChatId(clanId);
             setClanName(clanName);
@@ -497,7 +498,7 @@ const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
             setClanName(clanName);
             setIsModifyModalOpen(false);
             setSelectedRecipientId(null);
-            // Refetch clans to update clanIds
+          
             try {
               const clans = await getClansByUserId(currentUserId);
               const ids = Array.isArray(clans) ? clans.map((c: ClanDocument) => c.id || c._id).filter(Boolean) as string[] : [];

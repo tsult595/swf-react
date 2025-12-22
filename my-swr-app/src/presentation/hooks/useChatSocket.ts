@@ -55,6 +55,7 @@ export function useChatSocket(currentUserId: string, currentUsername: string) {
       setMessages((prev) => [...prev, msg]);
     }
     socketRef.current.emit('chat message', msg);
+    // ispravit
   };
 
   return {
