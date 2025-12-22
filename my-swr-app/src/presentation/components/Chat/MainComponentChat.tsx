@@ -274,11 +274,11 @@ const MainComponentChat = () => {
   const { messages, sendMessage, setMessages } = useChatSocket(currentUserId, currentUsername);
   const [inputValue, setInputValue] = useState('');
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
-  const [selectedRecipientId, setSelectedRecipientId] = useState<string | null>(null);
+  const [selectedRecipientId, setSelectedRecipientId] = useState<string | null>(localStorage.getItem('selectedRecipientId'));
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModifyModalOpen, setIsModifyModalOpen] = useState(false);
-  const [clanChatId, setClanChatId] = useState<string | null>(null); // id или имя клана
-  const [clanName, setClanName] = useState<string | null>(null);
+  const [clanChatId, setClanChatId] = useState<string | null>(localStorage.getItem('clanChatId')); // id или имя клана
+  const [clanName, setClanName] = useState<string | null>(localStorage.getItem('clanName'));
   const { data: allClans } = useSWR('http://localhost:3001/api/clans', getAllClans);
   const clanMap = allClans && Array.isArray(allClans) ? allClans.reduce((acc: Record<string, string>, clan: ClanDocument) => {
     acc[clan._id || clan.id] = clan.name;
@@ -289,7 +289,7 @@ const MainComponentChat = () => {
   useEffect(() => {
   if (clanChatId) {
     getAllClanMessages(clanChatId).then((msgs) => {
-      // Добавить в messages, фильтруя дубликаты
+    
       setMessages((prev) => [...prev, ...msgs.filter(m => !prev.some(p => p.id === m.id))]);
     });
   }
@@ -298,7 +298,7 @@ const MainComponentChat = () => {
 useEffect(() => {
   if (selectedRecipientId) {
     getAllPrivateMessages(currentUserId).then((msgs) => {
-      // Фильтровать только приватные с selectedRecipientId
+
       const filtered = msgs.filter(m => m.recipientId === selectedRecipientId || m.userId === selectedRecipientId);
       setMessages((prev) => [...prev, ...filtered.filter(m => !prev.some(p => p.id === m.id))]);
     });
@@ -306,11 +306,19 @@ useEffect(() => {
 }, [selectedRecipientId]);
 
   useEffect(() => {
-    if (clanChatId && !clanIds.includes(clanChatId)) {
-      setClanChatId(null);
-      setClanName(null);
-    }
-  }, [clanIds, clanChatId]);
+    if (clanChatId) localStorage.setItem('clanChatId', clanChatId);
+    else localStorage.removeItem('clanChatId');
+  }, [clanChatId]);
+
+  useEffect(() => {
+    if (clanName) localStorage.setItem('clanName', clanName);
+    else localStorage.removeItem('clanName');
+  }, [clanName]);
+
+  useEffect(() => {
+    if (selectedRecipientId) localStorage.setItem('selectedRecipientId', selectedRecipientId);
+    else localStorage.removeItem('selectedRecipientId');
+  }, [selectedRecipientId]);
 
   useEffect(() => {
     setMessages(prev => prev.filter(msg => {
@@ -400,6 +408,7 @@ const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     <>
       <ChatContainer>
         <ChatHeader>
+          {currentUserId}
           <Scroll size={28} color="#665d3fff" />
           <CreateGroupButton onClick={() => setIsModalOpen(true)}>
             Создать свой клан

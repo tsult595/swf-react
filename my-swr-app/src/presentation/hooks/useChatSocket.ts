@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import type { Message } from '../../Domain/Entities/MessageTypes';
 
+
+
 const SOCKET_URL = 'http://localhost:3001';
 
 export function useChatSocket(currentUserId: string, currentUsername: string) {
@@ -23,7 +25,7 @@ export function useChatSocket(currentUserId: string, currentUsername: string) {
     socket.on('chat message', (msg: Message) => {
       console.log('received chat message', msg);
       setMessages((prev) => {
-        if (prev.some((m) => m.id === msg.id)) return prev;
+        if (prev.some((m) => m.id === msg.id) || msg.userId === currentUserId) return prev; // Не добавлять дубликаты и свои сообщения
         return [...prev, msg];
       });
     });
@@ -51,8 +53,9 @@ export function useChatSocket(currentUserId: string, currentUsername: string) {
       timestamp: new Date().toISOString(),
     };
     console.log('emitting chat message', msg);
+    setMessages((prev) => [...prev, msg]); // Добавить локально для отправителя
     socketRef.current.emit('chat message', msg);
-    // ispravit
+    // ispravit front doljen otpravlat http soobwenie
   };
 
   return {
