@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components';
 import { useState, useEffect , useRef } from 'react';
 import { getClansByUserId } from '../../../data/api/clanApi';
-import { getAllClanMessages, getAllPrivateMessages , deleteMessageById } from '../../../data/api/messageApi';
+import { getAllClanMessages, getAllPrivateMessages } from '../../../data/api/messageApi';
 import { Send, Scroll } from 'lucide-react';
 import AsideBackGround from '../../../assets/auction_menu_background.png';
 import HeaderBackGround from '../../../assets/page_header_background.png';
@@ -420,8 +420,8 @@ const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
           </CreateGroupButton>
           <h2>Chat</h2>
         </ChatHeader>
-
-        <MessagesContainer ref={messagesContainerRef}>
+      {/* otdelniy component */}
+        {/* <MessagesContainer ref={messagesContainerRef}>
           {messages.map((message) => {
           
             if (clanChatId) {
@@ -448,6 +448,24 @@ const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
               <MessageWrapper key={message.id} $isOwn={isOwn}>
                 <MessageBubble $isOwn={isOwn}>
                   <MessageHeader>
+                    {message.id}!!
+                <button onClick={async () => {
+                console.log('Attempting to delete message with ID:', message.id);
+        //  const messageToRevert = messages.find(m => m.id === message.id);
+            // setMessages(prev => prev.filter(m => m.id !== message.id));
+  
+      // try {
+        await deleteMessageById(message.id);
+
+      //  } catch (error) {
+        // console.log('Failed to delete message', error);
+      //  alert('Failed to delete message');
+      //  if (messageToRevert) {
+      //   setMessages(prev => [...prev, messageToRevert]); 
+      //   }
+      }
+     
+                 }>x</button>
                     {isClan && (clanName || (message.recipientId && clanMap[message.recipientId])) && <ClanLabel>[{clanName || clanMap[message.recipientId as string]}]</ClanLabel>}
                     <Username
                       $type={message.userId}
@@ -483,15 +501,8 @@ const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
                         minute: '2-digit',
                       })}
                     </Timestamp>
-                    <button onClick={async () => {
-                      try {
-                        await deleteMessageById(message.id);
-                        setMessages(prev => prev.filter(m => m.id !== message.id));
-                      } catch (error) {
-                        console.log('Failed to delete message', error);
-                        alert('Failed to delete message');
-                      }
-                    }}>x</button>
+
+    
                     <button>UP</button>
                   </MessageHeader>
                   <MessageText>{message.text}</MessageText>
@@ -499,7 +510,7 @@ const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
               </MessageWrapper>
             );
           })}
-        </MessagesContainer>
+        </MessagesContainer> */}
 
         <InputContainer>
           {selectedRecipientId ? (

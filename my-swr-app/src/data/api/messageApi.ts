@@ -53,6 +53,7 @@ export const getAllClanMessages = async (clanId: string): Promise<Message[]> => 
 };
 
 export const deleteMessageById = async (messageId: string): Promise<boolean> => {
+  console.log('Deleting message with ID:', messageId);
   const response = await fetch(`${API_URL}/messages/${messageId}`, {
     method: 'DELETE',
   });
@@ -62,5 +63,7 @@ export const deleteMessageById = async (messageId: string): Promise<boolean> => 
     throw new Error(error.error || 'Failed to delete message');
   }
   
-  return true; // Предполагаем успех, если ok
+  return true; 
 };
+
+// try catch block

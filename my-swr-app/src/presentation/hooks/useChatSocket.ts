@@ -20,6 +20,7 @@ export function useChatSocket(currentUserId: string, currentUsername: string) {
     console.log('registering user:', currentUserId);
     socket.emit('get all messages');
     socket.on('all messages', (msgs: Message[]) => {
+    console.log('received all messages', msgs);
       if (!loaded) {
         setMessages(msgs);
         setLoaded(true);
