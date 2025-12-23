@@ -90,18 +90,17 @@ interface ChatModalComponentProps {
   onClose: () => void;
   onCreateClan: (clanId: string, clanName: string) => void;
   sendMessage: (args: { text: string; recipientId: string; type: 'private' }) => void;
+  prikolniyText?: string;
 }
 
 const fetcher = () => getAllUsers();
 
-const ChatModalComponent = ({ onClose, onCreateClan, sendMessage }: ChatModalComponentProps) => {
+const ChatModalComponent = ({ onClose, onCreateClan, sendMessage, prikolniyText }: ChatModalComponentProps) => {
   const [clanName, setClanName] = useState('');
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-
   const { data: users, isLoading, error } = useSWR<UserInfo[]>('all-users', fetcher);
 
-  // clanId должен быть передан через пропсы или получен из состояния, если редактируется существующий клан
-  // Для примера возьмём clanName как clanId, если нет отдельного id
+
 
   const toggleUser = (id: string) => {
     setSelectedUsers((prev) =>
@@ -147,6 +146,7 @@ const ChatModalComponent = ({ onClose, onCreateClan, sendMessage }: ChatModalCom
     <ModalOverlay>
       <ModalContainer>
         <Title>Создать клан</Title>
+        {prikolniyText}
         <Input
           placeholder="Название клана"
           value={clanName}

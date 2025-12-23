@@ -1,6 +1,5 @@
 export interface Message {
   id: string;                              
-  // channel: 'global' | 'guild' | 'battle';
   username: string;
   userId: string;
   text: string;

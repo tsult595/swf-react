@@ -11,6 +11,7 @@ import type { ClanDocument } from '../../../Domain/Entities/ClanTypes';
 import MainChatMessagesContainer from './MainChatMessagesContainer';
 import MainChatInputContainer from './MainChatInputContainer';
 import MainChatHeader from './MainChatHeader';
+import type { Message } from '../../../Domain/Entities/MessageTypes';
 
 const FrameBorderModalMain = css`
   border-style: solid;
@@ -31,10 +32,16 @@ const ChatContainer = styled.div`
 `;
 
 const MainComponentChat = () => {
+  const [messages, setMessages] = useState<Message[]>([]);
+  
+
+
+
+
   const [currentUserId, setCurrentUserId] = useState<string>('');
   const currentUsername = 'Tima';
   const [clanIds, setClanIds] = useState<string[]>([]);
-  const { messages, sendMessage, setMessages } = useChatSocket(currentUserId, currentUsername);
+  const {sendMessage } = useChatSocket(currentUserId, currentUsername);
   const [inputValue, setInputValue] = useState('');
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
   const [selectedRecipientId, setSelectedRecipientId] = useState<string | null>(localStorage.getItem('selectedRecipientId'));
@@ -114,13 +121,6 @@ const MainComponentChat = () => {
     if (selectedRecipientId) localStorage.setItem('selectedRecipientId', selectedRecipientId);
     else localStorage.removeItem('selectedRecipientId');
   }, [selectedRecipientId]);
-
-  useEffect(() => {
-    setMessages(prev => prev.filter(msg => {
-      if (msg.type === 'clanChat' && msg.recipientId && !clanIds.includes(msg.recipientId)) return false;
-      return true;
-    }));
-  }, [clanIds]);
 
   useEffect(() => {
     async function getUserIdAndClans() {
@@ -212,6 +212,7 @@ const MainComponentChat = () => {
             setSelectedRecipientId(null);
             setIsModalOpen(false);
           }}
+          prikolniyText="welcome"
         />
       )}
       {isModifyModalOpen && (

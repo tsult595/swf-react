@@ -148,6 +148,7 @@ const MainChatMessagesContainer: React.FC<MainChatMessagesContainerProps> = ({
   return (
     <MessagesContainer ref={containerRef}>
       {messages.map((message) => {
+        console.log('Rendering message:', message);
         if (clanChatId) {
           const isClanMessage = message.type === 'clanChat' && message.recipientId === clanChatId;
           const isPrivateMessage = message.type === 'private' && (message.recipientId === currentUserId || message.userId === currentUserId);
