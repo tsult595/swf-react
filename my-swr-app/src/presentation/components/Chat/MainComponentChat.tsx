@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components';
 import { useState, useEffect , useRef } from 'react';
 import { getClansByUserId } from '../../../data/api/clanApi';
-import { getAllClanMessages, getAllPrivateMessages } from '../../../data/api/messageApi';
+import { getAllClanMessages, getAllPrivateMessages , deleteMessageById } from '../../../data/api/messageApi';
 import { Send, Scroll } from 'lucide-react';
 import AsideBackGround from '../../../assets/auction_menu_background.png';
 import HeaderBackGround from '../../../assets/page_header_background.png';
@@ -14,6 +14,8 @@ import ChatModifyComponentModul from '../../Modals/ChatModalComponent/ChatModify
 import Swal from 'sweetalert2';import useSWR from 'swr';
 import { getAllClans } from '../../../data/api/clanApi';
 import type { ClanDocument } from '../../../Domain/Entities/ClanTypes';
+
+
 
 
 
@@ -481,6 +483,16 @@ const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
                         minute: '2-digit',
                       })}
                     </Timestamp>
+                    <button onClick={async () => {
+                      try {
+                        await deleteMessageById(message.id);
+                        setMessages(prev => prev.filter(m => m.id !== message.id));
+                      } catch (error) {
+                        console.log('Failed to delete message', error);
+                        alert('Failed to delete message');
+                      }
+                    }}>x</button>
+                    <button>UP</button>
                   </MessageHeader>
                   <MessageText>{message.text}</MessageText>
                 </MessageBubble>
