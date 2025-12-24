@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 import AsideBackGround from '../../../assets/auction_menu_background.png';
 import type { Message } from '../../../Domain/Entities/MessageTypes';
+import { getAllPublicMessagesForUI } from '../../../presentation/public-chat/getAllPublicMessages';
+import { useEffect, useState } from 'react';
 
 const MessagesContainer = styled.div`
   flex: 1;
@@ -123,7 +125,7 @@ const Timestamp = styled.span`
 `;
 
 interface MainChatMessagesContainerProps {
-  messages: Message[];
+//   messages: Message[];
   currentUserId: string;
   clanIds: string[];
   clanChatId: string | null;
@@ -135,7 +137,7 @@ interface MainChatMessagesContainerProps {
 }
 
 const MainChatMessagesContainer: React.FC<MainChatMessagesContainerProps> = ({
-  messages,
+//   messages,
   currentUserId,
   clanIds,
   clanChatId,
@@ -145,10 +147,32 @@ const MainChatMessagesContainer: React.FC<MainChatMessagesContainerProps> = ({
   onSelectRecipient,
   containerRef
 }) => {
+   
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+
+
+
+  useEffect(() => {
+    const loadMessages = async () => {
+        const loadedMessages = await getAllPublicMessagesForUI((errorText) => setError(errorText), (loading) => setLoading(loading));
+        setMessages(loadedMessages);
+   
+        setLoading(false);
+   
+    };
+
+    loadMessages();
+  }, []);
+
+  if (loading) return <div>Загрузка сообщений...</div>;
+  if (error) return <div style={{ color: 'red' }}>{error}</div>;
+
+
   return (
     <MessagesContainer ref={containerRef}>
       {messages.map((message) => {
-        console.log('Rendering message:', message);
         if (clanChatId) {
           const isClanMessage = message.type === 'clanChat' && message.recipientId === clanChatId;
           const isPrivateMessage = message.type === 'private' && (message.recipientId === currentUserId || message.userId === currentUserId);
