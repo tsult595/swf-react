@@ -1,8 +1,7 @@
 import styled from 'styled-components';
-import { useState } from 'react';
-import useSWR from 'swr';
+import { useState, useEffect } from 'react';
 import type { UserInfo } from '../../../Domain/Entities/UserType';
-import { getAllUsers } from '../../../data/api/userApi';
+import { getAllUsersForUI } from '../../all-users/getAllUsers';
 import { createClan } from '../../../data/api/clanApi';
 const ModalOverlay = styled.div`
   position: fixed;
@@ -70,19 +69,46 @@ const UserItem = styled.div<{ selected: boolean }>`
   }
 `;
 
-const Button = styled.button`
-  background: linear-gradient(135deg, #ffd700 0%, #b8941e 100%);
+const LoadingSpinner = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  color: #ffd700;
+  font-size: 1.2rem;
+  
+  &::after {
+    content: '';
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ffd700;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-left: 10px;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`;
+
+const StyledButton = styled.button`
+  background: #ffd700;
   color: #232323;
   border: none;
   border-radius: 8px;
   padding: 12px 24px;
-  font-weight: bold;
   font-size: 1rem;
+  font-weight: bold;
   cursor: pointer;
-  margin-top: 8px;
-  transition: background 0.2s;
-  &:hover {
-    background: linear-gradient(135deg, #ffe066 0%, #ffd700 100%);
+  margin-bottom: 8px;
+  transition: background 0.2s, color 0.2s;
+  &:disabled {
+    background: #ccc;
+    color: #888;
+    cursor: not-allowed;
   }
 `;
 
@@ -93,12 +119,20 @@ interface ChatModalComponentProps {
   prikolniyText?: string;
 }
 
-const fetcher = () => getAllUsers();
-
 const ChatModalComponent = ({ onClose, onCreateClan, sendMessage, prikolniyText }: ChatModalComponentProps) => {
   const [clanName, setClanName] = useState('');
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-  const { data: users, isLoading, error } = useSWR<UserInfo[]>('all-users', fetcher);
+  const [users, setUsers] = useState<UserInfo[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    getAllUsersForUI(
+      (errorText) => setError(errorText),
+      (users) => setUsers(users),
+      (loading) => setLoading(loading)
+    );
+  }, []);
 
 
 
@@ -154,9 +188,9 @@ const ChatModalComponent = ({ onClose, onCreateClan, sendMessage, prikolniyText 
         />
         <div style={{ color: '#ffd700', marginBottom: 6 }}>Добавить участников:</div>
         <UserList>
-          {isLoading && <div style={{ color: '#fff' }}>Загрузка пользователей...</div>}
-          {error && <div style={{ color: 'red' }}>Ошибка загрузки пользователей</div>}
-          {uniqueUsers.map((user) => (
+          {loading && <LoadingSpinner>Загрузка пользователей...</LoadingSpinner>}
+          {error && <div style={{ color: 'red', textAlign: 'center', padding: '20px' }}>Ошибка: {error}</div>}
+          {!loading && !error && uniqueUsers.map((user) => (
             <UserItem
               key={user.id}
               selected={selectedUsers.includes(user.id)}
@@ -166,12 +200,12 @@ const ChatModalComponent = ({ onClose, onCreateClan, sendMessage, prikolniyText 
             </UserItem>
           ))}
         </UserList>
-        <Button onClick={handleCreate} disabled={!clanName.trim() || selectedUsers.length === 0}>
+        <StyledButton onClick={handleCreate} disabled={!clanName.trim() || selectedUsers.length === 0}>
           Создать клан
-        </Button>
-        <Button style={{ background: '#444', color: '#fff', marginTop: 0 }} onClick={onClose}>
+        </StyledButton>
+        <StyledButton style={{ background: '#444', color: '#fff', marginTop: 0 }} onClick={onClose}>
           Отмена
-        </Button>
+        </StyledButton>
       </ModalContainer>
     </ModalOverlay>
   );

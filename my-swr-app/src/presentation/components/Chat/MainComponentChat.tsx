@@ -1,7 +1,9 @@
 import styled, { css } from 'styled-components';
 import { useState, useEffect, useRef } from 'react';
 import { getClansByUserId } from '../../../data/api/clanApi';
-import { getAllClanMessages, getAllPrivateMessages, deleteMessageById } from '../../../data/api/messageApi';
+import { deleteMessageById } from '../../../data/api/messageApi';
+import { getAllClanMessagesForUI } from '../../clan-chat/getAllClanMessages';
+import { getAllPrivateMessagesForUI } from '../../private-message/getAllPrivateMessages';
 import { generatePersonalizedUserId } from '../../../utils/userId';
 import { useChatSocket } from '../../hooks/useChatSocket';
 import ChatModalComponent from '../../Modals/ChatModalComponent/ChatModalComponent';
@@ -92,20 +94,40 @@ const MainComponentChat = () => {
 
   useEffect(() => {
     if (clanChatId) {
-      getAllClanMessages(clanChatId).then((msgs) => {
-        setMessages((prev) => [...prev, ...msgs.filter(m => !prev.some(p => p.id === m.id))]);
-      });
+      const loadClanMessages = async () => {
+        try {
+          const msgs = await getAllClanMessagesForUI(
+            clanChatId,
+            (errorText) => console.error('Clan messages error:', errorText),
+            () => {} // loading callback, if needed
+          );
+          setMessages((prev) => [...prev, ...msgs.filter(m => !prev.some(p => p.id === m.id))]);
+        } catch (error) {
+          console.error('Failed to load clan messages:', error);
+        }
+      };
+      loadClanMessages();
     }
   }, [clanChatId]);
 
   useEffect(() => {
     if (selectedRecipientId) {
-      getAllPrivateMessages(currentUserId).then((msgs) => {
-        const filtered = msgs.filter(m => m.recipientId === selectedRecipientId || m.userId === selectedRecipientId);
-        setMessages((prev) => [...prev, ...filtered.filter(m => !prev.some(p => p.id === m.id))]);
-      });
+      const loadPrivateMessages = async () => {
+        try {
+          const messages = await getAllPrivateMessagesForUI(
+            currentUserId,
+            (errorText) => console.error('Private messages error:', errorText),
+            () => {} // loading callback, if needed
+          );
+          const filtered = messages.filter(m => m.recipientId === selectedRecipientId || m.userId === selectedRecipientId);
+          setMessages((prev) => [...prev, ...filtered.filter(m => !prev.some(p => p.id === m.id))]);
+        } catch (error) {
+          console.error('Failed to load private messages:', error);
+        }
+      };
+      loadPrivateMessages();
     }
-  }, [selectedRecipientId]);
+  }, [selectedRecipientId, currentUserId]);
 
   useEffect(() => {
     if (clanChatId) localStorage.setItem('clanChatId', clanChatId);
@@ -142,12 +164,12 @@ const MainComponentChat = () => {
     getUserIdAndClans();
   }, []);
 
-  useEffect(() => {
-    const container = messagesContainerRef.current;
-    if (container) {
-      container.scrollTop = container.scrollHeight;
-    }
-  }, [messages]);
+  // useEffect(() => {
+  //   const container = messagesContainerRef.current;
+  //   if (container) {
+  //     container.scrollTop = container.scrollHeight;
+  //   }
+  // }, [messages]);
 
   useEffect(() => {
     messages.forEach((msg) => {
@@ -177,7 +199,7 @@ const MainComponentChat = () => {
           someFancyText={"Welcome!"}
         />
         <MainChatMessagesContainer
-          messages={messages}
+          // messages={messages}
           currentUserId={currentUserId}
           clanIds={clanIds}
           clanChatId={clanChatId}

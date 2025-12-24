@@ -153,10 +153,12 @@ const MainChatMessagesContainer: React.FC<MainChatMessagesContainerProps> = ({
   const [messages, setMessages] = useState<Message[]>([]);
 
 
-
   useEffect(() => {
     const loadMessages = async () => {
-        const loadedMessages = await getAllPublicMessagesForUI((errorText) => setError(errorText), (loading) => setLoading(loading));
+        const loadedMessages = await getAllPublicMessagesForUI(
+          (errorText) => setError(errorText),
+          (loading) => setLoading(loading)
+        );
         setMessages(loadedMessages);
    
         setLoading(false);
@@ -165,6 +167,13 @@ const MainChatMessagesContainer: React.FC<MainChatMessagesContainerProps> = ({
 
     loadMessages();
   }, []);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+    }
+  }, [messages]);
 
   if (loading) return <div>Загрузка сообщений...</div>;
   if (error) return <div style={{ color: 'red' }}>{error}</div>;

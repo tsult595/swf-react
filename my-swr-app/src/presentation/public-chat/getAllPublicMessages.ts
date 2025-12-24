@@ -5,7 +5,7 @@ import { getAllPublicMessagesUseCase } from '../../Domain/publicChat/fetchAllMes
 
 
 export async function getAllPublicMessagesForUI(shouldShowErrorPopUp: (errorText: string) => void ,
-//  shouldShowMessages: (messages: Message[]) => void,
+
  shouldLoading: (loading: boolean) => void): Promise<Message[]> {
 
   try {

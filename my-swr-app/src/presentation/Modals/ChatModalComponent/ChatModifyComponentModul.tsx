@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { getClansByUserId, addUserToClan, removeUserFromClan, deleteClan } from '../../../data/api/clanApi';
 import type { ClanDocument } from '../../../Domain/Entities/ClanTypes';
 import type { UserInfo } from '../../../Domain/Entities/UserType';
-import { getAllUsers } from '../../../data/api/userApi';
+import { getAllUsersForUI } from '../../all-users/getAllUsers';
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -123,10 +123,10 @@ const ChatModifyComponentModul = ({ userId, onClose, onOpenChat, sendMessage, on
   const [allUsers, setAllUsers] = useState<UserInfo[]>([]);
   const [selectedClan, setSelectedClan] = useState<ClanDocument | null>(null);
 
-  useEffect(() => {
-    getClansByUserId(userId).then(setClans);
-    getAllUsers().then(setAllUsers);
-  }, [userId]);
+    useEffect(() => {
+      getClansByUserId(userId).then(setClans);
+      getAllUsersForUI(() => {}, setAllUsers, () => {}).then(() => {});
+    }, [userId]);
 
 
   const handleAddUser = async (_clanId: string, userId: string) => {
