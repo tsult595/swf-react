@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { getClansByUserId } from '../../../data/api/clanApi';
 import { deleteMessageById } from '../../../data/api/messageApi';
 import { getAllClanMessagesForUI } from '../../clan-chat/getAllClanMessages';
@@ -39,7 +39,31 @@ const MainComponentChat = () => {
   const [currentUserId, setCurrentUserId] = useState<string>('');
   const currentUsername = 'Tima';
   const [clanIds, setClanIds] = useState<string[]>([]);
-  const { sendMessage } = useChatSocket(currentUserId, currentUsername, undefined, undefined, clanIds);
+  const onNewMessage = useCallback((message: Message) => {
+    setMessages(prev => {
+      // Skip real messages from self to avoid duplicates
+      if (message.userId === currentUserId && !message.id.startsWith('temp-')) return prev;
+
+      const newPrev = [...prev];
+      if (message.id.startsWith('temp-')) {
+        message.uniqueKey = message.id;
+        newPrev.push(message);
+      } else {
+        message.uniqueKey = message.id; // default for new messages
+        const tempIndex = newPrev.findIndex(m => m.text === message.text && m.userId === message.userId && m.type === message.type && m.recipientId === message.recipientId && m.id.startsWith('temp-'));
+        if (tempIndex !== -1) {
+          const temp = newPrev[tempIndex];
+          message.uniqueKey = temp.uniqueKey; // keep the same uniqueKey
+          Object.assign(temp, message); // update the existing object
+        } else {
+          newPrev.push(message);
+        }
+      }
+      return newPrev;
+    });
+  }, [currentUserId]);
+
+  const { sendMessage } = useChatSocket(currentUserId, currentUsername, clanIds, onNewMessage);
   const [inputValue, setInputValue] = useState('');
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
   const [selectedRecipientId, setSelectedRecipientId] = useState<string | null>(localStorage.getItem('selectedRecipientId'));
@@ -58,9 +82,9 @@ const MainComponentChat = () => {
   useEffect(() => {
   const loadMessages = async () => {
     await getAllPublicMessagesForUI(
-      (loading) => setLoading(loading),           // loading управляется автоматически
-      (errorText) => setError(errorText),         // ошибка показывается
-      (messages) => setMessages(messages)         // сообщения приходят
+      (loading) => setLoading(loading),         
+      (errorText) => setError(errorText),        
+      (messages) => setMessages(messages)        
     );
   };
 

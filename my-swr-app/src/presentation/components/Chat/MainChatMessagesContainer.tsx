@@ -182,7 +182,7 @@ const MainChatMessagesContainer: React.FC<MainChatMessagesContainerProps> = ({
         const isClan = message.type === 'clanChat';
         console.log('MainChatMessagesContainer rendering messages:', messages.length, messages.map(m => m.text));
         return (
-          <MessageWrapper key={message.id} $isOwn={isOwn}>
+          <MessageWrapper key={message.uniqueKey || message.id} $isOwn={isOwn}>
             <MessageBubble $isOwn={isOwn}>
               <MessageHeader>
                 {isClan && (message.clanName || clanName) && <ClanLabel>[{message.clanName || clanName}]</ClanLabel>}

@@ -7,6 +7,7 @@ export interface Message {
   recipientId?: string;   
   timestamp: string;
   clanName?: string;
+  uniqueKey?: string;
 }
 
 

@@ -1,94 +1,89 @@
-import { useEffect, useRef, useState } from 'react';
+// src/hooks/useChatSocket.ts
+
+import { useEffect, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
 import type { Message } from '../../Domain/Entities/MessageTypes';
-import { sendMessage as sendMessageAPI, getAllMessages } from '../../data/api/messageApi';
-
-
 
 const SOCKET_URL = 'http://localhost:3001';
 
-export function useChatSocket(currentUserId: string, currentUsername: string, selectedRecipientId?: string, clanChatId?: string, clanIds?: string[]) {
-  const [messages, setMessages] = useState<Message[]>([]);
+interface UseChatSocketReturn {
+  sendMessage: (args: {
+    text: string;
+    recipientId?: string;
+    type?: 'normal' | 'private' | 'clanChat';
+    clanName?: string;
+  }) => void;
+}
+
+export function useChatSocket(
+  currentUserId: string,
+  currentUsername: string,
+  clanIds: string[],
+  onNewMessage: (message: Message) => void  // ← колбэк в родитель
+): UseChatSocketReturn {
   const socketRef = useRef<Socket | null>(null);
-  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     if (!currentUserId) return;
+
     const socket = io(SOCKET_URL);
     socketRef.current = socket;
 
     socket.emit('register', currentUserId);
-    console.log('registering user:', currentUserId);
-    if (clanIds) {
+    console.log('Socket registered:', currentUserId);
+
+    if (clanIds.length > 0) {
       socket.emit('join clans', clanIds);
-      console.log('joining clans:', clanIds);
     }
 
-    // Загружаем историю через HTTP
-    const loadHistory = async () => {
-      try {
-        const msgs = await getAllMessages();
-        console.log('loaded history via HTTP:', msgs);
-        if (!loaded) {
-          setMessages(msgs);
-          setLoaded(true);
-        }
-      } catch (error) {
-        console.error('Failed to load history:', error);
-      }
-    };
-    loadHistory();
-
     socket.on('chat message', (msg: Message) => {
-      console.log('received chat message', msg);
-      console.log('checking userId equal:', msg.userId === currentUserId, 'msg.userId:', msg.userId, 'currentUserId:', currentUserId);
-      setMessages((prev) => {
-        console.log('setMessages called, prev length:', prev.length, 'msg:', msg.text);
-        if (msg.userId === currentUserId) return prev;
-        if (prev.some((m) => m.id === msg.id)) return prev;
-        const newArr = [...prev, msg];
-        console.log('new messages length:', newArr.length);
-        return newArr;
-      });
+      console.log('📨 Новое сообщение от сервера:', msg.text);
+      onNewMessage(msg);
     });
 
     return () => {
       socket.disconnect();
     };
-  }, [currentUserId, clanIds]);
+  }, [currentUserId, clanIds, onNewMessage]);
 
-  type SendMessageArgs = {
+  const sendMessage = ({
+    text,
+    recipientId,
+    type = 'normal',
+    clanName,
+  }: {
     text: string;
     recipientId?: string;
     type?: 'normal' | 'private' | 'clanChat';
     clanName?: string;
-  };
+  }) => {
+    if (!text.trim() || !socketRef.current) return;
 
-  const sendMessage = async ({ text, recipientId, type, clanName }: SendMessageArgs) => {
-    if (!text.trim() || !currentUserId) return;
-    const msg: Omit<Message, 'timestamp'> = {
-      id: Date.now().toString(),
-      username: currentUsername,
+    const optimisticMessage: Message = {
+      id: `temp-${Date.now()}-${Math.random()}`,
       userId: currentUserId,
-      text,
-      type: type || 'normal',
+      username: currentUsername,
+      text: text.trim(),
+      type,
       recipientId,
       clanName,
+      timestamp: new Date().toISOString(),
+      uniqueKey: `temp-${Date.now()}-${Math.random()}`,
     };
-    console.log('sending message via HTTP', msg);
-    setMessages((prev) => [...prev, { ...msg, timestamp: new Date().toISOString() }]); // Добавить локально для отправителя
-    try {
-      await sendMessageAPI(msg);
-    } catch (error) {
-      console.error('Failed to send message', error);
-      // Optionally remove from local messages
-      setMessages((prev) => prev.filter(m => m.id !== msg.id));
-    }
+
+    // Добавляем сразу локально
+    onNewMessage(optimisticMessage);
+
+    // Отправляем через сокет
+    socketRef.current.emit('chat message', {
+      text: text.trim(),
+      type,
+      recipientId,
+      clanName,
+      userId: currentUserId,
+      username: currentUsername,
+    });
   };
 
-  return {
-    messages,
-    sendMessage,
-    setMessages,
-  };
+  return { sendMessage };
 }
