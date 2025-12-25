@@ -5,7 +5,8 @@ export interface Message {
   text: string;
   type: 'normal' | 'private' | 'clanChat';
   recipientId?: string;   
-  timestamp: string;                       
+  timestamp: string;
+  clanName?: string;
 }
 
 

@@ -146,13 +146,19 @@ const ChatModifyComponentModul = ({ userId, onClose, onOpenChat, sendMessage, on
     });
   };
 
-  const handleRemoveUser = async (clanId: string, userId: string) => {
-    console.log('handleRemoveUser', { clanId, userId });
-    await removeUserFromClan(clanId, userId);
+  const handleRemoveUser = async (clanId: string, memberId: string) => {
+    console.log('handleRemoveUser', { clanId, memberId });
+    await removeUserFromClan(clanId, memberId);
     onClanUpdate('remove', clanId);
+    // Refetch clans to ensure UI is updated
+    const updatedClans = await getClansByUserId(userId);
+    setClans(updatedClans);
+    // Update selectedClan if it's the modified clan
+    const updatedSelectedClan = updatedClans.find((c: ClanDocument) => (c.id || c._id) === clanId);
+    setSelectedClan(updatedSelectedClan || selectedClan);
     setSelectedClan(selectedClan && (selectedClan.id || selectedClan._id) === clanId ? {
       ...selectedClan,
-      members: selectedClan.members.filter(id => id !== userId),
+      members: selectedClan.members.filter(id => id !== memberId),
     } : selectedClan);
   };
 

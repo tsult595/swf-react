@@ -4,6 +4,7 @@ import { getClansByUserId } from '../../../data/api/clanApi';
 import { deleteMessageById } from '../../../data/api/messageApi';
 import { getAllClanMessagesForUI } from '../../clan-chat/getAllClanMessages';
 import { getAllPrivateMessagesForUI } from '../../private-message/getAllPrivateMessages';
+import { getAllPublicMessagesForUI } from '../../../presentation/public-chat/getAllPublicMessages';
 import { generatePersonalizedUserId } from '../../../utils/userId';
 import { useChatSocket } from '../../hooks/useChatSocket';
 import ChatModalComponent from '../../Modals/ChatModalComponent/ChatModalComponent';
@@ -35,15 +36,10 @@ const ChatContainer = styled.div`
 
 const MainComponentChat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
-  
-
-
-
-
   const [currentUserId, setCurrentUserId] = useState<string>('');
   const currentUsername = 'Tima';
   const [clanIds, setClanIds] = useState<string[]>([]);
-  const {sendMessage } = useChatSocket(currentUserId, currentUsername);
+  const { sendMessage } = useChatSocket(currentUserId, currentUsername, undefined, undefined, clanIds);
   const [inputValue, setInputValue] = useState('');
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
   const [selectedRecipientId, setSelectedRecipientId] = useState<string | null>(localStorage.getItem('selectedRecipientId'));
@@ -52,6 +48,24 @@ const MainComponentChat = () => {
   const [clanChatId, setClanChatId] = useState<string | null>(localStorage.getItem('clanChatId'));
   const [clanName, setClanName] = useState<string | null>(localStorage.getItem('clanName'));
   const [seenNotifications, setSeenNotifications] = useState<Set<string>>(new Set());
+   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  useEffect(() => {
+  console.log('MainComponentChat messages updated:', messages.length, messages.map(m => m.text));
+}, [messages]);
+
+  useEffect(() => {
+  const loadMessages = async () => {
+    await getAllPublicMessagesForUI(
+      (loading) => setLoading(loading),           // loading управляется автоматически
+      (errorText) => setError(errorText),         // ошибка показывается
+      (messages) => setMessages(messages)         // сообщения приходят
+    );
+  };
+
+  loadMessages();
+}, []);
 
   const handleSendMessage = () => {
     if (!inputValue.trim()) return;
@@ -66,6 +80,7 @@ const MainComponentChat = () => {
         text: inputValue,
         recipientId: clanChatId,
         type: 'clanChat',
+        clanName: clanName || undefined,
       });
     } else {
       sendMessage({
@@ -189,6 +204,9 @@ const MainComponentChat = () => {
     });
   }, [messages, currentUserId, seenNotifications]);
 
+   if (loading) return <div>Загрузка сообщений...</div>;
+  if (error) return <div style={{ color: 'red' }}>{error}</div>;
+
   return (
     <>
       <ChatContainer>
@@ -199,7 +217,7 @@ const MainComponentChat = () => {
           someFancyText={"Welcome!"}
         />
         <MainChatMessagesContainer
-          // messages={messages}
+          messages={messages}
           currentUserId={currentUserId}
           clanIds={clanIds}
           clanChatId={clanChatId}

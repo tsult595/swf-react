@@ -4,17 +4,30 @@ import type { Message } from '../../Domain/Entities/MessageTypes';
 import { getAllPublicMessagesUseCase } from '../../Domain/publicChat/fetchAllMessages';
 
 
-export async function getAllPublicMessagesForUI(shouldShowErrorPopUp: (errorText: string) => void ,
+type LoadingCallback = (loading: boolean) => void;
+type ErrorCallback = (errorText: string) => void;
+type MessagesCallback = (messages: Message[]) => void;
 
- shouldLoading: (loading: boolean) => void): Promise<Message[]> {
-
+export async function getAllPublicMessagesForUI(
+  onLoading: LoadingCallback,
+  onError: ErrorCallback,
+  onMessages: MessagesCallback
+): Promise<Message[]> {
   try {
-    return await getAllPublicMessagesUseCase();
+    onLoading(true);
+
+    const messages = await getAllPublicMessagesUseCase();
+
+    onLoading(false);
+    onMessages(messages);
+    return messages;
   } catch (error) {
-    console.error('Ошибка в presentation слое:', error);
-    shouldLoading(false);
-    // shouldShowMessages([]);
-    shouldShowErrorPopUp(error instanceof Error ? error.message : 'Неизвестная ошибка');
-    throw error; 
+    onLoading(false);
+    onMessages([]);
+
+    const errorText = error instanceof Error ? error.message : 'Неизвестная ошибка';
+    onError(errorText);
+
+    throw error; // если хочешь пробросить дальше
   }
-} 
+}

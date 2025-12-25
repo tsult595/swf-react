@@ -1,8 +1,7 @@
 import styled from 'styled-components';
 import AsideBackGround from '../../../assets/auction_menu_background.png';
 import type { Message } from '../../../Domain/Entities/MessageTypes';
-import { getAllPublicMessagesForUI } from '../../../presentation/public-chat/getAllPublicMessages';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 const MessagesContainer = styled.div`
   flex: 1;
@@ -125,7 +124,7 @@ const Timestamp = styled.span`
 `;
 
 interface MainChatMessagesContainerProps {
-//   messages: Message[];
+  messages: Message[];
   currentUserId: string;
   clanIds: string[];
   clanChatId: string | null;
@@ -137,7 +136,7 @@ interface MainChatMessagesContainerProps {
 }
 
 const MainChatMessagesContainer: React.FC<MainChatMessagesContainerProps> = ({
-//   messages,
+  messages,
   currentUserId,
   clanIds,
   clanChatId,
@@ -147,45 +146,25 @@ const MainChatMessagesContainer: React.FC<MainChatMessagesContainerProps> = ({
   onSelectRecipient,
   containerRef
 }) => {
-   
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
-
-
-  useEffect(() => {
-    const loadMessages = async () => {
-        const loadedMessages = await getAllPublicMessagesForUI(
-          (errorText) => setError(errorText),
-          (loading) => setLoading(loading)
-        );
-        setMessages(loadedMessages);
-   
-        setLoading(false);
-   
-    };
-
-    loadMessages();
-  }, []);
-
   useEffect(() => {
     const container = containerRef.current;
     if (container) {
       container.scrollTop = container.scrollHeight;
     }
-  }, [messages]);
-
-  if (loading) return <div>Загрузка сообщений...</div>;
-  if (error) return <div style={{ color: 'red' }}>{error}</div>;
-
+  }, [messages, containerRef]);
 
   return (
     <MessagesContainer ref={containerRef}>
       {messages.map((message) => {
-        if (clanChatId) {
+        if (selectedRecipientId) {
+          const isPrivateMessage = message.type === 'private' && (message.recipientId === selectedRecipientId || message.userId === selectedRecipientId);
+          const isPublic = message.type === 'normal';
+          if (!isPrivateMessage && !isPublic) return null;
+        } else if (clanChatId) {
           const isClanMessage = message.type === 'clanChat' && message.recipientId === clanChatId;
           const isPrivateMessage = message.type === 'private' && (message.recipientId === currentUserId || message.userId === currentUserId);
-          if (!isClanMessage && !isPrivateMessage) return null;
+          const isPublic = message.type === 'normal';
+          if (!isClanMessage && !isPrivateMessage && !isPublic) return null;
         } else {
           if (
             message.type === 'private' &&
@@ -201,11 +180,12 @@ const MainChatMessagesContainer: React.FC<MainChatMessagesContainerProps> = ({
         const isOwn = message.userId === currentUserId;
         const isPrivate = message.type === 'private';
         const isClan = message.type === 'clanChat';
+        console.log('MainChatMessagesContainer rendering messages:', messages.length, messages.map(m => m.text));
         return (
           <MessageWrapper key={message.id} $isOwn={isOwn}>
             <MessageBubble $isOwn={isOwn}>
               <MessageHeader>
-                {isClan && clanName && <ClanLabel>[{clanName}]</ClanLabel>}
+                {isClan && (message.clanName || clanName) && <ClanLabel>[{message.clanName || clanName}]</ClanLabel>}
                 <Username
                   $type={message.userId}
                   style={{
