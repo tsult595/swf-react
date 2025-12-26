@@ -238,7 +238,7 @@ const MainComponentChat = () => {
           onCreateClanClick={() => setIsModalOpen(true)}
           onModifyClanClick={() => setIsModifyModalOpen(true)}
           currentUserId={currentUserId}
-          someFancyText={"Welcome!"}
+          clanName={clanName || undefined}
         />
         <MainChatMessagesContainer
           messages={messages}

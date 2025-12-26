@@ -51,14 +51,14 @@ interface MainChatHeaderProps {
   onCreateClanClick: () => void;
   onModifyClanClick: () => void;
   currentUserId: string;
-  someFancyText?: string;
+  clanName?: string;
 }
 
-const MainChatHeader: React.FC<MainChatHeaderProps> = ({ onCreateClanClick, onModifyClanClick, currentUserId, someFancyText }) => {
+const MainChatHeader: React.FC<MainChatHeaderProps> = ({ onCreateClanClick, onModifyClanClick, currentUserId, clanName }) => {
   return (
     <ChatHeader>
         {currentUserId}
-        {someFancyText}
+        {clanName}
       <Scroll size={28} color="#665d3fff" />
       <CreateGroupButton onClick={onCreateClanClick}>
         Создать свой клан

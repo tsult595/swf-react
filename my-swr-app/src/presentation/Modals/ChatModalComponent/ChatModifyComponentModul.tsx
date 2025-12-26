@@ -174,13 +174,6 @@ const ChatModifyComponentModul = ({ userId, onClose, onOpenChat, sendMessage, on
           <MemberItem
             key={u.id}
             isMember={isMember}
-            // style={{
-            //   color: isMember ? '#00e676' : '#fff',
-            //   border: isMember ? '2px solid #00e676' : 'none',
-            //   background: isMember ? '#003c1a33' : 'transparent',
-            //   marginBottom: 6,
-            //   cursor: isMember ? 'default' : 'pointer',
-            // }}
           >
             {u.nickname || u.id}
             {isMember && isOwner && (
