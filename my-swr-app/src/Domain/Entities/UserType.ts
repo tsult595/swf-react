@@ -8,6 +8,10 @@ export type UserInfo = {
   id: string;
   nickname?: string;
   clans?: string[];
+  companions?: string[];
+  createdAt?: string;
+  email?: string;
+  emailVerified?: boolean;
   userAgent: string;
   language: string;
   platform: string;

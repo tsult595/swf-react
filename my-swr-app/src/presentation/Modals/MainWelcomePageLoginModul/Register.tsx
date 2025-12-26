@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { registerUser } from '../../../data/api/authApi';
 
 const Container = styled.div`
   width: 100%;
@@ -71,9 +72,9 @@ const Input = styled.input`
   }
 `;
 
-const Message = styled.p<{ success?: boolean }>`
+const Message = styled.p<{ $success?: boolean }>`
   font-size: 0.875rem;
-  color: ${({ success }) => (success ? '#059669' : '#dc2626')};
+  color: ${({ $success }) => ($success ? '#059669' : '#dc2626')};
   margin: 0;
 `;
 
@@ -142,9 +143,7 @@ const LoginForm = () => {
 
   // Замени на свою функцию
   const requestEmailVerification = async (email: string) => {
-    // Пример заглушки
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    if (!email.includes('@')) throw new Error('Invalid email');
+    await registerUser(email);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -185,7 +184,7 @@ const LoginForm = () => {
           </InputGroup>
 
           {message && (
-            <Message success={message.includes('sent')}>
+            <Message $success={message.includes('sent')}>
               {message}
             </Message>
           )}
