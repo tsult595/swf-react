@@ -180,6 +180,10 @@ const MainChatMessagesContainer: React.FC<MainChatMessagesContainerProps> = ({
         const isOwn = message.userId === currentUserId;
         const isPrivate = message.type === 'private';
         const isClan = message.type === 'clanChat';
+        // Hide "added to clan" messages sent by the owner
+        if (isPrivate && isOwn && message.text.includes('добавлены в клан')) {
+          return null;
+        }
         console.log('MainChatMessagesContainer rendering messages:', messages.length, messages.map(m => m.text));
         return (
           <MessageWrapper key={message.uniqueKey || message.id} $isOwn={isOwn}>

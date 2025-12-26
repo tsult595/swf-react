@@ -203,12 +203,12 @@ const MainComponentChat = () => {
     getUserIdAndClans();
   }, []);
 
-  // useEffect(() => {
-  //   const container = messagesContainerRef.current;
-  //   if (container) {
-  //     container.scrollTop = container.scrollHeight;
-  //   }
-  // }, [messages]);
+  useEffect(() => {
+    const container = messagesContainerRef.current;
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+    }
+  }, [messages]);
 
   useEffect(() => {
     messages.forEach((msg) => {
@@ -228,7 +228,7 @@ const MainComponentChat = () => {
     });
   }, [messages, currentUserId, seenNotifications]);
 
-   if (loading) return <div>Загрузка сообщений...</div>;
+   if (loading) return <div>Загрузка сообщений.</div>;
   if (error) return <div style={{ color: 'red' }}>{error}</div>;
 
   return (

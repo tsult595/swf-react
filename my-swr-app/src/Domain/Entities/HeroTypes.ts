@@ -25,15 +25,7 @@ export interface LotHistory {
   price: number;
   date: string;
 }
-// export interface Message {
-//   id?: number;
-//   // channel: 'global' | 'guild' | 'battle';
-//   username: string;
-//   userId: string;
-//   text: string;
-//   // type: 'normal' | 'system' | 'battle'; 
-//   timestamp: Date;
-// }
+
 
 export interface LikedHeroesProps {
   hero: Hero; 
