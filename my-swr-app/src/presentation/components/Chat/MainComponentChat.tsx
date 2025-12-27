@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { getClansByUserId } from '../../../data/api/clanApi';
+import { getClansByUserId , addUserToClan , removeUserFromClan  } from '../../../data/api/clanApi';
 import { deleteMessageById } from '../../../data/api/messageApi';
 import { getAllClanMessagesForUI } from '../../clan-chat/getAllClanMessages';
 import { getAllPrivateMessagesForUI } from '../../private-message/getAllPrivateMessages';
@@ -15,6 +15,7 @@ import MainChatMessagesContainer from './MainChatMessagesContainer';
 import MainChatInputContainer from './MainChatInputContainer';
 import MainChatHeader from './MainChatHeader';
 import type { Message } from '../../../Domain/Entities/MessageTypes';
+
 
 const FrameBorderModalMain = css`
   border-style: solid;
@@ -74,6 +75,7 @@ const MainComponentChat = () => {
   const [seenNotifications, setSeenNotifications] = useState<Set<string>>(new Set());
    const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
   
   useEffect(() => {
   console.log('MainComponentChat messages updated:', messages.length, messages.map(m => m.text));
@@ -228,6 +230,31 @@ const MainComponentChat = () => {
     });
   }, [messages, currentUserId, seenNotifications]);
 
+
+  const handleAddUser = async (clanId: string, userId: string, clanName: string) => {
+    await addUserToClan(clanId, userId);
+    sendMessage({
+      text: `Вы были добавлены в клан ${clanName}!`,
+      recipientId: userId,
+      type: 'private',
+    });
+    setClanIds(prev => prev.includes(clanId) ? prev : [...prev, clanId]);
+    getClansByUserId(currentUserId).then((clans) => {
+      const ids = Array.isArray(clans) ? clans.map((c: ClanDocument) => c.id || c._id).filter(Boolean) as string[] : [];
+      setClanIds(ids);
+    }).catch((e) => console.error('Failed to refetch clans on update', e));
+  };
+
+  const handleRemoveUser = async (clanId: string, memberId: string) => {
+    await removeUserFromClan(clanId, memberId);
+    setClanIds(prev => prev.filter(id => id !== clanId));
+    getClansByUserId(currentUserId).then((clans) => {
+      const ids = Array.isArray(clans) ? clans.map((c: ClanDocument) => c.id || c._id).filter(Boolean) as string[] : [];
+      setClanIds(ids);
+    }).catch((e) => console.error('Failed to refetch clans on update', e));
+  };
+
+
    if (loading) return <div>Загрузка сообщений.</div>;
   if (error) return <div style={{ color: 'red' }}>{error}</div>;
 
@@ -282,19 +309,10 @@ const MainComponentChat = () => {
       {isModifyModalOpen && (
         <ChatModifyComponentModul
           userId={currentUserId}
+          handleAddUser={handleAddUser}
+          handleRemoveUser={handleRemoveUser}
           onClose={() => setIsModifyModalOpen(false)}
           sendMessage={sendMessage}
-          onClanUpdate={(action?: 'add' | 'remove', clanId?: string) => {
-            if (action === 'remove' && clanId) {
-              setClanIds(prev => prev.filter(id => id !== clanId));
-            } else if (action === 'add' && clanId) {
-              setClanIds(prev => prev.includes(clanId) ? prev : [...prev, clanId]);
-            }
-            getClansByUserId(currentUserId).then((clans) => {
-              const ids = Array.isArray(clans) ? clans.map((c: ClanDocument) => c.id || c._id).filter(Boolean) as string[] : [];
-              setClanIds(ids);
-            }).catch((e) => console.error('Failed to refetch clans on update', e));
-          }}
           onOpenChat={async ({ clanId, clanName }) => {
             setClanChatId(clanId);
             setClanName(clanName);

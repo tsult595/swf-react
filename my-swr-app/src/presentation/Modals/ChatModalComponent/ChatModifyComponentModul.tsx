@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { useState, useEffect } from 'react';
-import { getClansByUserId, addUserToClan, removeUserFromClan, deleteClan } from '../../../data/api/clanApi';
+import { getClansByUserId, deleteClan } from '../../../data/api/clanApi';
 import type { ClanDocument } from '../../../Domain/Entities/ClanTypes';
 import type { UserInfo } from '../../../Domain/Entities/UserType';
 import { getAllUsersForUI } from '../../all-users/getAllUsers';
@@ -114,11 +114,12 @@ interface ChatModifyComponentModulProps {
   onClose: () => void;
   onOpenChat: (data: { clanId: string, clanName: string }) => void;
   sendMessage: (args: { text: string; recipientId: string; type: 'private' }) => void;
-  onClanUpdate: (action: 'add' | 'remove', clanId: string) => void;
+  handleAddUser: (clanId: string, userId: string, clanName: string) => Promise<void>;
+  handleRemoveUser: (clanId: string, memberId: string) => Promise<void>;
 }
 
 
-const ChatModifyComponentModul = ({ userId, onClose, onOpenChat, sendMessage, onClanUpdate }: ChatModifyComponentModulProps) => {
+const ChatModifyComponentModul = ({ userId, onClose, onOpenChat, handleAddUser, handleRemoveUser }: ChatModifyComponentModulProps) => {
   const [clans, setClans] = useState<ClanDocument[]>([]);
   const [allUsers, setAllUsers] = useState<UserInfo[]>([]);
   const [selectedClan, setSelectedClan] = useState<ClanDocument | null>(null);
@@ -129,39 +130,7 @@ const ChatModifyComponentModul = ({ userId, onClose, onOpenChat, sendMessage, on
     }, [userId]);
 
 
-  const handleAddUser = async (_clanId: string, userId: string) => {
-    const clanId = selectedClan?.id || selectedClan?._id;
-    console.log('handleAddUser', { clanId, userId });
-    if (!clanId) return;
-    await addUserToClan(clanId, userId);
-    sendMessage({
-      text: `Вы были добавлены в клан ${selectedClan.name}!`,
-      recipientId: userId,
-      type: 'private',
-    });
-    onClanUpdate('add', clanId);
-    setSelectedClan(selectedClan && {
-      ...selectedClan,
-      members: [...selectedClan.members, userId],
-    });
-  };
-
-  const handleRemoveUser = async (clanId: string, memberId: string) => {
-    console.log('handleRemoveUser', { clanId, memberId });
-    await removeUserFromClan(clanId, memberId);
-    onClanUpdate('remove', clanId);
-    // Refetch clans to ensure UI is updated
-    const updatedClans = await getClansByUserId(userId);
-    setClans(updatedClans);
-    // Update selectedClan if it's the modified clan
-    const updatedSelectedClan = updatedClans.find((c: ClanDocument) => (c.id || c._id) === clanId);
-    setSelectedClan(updatedSelectedClan || selectedClan);
-    setSelectedClan(selectedClan && (selectedClan.id || selectedClan._id) === clanId ? {
-      ...selectedClan,
-      members: selectedClan.members.filter(id => id !== memberId),
-    } : selectedClan);
-  };
-
+ 
 
   const renderUsers = (clan: ClanDocument) => (
     <MemberList style={{ border: '2px solid #ffd700', borderRadius: 8, padding: 8 }}>
@@ -186,7 +155,7 @@ const ChatModifyComponentModul = ({ userId, onClose, onOpenChat, sendMessage, on
               <RemoveButton style={{ marginLeft: 12 }} onClick={e => { e.stopPropagation(); if (clan.id || clan._id) handleRemoveUser((clan.id || clan._id) as string, u.id); }}>Удалить</RemoveButton>
             )}
             {!isMember && isCurrentUserOwner && (
-              <Button style={{ marginLeft: 12, background: '#00e676', color: '#232323' }} onClick={e => { e.stopPropagation(); if (clan.id || clan._id) handleAddUser((clan.id || clan._id) as string, u.id); }}>Добавить</Button>
+              <Button style={{ marginLeft: 12, background: '#00e676', color: '#232323' }} onClick={e => { e.stopPropagation(); if (clan.id || clan._id) handleAddUser((clan.id || clan._id) as string, u.id, clan.name); }}>Добавить</Button>
             )}
           </MemberItem>
         );
