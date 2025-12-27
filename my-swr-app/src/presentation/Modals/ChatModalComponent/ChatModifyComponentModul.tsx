@@ -137,6 +137,7 @@ const ChatModifyComponentModul = ({ userId, onClose, onOpenChat, handleAddUser: 
     setSelectedClan(selectedClan && {
       ...selectedClan,
       members: [...selectedClan.members, userId],
+      
     });
     setClans(prev => prev.map(c => (c.id || c._id) === clanId ? { ...c, members: [...c.members, userId] } : c));
   };
