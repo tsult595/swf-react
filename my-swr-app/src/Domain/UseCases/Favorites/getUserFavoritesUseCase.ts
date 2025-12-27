@@ -1,7 +1,9 @@
 // src/Domain/usecases/getUserFavoritesUseCase.ts
-import { getUserFavorites } from '../../../data/api/favoritesApi';
-import type { Hero } from '../../Entities/HeroTypes';
+import { favoritesRepository } from '../../../data/api/favoritesRepository';
 
-export const getUserFavoritesUseCase = async (userId: string): Promise<Hero[]> => {
-  return await getUserFavorites(userId);
+export const removeFromFavoritesUseCase = (
+  userId: string,
+  heroId: number
+) => {
+  return favoritesRepository.remove(userId, heroId);
 };

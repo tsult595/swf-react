@@ -1,6 +1,6 @@
 // domain/useCases/toggleFavorite.ts
-import { Hero } from '../entities/Hero';
-import { favoritesRepository } from '../../data/favoritesRepository';
+import type { Hero } from '../../../Domain/Entities/HeroTypes';
+import { favoritesRepository } from '../../../data/api/favoritesRepository';
 
 export const toggleFavoriteUseCase = async (
   userId: string,

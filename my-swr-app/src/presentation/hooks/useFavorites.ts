@@ -1,60 +1,36 @@
-// src/presentation/hooks/useFavorites.ts
-
+// presenter/useFavorites.ts
 import useSWR from 'swr';
 import type { Hero } from '../../Domain/Entities/HeroTypes';
-import {  getUserFavoritesUseCase} from '../../Domain/UseCases/Favorites/getUserFavoritesUseCase';
-import { addToFavoritesUseCase } from '../../Domain/UseCases/Favorites/addToFavoritesUseCase';
-import { removeFromFavoritesUseCase } from '../../Domain/UseCases/Favorites/removeFromFavoritesUseCase';
-
-const fetcher = (userId: string) => getUserFavoritesUseCase(userId);
+import { toggleFavoriteUseCase } from '../../Domain/UseCases/Favorites/toggleFavorite';
+import { getUserFavoritesUseCase } from '../../Domain/UseCases/Favorites/addToFavoritesUseCase';
 
 export const useFavorites = (userId: string) => {
-  const { 
-    data: favorites = [], 
-    isLoading, 
-    mutate 
-  } = useSWR<Hero[]>(
+  const { data: favorites = [], isLoading, mutate } = useSWR<Hero[]>(
     userId ? `/favorites/${userId}` : null,
-    () => fetcher(userId),
-    {
-      revalidateOnFocus: false,
-      fallbackData: [],
-    }
+    () => getUserFavoritesUseCase(userId),
+    { fallbackData: [], revalidateOnFocus: false }
   );
 
   const toggleFavorite = async (hero: Hero, e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
+    e?.stopPropagation();
 
     const isCurrentlyFavorite = favorites.some(f => f.id === hero.id);
 
-    // Оптимистичный апдейт
     const optimisticFavorites = isCurrentlyFavorite
       ? favorites.filter(f => f.id !== hero.id)
       : [...favorites, hero];
 
-    mutate(optimisticFavorites, false); // false = не ревалидировать сразу
+    mutate(optimisticFavorites, false);
 
     try {
-      if (isCurrentlyFavorite) {
-        await removeFromFavoritesUseCase(userId, hero.id);
-      } else {
-        await addToFavoritesUseCase(userId, hero.id);
-      }
-
-      // После успеха — ревалидируем (или просто оставляем optimistic)
+      await toggleFavoriteUseCase(userId, hero, isCurrentlyFavorite);
       mutate();
-    } catch (error) {
-      console.error('Failed to toggle favorite:', error);
-      mutate(); // откатываем при ошибке
+    } catch {
+      mutate(); // rollback
     }
   };
 
-  const isFavorite = (heroId: number) => favorites.some(h => h.id === heroId);
+  const isFavorite = (heroId: string | number) => favorites.some(f => f.id === heroId);
 
-  return {
-    favorites,
-    isLoading,
-    toggleFavorite,
-    isFavorite,
-  };
+  return { favorites, isLoading, toggleFavorite, isFavorite };
 };

@@ -1,6 +1,6 @@
 
 export interface Hero {
-  id: number;
+  id: number | string;
   name: string;
   fileName: string;
   rarity: 'Common' | 'Middle' | 'High';

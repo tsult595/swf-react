@@ -1,6 +1,9 @@
-// src/Domain/usecases/removeFromFavoritesUseCase.ts
-import { removeFromFavorites } from '../../../data/api/favoritesApi';
+// favorites/domain/useCases/removeFromFavorites.ts
+import { favoritesRepository } from '../../../data/api/favoritesRepository';
 
-export const removeFromFavoritesUseCase = async (userId: string, heroId: number) => {
-  return await removeFromFavorites(userId, heroId);
+export const removeFromFavoritesUseCase = (
+  userId: string,
+  heroId: number
+) => {
+  return favoritesRepository.remove(userId, heroId);
 };
