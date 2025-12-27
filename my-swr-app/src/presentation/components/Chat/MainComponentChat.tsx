@@ -73,7 +73,7 @@ const MainComponentChat = () => {
   const [clanChatId, setClanChatId] = useState<string | null>(localStorage.getItem('clanChatId'));
   const [clanName, setClanName] = useState<string | null>(localStorage.getItem('clanName'));
   const [seenNotifications, setSeenNotifications] = useState<Set<string>>(new Set());
-   const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   
@@ -160,7 +160,9 @@ const MainComponentChat = () => {
             (errorText) => console.error('Private messages error:', errorText),
             () => {} // loading callback, if needed
           );
-          const filtered = messages.filter(m => m.recipientId === selectedRecipientId || m.userId === selectedRecipientId);
+          const filtered = messages.filter(m =>
+             m.recipientId === selectedRecipientId ||
+             m.userId === selectedRecipientId);
           setMessages((prev) => [...prev, ...filtered.filter(m => !prev.some(p => p.id === m.id))]);
         } catch (error) {
           console.error('Failed to load private messages:', error);

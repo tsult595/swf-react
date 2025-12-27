@@ -1,11 +1,12 @@
+// src/presentation/hooks/useFavorites.ts
 
-import useSWR, { mutate as globalMutate } from 'swr';
+import useSWR from 'swr';
 import type { Hero } from '../../Domain/Entities/HeroTypes';
-import { 
-  addToFavorites, 
-  removeFromFavorites, 
-  getUserFavorites 
-} from '../../data/api/favoritesApi';
+import {  getUserFavoritesUseCase} from '../../Domain/UseCases/Favorites/getUserFavoritesUseCase';
+import { addToFavoritesUseCase } from '../../Domain/UseCases/Favorites/addToFavoritesUseCase';
+import { removeFromFavoritesUseCase } from '../../Domain/UseCases/Favorites/removeFromFavoritesUseCase';
+
+const fetcher = (userId: string) => getUserFavoritesUseCase(userId);
 
 export const useFavorites = (userId: string) => {
   const { 
@@ -14,10 +15,9 @@ export const useFavorites = (userId: string) => {
     mutate 
   } = useSWR<Hero[]>(
     userId ? `/favorites/${userId}` : null,
-    () => getUserFavorites(userId),
+    () => fetcher(userId),
     {
       revalidateOnFocus: false,
-      refreshInterval: 0,
       fallbackData: [],
     }
   );
@@ -25,42 +25,31 @@ export const useFavorites = (userId: string) => {
   const toggleFavorite = async (hero: Hero, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
 
-    const currentFavorites = favorites || [];
-    const isFavorite = currentFavorites.some(fav => fav.id === hero.id);
+    const isCurrentlyFavorite = favorites.some(f => f.id === hero.id);
+
+    // Оптимистичный апдейт
+    const optimisticFavorites = isCurrentlyFavorite
+      ? favorites.filter(f => f.id !== hero.id)
+      : [...favorites, hero];
+
+    mutate(optimisticFavorites, false); // false = не ревалидировать сразу
 
     try {
-      if (isFavorite) {
-        const newFavorites = currentFavorites.filter(fav => fav.id !== hero.id);
-        mutate(newFavorites, false);
-        globalMutate(`/favorites/${userId}`, newFavorites, false);
-
-        await removeFromFavorites(userId, hero.id);
-        console.log(`Removed ${hero.name} from favorites`);
+      if (isCurrentlyFavorite) {
+        await removeFromFavoritesUseCase(userId, hero.id);
       } else {
-        const newFavorites = [...currentFavorites, hero];
-        mutate(newFavorites, false);
-        globalMutate(`/favorites/${userId}`, newFavorites, false);
-
-        await addToFavorites(userId, hero.id);
-        console.log(`Added ${hero.name} to favorites`);
+        await addToFavoritesUseCase(userId, hero.id);
       }
 
-    
+      // После успеха — ревалидируем (или просто оставляем optimistic)
       mutate();
-      globalMutate(`/favorites/${userId}`);
     } catch (error) {
-      console.error('Error toggling favorite:', error);
-      mutate(); 
-      globalMutate(`/favorites/${userId}`);
+      console.error('Failed to toggle favorite:', error);
+      mutate(); // откатываем при ошибке
     }
   };
 
-  const isFavorite = (heroId: number) => {
-    return favorites.some(hero => hero.id === heroId);
-  };
-
-
-  
+  const isFavorite = (heroId: number) => favorites.some(h => h.id === heroId);
 
   return {
     favorites,
