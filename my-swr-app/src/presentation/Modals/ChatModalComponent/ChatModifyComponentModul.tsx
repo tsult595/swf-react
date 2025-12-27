@@ -119,7 +119,7 @@ interface ChatModifyComponentModulProps {
 }
 
 
-const ChatModifyComponentModul = ({ userId, onClose, onOpenChat, handleAddUser, handleRemoveUser }: ChatModifyComponentModulProps) => {
+const ChatModifyComponentModul = ({ userId, onClose, onOpenChat, handleAddUser: parentHandleAddUser, handleRemoveUser: parentHandleRemoveUser }: ChatModifyComponentModulProps) => {
   const [clans, setClans] = useState<ClanDocument[]>([]);
   const [allUsers, setAllUsers] = useState<UserInfo[]>([]);
   const [selectedClan, setSelectedClan] = useState<ClanDocument | null>(null);
@@ -128,6 +128,27 @@ const ChatModifyComponentModul = ({ userId, onClose, onOpenChat, handleAddUser, 
       getClansByUserId(userId).then(setClans);
       getAllUsersForUI(() => {}, setAllUsers, () => {}).then(() => {});
     }, [userId]);
+
+
+  const handleAddUser = async (_clanId: string, userId: string) => {
+    const clanId = selectedClan?.id || selectedClan?._id;
+    if (!clanId || !selectedClan) return;
+    await parentHandleAddUser(clanId, userId, selectedClan.name);
+    setSelectedClan(selectedClan && {
+      ...selectedClan,
+      members: [...selectedClan.members, userId],
+    });
+    setClans(prev => prev.map(c => (c.id || c._id) === clanId ? { ...c, members: [...c.members, userId] } : c));
+  };
+
+  const handleRemoveUser = async (clanId: string, memberId: string) => {
+    await parentHandleRemoveUser(clanId, memberId);
+    setSelectedClan(selectedClan && (selectedClan.id || selectedClan._id) === clanId ? {
+      ...selectedClan,
+      members: selectedClan.members.filter(id => id !== memberId),
+    } : selectedClan);
+    setClans(prev => prev.map(c => (c.id || c._id) === clanId ? { ...c, members: c.members.filter(id => id !== memberId) } : c));
+  };
 
 
  
@@ -155,7 +176,7 @@ const ChatModifyComponentModul = ({ userId, onClose, onOpenChat, handleAddUser, 
               <RemoveButton style={{ marginLeft: 12 }} onClick={e => { e.stopPropagation(); if (clan.id || clan._id) handleRemoveUser((clan.id || clan._id) as string, u.id); }}>Удалить</RemoveButton>
             )}
             {!isMember && isCurrentUserOwner && (
-              <Button style={{ marginLeft: 12, background: '#00e676', color: '#232323' }} onClick={e => { e.stopPropagation(); if (clan.id || clan._id) handleAddUser((clan.id || clan._id) as string, u.id, clan.name); }}>Добавить</Button>
+              <Button style={{ marginLeft: 12, background: '#00e676', color: '#232323' }} onClick={e => { e.stopPropagation(); if (clan.id || clan._id) handleAddUser((clan.id || clan._id) as string, u.id); }}>Добавить</Button>
             )}
           </MemberItem>
         );

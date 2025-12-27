@@ -27,6 +27,8 @@ export const useMessage = (
         username: currentUsername,
         userId: currentUserId,
         text: inputValue.trim(),
+        type: tabTypeMap[activeTab],
+        id: Date.now().toString(),
       });
 
       mutateMessages([...messages, savedMessage], false);
