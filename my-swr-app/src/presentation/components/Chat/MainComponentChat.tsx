@@ -229,6 +229,23 @@ const MainComponentChat = () => {
           setClanIds(ids);
         }).catch((e) => console.error('Failed to refetch clans on add', e));
       }
+      if (
+        msg.type === 'private' &&
+        msg.recipientId === currentUserId &&
+        msg.text.includes('удалены из клана') &&
+        !seenNotifications.has(String(msg.id))
+      ) {
+        // Swal.fire('Вы были удалены из клана!');
+        setSeenNotifications((prev) => new Set(prev).add(String(msg.id)));
+        if (clanChatId) {
+          setClanChatId(null);
+          setClanName(null);
+        }
+        getClansByUserId(currentUserId).then((clans) => {
+          const ids = Array.isArray(clans) ? clans.map((c: ClanDocument) => c.id || c._id).filter(Boolean) as string[] : [];
+          setClanIds(ids);
+        }).catch((e) => console.error('Failed to refetch clans on remove', e));
+      }
     });
   }, [messages, currentUserId, seenNotifications]);
 
@@ -249,6 +266,13 @@ const MainComponentChat = () => {
 
   const handleRemoveUser = async (clanId: string, memberId: string) => {
     await removeUserFromClan(clanId, memberId);
+    if (memberId !== currentUserId) {
+      sendMessage({
+        text: `Вы были удалены из клана!`,
+        recipientId: memberId,
+        type: 'private',
+      });
+    }
     setClanIds(prev => prev.filter(id => id !== clanId));
     getClansByUserId(currentUserId).then((clans) => {
       const ids = Array.isArray(clans) ? clans.map((c: ClanDocument) => c.id || c._id).filter(Boolean) as string[] : [];

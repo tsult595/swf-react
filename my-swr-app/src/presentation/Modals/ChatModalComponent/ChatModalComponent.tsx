@@ -212,3 +212,5 @@ const ChatModalComponent = ({ onClose, onCreateClan, sendMessage, prikolniyText 
 };
 
 export default ChatModalComponent;
+
+
