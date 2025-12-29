@@ -147,15 +147,14 @@ const ChatModalComponent = ({ onClose, onCreateClan, sendMessage, prikolniyText 
   const handleCreate = async () => {
     if (clanName.trim() && selectedUsers.length > 0) {
       try {
-        // Получаем текущий userId из localStorage
         const ownerId = localStorage.getItem('userId');
         if (!ownerId) throw new Error('UserId not found');
         // Гарантируем, что ownerId есть в списке участников
         const allMembers = selectedUsers.includes(ownerId) ? selectedUsers : [ownerId, ...selectedUsers];
         const clan = await createClan(clanName.trim(), allMembers, ownerId);
-        // Отправляем сообщения участникам
+    
         allMembers.forEach((memberId) => {
-          if (memberId !== ownerId) { // Не отправлять себе
+          if (memberId !== ownerId) {
             sendMessage({
               text: `Вы были добавлены в клан ${clanName.trim()}!`,
               recipientId: memberId,

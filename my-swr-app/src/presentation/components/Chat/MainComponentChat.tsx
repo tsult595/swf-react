@@ -158,7 +158,7 @@ const MainComponentChat = () => {
           const messages = await getAllPrivateMessagesForUI(
             currentUserId,
             (errorText) => console.error('Private messages error:', errorText),
-            () => {} // loading callback, if needed
+            () => {} 
           );
           const filtered = messages.filter(m =>
              m.recipientId === selectedRecipientId ||
