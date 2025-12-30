@@ -1,8 +1,9 @@
-// presenter/useFavorites.ts
+
 import useSWR from 'swr';
 import type { Hero } from '../../Domain/Entities/HeroTypes';
-import { toggleFavoriteUseCase } from '../../Domain/UseCases/Favorites/toggleFavorite';
-import { getUserFavoritesUseCase } from '../../Domain/UseCases/Favorites/addToFavoritesUseCase';
+import { toggleFavoriteUseCase } from '../../Domain/favorites/toggleFavoriteUseCase';
+
+import { getUserFavoritesUseCase } from '../../Domain/favorites/getUserFavoritesUseCase';
 
 export const useFavorites = (userId: string) => {
   const { data: favorites = [], isLoading, mutate } = useSWR<Hero[]>(
@@ -23,7 +24,7 @@ export const useFavorites = (userId: string) => {
     mutate(optimisticFavorites, false);
 
     try {
-      await toggleFavoriteUseCase(userId, hero, isCurrentlyFavorite);
+      await toggleFavoriteUseCase(userId, hero.id, isCurrentlyFavorite);
       mutate();
     } catch {
       mutate(); // rollback

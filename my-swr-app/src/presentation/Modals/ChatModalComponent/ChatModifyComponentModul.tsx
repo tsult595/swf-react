@@ -168,7 +168,7 @@ const ChatModifyComponentModul = ({ userId, onClose, onOpenChat, handleAddUser: 
           >
             {u.nickname || u.id}
             {isMember && isOwner && (
-              <span style={{ marginLeft: 8, color: '#ffd700', fontWeight: 'bold' }}>(Владелец)</span>
+              <span style={{ marginLeft: 8, color: '#f0d332ff', fontWeight: 'bold' }}>(Владелец)</span>
             )}
             {isMember && !isOwner && isCurrentUser && (
               <RemoveButton style={{ marginLeft: 12 }} onClick={e => { e.stopPropagation(); if (clan.id || clan._id) handleRemoveUser((clan.id || clan._id) as string, u.id); }}>Покинуть</RemoveButton>

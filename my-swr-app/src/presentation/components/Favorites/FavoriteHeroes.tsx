@@ -7,7 +7,10 @@ import heroFrameHigh from '../../../assets/character_border_violet.png';
 import heroFrameMiddle from '../../../assets/character_border_blue.png'; 
 import { Heart } from 'lucide-react';
 
-import { useFavorites } from '../../hooks/useFavorites';
+// import { useFavorites } from '../../hooks/useFavorites';
+
+import { FavoritePresenter } from '../..';
+import { useCallback } from 'react';
 
 
 const FrameBorderModalMain = css`
@@ -192,9 +195,16 @@ const HeartButton = styled.button`
 
 const FavoriteHeroes = ({ onClose }: FavoriteHeroesProps) => { 
   const userId = 'user123';
-const { favorites, isLoading, toggleFavorite } = useFavorites(userId);
+// const { favorites, isLoading, toggleFavorite } = useFavorites(userId);
+ const {data : favorites, error , isLoading , mutate} = FavoritePresenter.useGetFavorites(userId);
 
+const toogleFavorite = useCallback(async (heroId : number )=>{
+   if (!favorites || !Array.isArray(favorites)) return;
+   const isCurrentlyFavorite = favorites.some(f => f.id === heroId);
 
+ await FavoritePresenter.toggleFavorites(userId, heroId, isCurrentlyFavorite)
+  .then(()=>{ mutate() });
+},[userId ,mutate, favorites]);
 
   if (!Array.isArray(favorites) || isLoading) {
     return (
@@ -239,7 +249,7 @@ const { favorites, isLoading, toggleFavorite } = useFavorites(userId);
               />
             </HeroFrame>
             <HeroInfo> 
-              <HeartButton onClick={(e) => toggleFavorite(hero, e)}> 
+              <HeartButton onClick={() => toogleFavorite(hero.id)}> 
                 <Heart 
                   size={20} 
                   color="red" 
