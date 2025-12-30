@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import type { Hero } from '../../Domain/Entities/HeroTypes';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
  
 import heroFrame from '../../assets/character_border_common.png'; 
 import heroFrameHigh from '../../assets/character_border_violet.png'; 
@@ -13,8 +13,9 @@ import FavoriteHeroes from './Favorites/FavoriteHeroes';
 import MainComponentChat from '../components/Chat/MainComponentChat'; 
 import { Heart } from 'lucide-react';
 
-import { useFavorites } from '../hooks/useFavorites';
+// import { useFavorites } from '../hooks/useFavorites';
 import { useHeroes } from '../hooks/useHeroes';
+import { FavoritePresenter } from '..';
 
 const LoadingWrapper = styled.div`
   display: flex;
@@ -294,8 +295,19 @@ function MainContent() {
   const [showFavorites, setShowFavorites] = useState(false);
   const [activeTab, setActiveTab] = useState<'characters' | 'items' | 'chat'>('characters'); 
   const userId = 'user123';
-  const { favorites,  toggleFavorite, isFavorite } = useFavorites(userId);
+  const { data: favorites,  mutate: mutateFavorites } = FavoritePresenter.useGetFavorites(userId);
   const { data: heroes, error, isLoading: isHeroesLoading, mutate } = useHeroes();
+
+  const toggleFavorite = useCallback(async (hero: Hero, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+
+    const isCurrentlyFavorite = favorites?.some((f: Hero) => f.id === hero.id) || false;
+
+    await FavoritePresenter.toggleFavorites(userId, hero.id, isCurrentlyFavorite);
+    mutateFavorites();
+  }, [userId, favorites, mutateFavorites]);
+
+  const isFavorite = (heroId: string | number) => favorites?.some((f: Hero) => f.id === heroId) || false;
 
 
   const handleHeroClick = (hero: Hero) => {

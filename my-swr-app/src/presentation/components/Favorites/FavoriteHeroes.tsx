@@ -7,7 +7,7 @@ import heroFrameHigh from '../../../assets/character_border_violet.png';
 import heroFrameMiddle from '../../../assets/character_border_blue.png'; 
 import { Heart } from 'lucide-react';
 
-// import { useFavorites } from '../../hooks/useFavorites';
+
 
 import { FavoritePresenter } from '../..';
 import { useCallback } from 'react';
