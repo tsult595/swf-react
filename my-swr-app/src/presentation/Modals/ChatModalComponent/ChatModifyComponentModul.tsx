@@ -1,9 +1,9 @@
 import styled from 'styled-components';
-import { useState, useEffect } from 'react';
-import { getClansByUserId, deleteClan } from '../../../data/api/clanApi';
+import { useState } from 'react';
+import { ClanPresenter } from '../..';
 import type { ClanDocument } from '../../../Domain/Entities/ClanTypes';
-import type { UserInfo } from '../../../Domain/Entities/UserType';
-import { getAllUsersForUI } from '../../all-users/getAllUsers';
+// import type { UserInfo } from '../../../Domain/Entities/UserType';
+import { UserPresenter } from '../..';
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -120,14 +120,9 @@ interface ChatModifyComponentModulProps {
 
 
 const ChatModifyComponentModul = ({ userId, onClose, onOpenChat, handleAddUser: parentHandleAddUser, handleRemoveUser: parentHandleRemoveUser }: ChatModifyComponentModulProps) => {
-  const [clans, setClans] = useState<ClanDocument[]>([]);
-  const [allUsers, setAllUsers] = useState<UserInfo[]>([]);
   const [selectedClan, setSelectedClan] = useState<ClanDocument | null>(null);
-
-    useEffect(() => {
-      getClansByUserId(userId).then(setClans);
-      getAllUsersForUI(() => {}, setAllUsers, () => {}).then(() => {});
-    }, [userId]);
+  const { data: clans, mutate: mutateClans } = ClanPresenter.useGetClansByUserId(userId);
+  const { data: allUsers, mutate } = UserPresenter.useFetchUsers();
 
 
   const handleAddUser = async (_clanId: string, userId: string) => {
@@ -139,7 +134,8 @@ const ChatModifyComponentModul = ({ userId, onClose, onOpenChat, handleAddUser: 
       members: [...selectedClan.members, userId],
       
     });
-    setClans(prev => prev.map(c => (c.id || c._id) === clanId ? { ...c, members: [...c.members, userId] } : c));
+    mutate(); // Refresh users list
+    mutateClans(); // Refresh clans list
   };
 
   const handleRemoveUser = async (clanId: string, memberId: string) => {
@@ -148,7 +144,8 @@ const ChatModifyComponentModul = ({ userId, onClose, onOpenChat, handleAddUser: 
       ...selectedClan,
       members: selectedClan.members.filter(id => id !== memberId),
     } : selectedClan);
-    setClans(prev => prev.map(c => (c.id || c._id) === clanId ? { ...c, members: c.members.filter(id => id !== memberId) } : c));
+    mutate(); // Refresh users list
+    mutateClans(); // Refresh clans list
   };
 
 
@@ -156,7 +153,7 @@ const ChatModifyComponentModul = ({ userId, onClose, onOpenChat, handleAddUser: 
 
   const renderUsers = (clan: ClanDocument) => (
     <MemberList style={{ border: '2px solid #ffd700', borderRadius: 8, padding: 8 }}>
-      {allUsers.map((u) => {
+      {allUsers && allUsers.map((u) => {
         const isMember = clan.members.includes(u.id);
         const isOwner = clan.ownerId === u.id;
         const isCurrentUser = userId === u.id;
@@ -190,7 +187,7 @@ const ChatModifyComponentModul = ({ userId, onClose, onOpenChat, handleAddUser: 
       <ModalContainer>
         <SectionTitle>Мои кланы</SectionTitle>
         <ClanList>
-          {clans.map(clan => {
+          {(clans as ClanDocument[] || []).map((clan) => {
             const isOwner = clan.ownerId === userId;
             const isMember = clan.members.includes(userId);
             return (
@@ -208,15 +205,18 @@ const ChatModifyComponentModul = ({ userId, onClose, onOpenChat, handleAddUser: 
                     <Button style={{ marginLeft: 8, background: '#d43f3f', color: '#fff' }} onClick={() => {
                       const clanId = clan.id || clan._id;
                       if (clanId && window.confirm('Удалить клан?')) {
-                        deleteClan(clanId as string).then(() => setClans(clans.filter(c => (c.id || c._id) !== clanId)));
+                        ClanPresenter.deleteClan(clanId as string).then(() => {
+                          mutateClans(); // Refresh clans list
+                          mutate(); // Refresh users list to update clan memberships
+                        });
                       }
                     }}>Удалить</Button>
                   ) : isMember ? (
-                    <Button style={{ marginLeft: 8, background: '#d43f3f', color: '#fff' }} onClick={() => {
+                    <Button style={{ marginLeft: 8, background: '#d43f3f', color: '#fff' }} onClick={async () => {
                       const clanId = clan.id || clan._id;
                       if (clanId && window.confirm('Покинуть клан?')) {
-                        handleRemoveUser(clanId as string, userId);
-                        setClans(clans.filter(c => (c.id || c._id) !== clanId));
+                        await handleRemoveUser(clanId as string, userId);
+                        mutateClans(); // Refresh clans list
                         if (selectedClan && (selectedClan.id || selectedClan._id) === clanId) {
                           setSelectedClan(null);
                         }
@@ -238,8 +238,9 @@ const ChatModifyComponentModul = ({ userId, onClose, onOpenChat, handleAddUser: 
               <Button style={{ background: '#d43f3f', color: '#fff', marginLeft: 8 }} onClick={() => {
                 const clanId = selectedClan.id || selectedClan._id;
                 if (clanId && window.confirm('Удалить клан?')) {
-                  deleteClan(clanId as string).then(() => {
-                    setClans(clans.filter(c => (c.id || c._id) !== clanId));
+                  ClanPresenter.deleteClan(clanId as string).then(() => {
+                    mutateClans(); // Refresh clans list
+                    mutate(); // Refresh users list
                     setSelectedClan(null);
                   });
                 }

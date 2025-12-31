@@ -1,8 +1,9 @@
 import styled from 'styled-components';
-import { useState, useEffect } from 'react';
-import type { UserInfo } from '../../../Domain/Entities/UserType';
-import { getAllUsersForUI } from '../../all-users/getAllUsers';
-import { createClan } from '../../../data/api/clanApi';
+import { useState} from 'react';
+// import type { UserInfo } from '../../../Domain/Entities/UserType';
+import { ClanPresenter } from '../..';
+import { UserPresenter } from '../..';
+
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -117,22 +118,18 @@ interface ChatModalComponentProps {
   onCreateClan: (clanId: string, clanName: string) => void;
   sendMessage: (args: { text: string; recipientId: string; type: 'private' }) => void;
   prikolniyText?: string;
+  ownerId: string;
+  allMembers: string[];
 }
 
-const ChatModalComponent = ({ onClose, onCreateClan, sendMessage, prikolniyText }: ChatModalComponentProps) => {
+const ChatModalComponent = ({ onClose, onCreateClan, sendMessage, prikolniyText, ownerId, allMembers }: ChatModalComponentProps) => {
   const [clanName, setClanName] = useState('');
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-  const [users, setUsers] = useState<UserInfo[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    getAllUsersForUI(
-      (errorText) => setError(errorText),
-      (users) => setUsers(users),
-      (loading) => setLoading(loading)
-    );
-  }, []);
+  // const [users, setUsers] = useState<UserInfo[]>([]);
+  // const [loading, setLoading] = useState(true);
+  // const [error, setError] = useState<string | null>(null);
+  const {data : users , isLoading , error , mutate } = UserPresenter.useFetchUsers();
+ 
 
 
 
@@ -147,11 +144,7 @@ const ChatModalComponent = ({ onClose, onCreateClan, sendMessage, prikolniyText 
   const handleCreate = async () => {
     if (clanName.trim() && selectedUsers.length > 0) {
       try {
-        const ownerId = localStorage.getItem('userId');
-        if (!ownerId) throw new Error('UserId not found');
-        // Гарантируем, что ownerId есть в списке участников
-        const allMembers = selectedUsers.includes(ownerId) ? selectedUsers : [ownerId, ...selectedUsers];
-        const clan = await createClan(clanName.trim(), allMembers, ownerId);
+        const clan = await ClanPresenter.createClan(clanName.trim(), allMembers, ownerId);
     
         allMembers.forEach((memberId) => {
           if (memberId !== ownerId) {
@@ -163,8 +156,9 @@ const ChatModalComponent = ({ onClose, onCreateClan, sendMessage, prikolniyText 
           }
         });
         onCreateClan(clan.id || clan._id, clan.name);
+        mutate(); // Refresh users list to update clan memberships
         onClose();
-      } catch (e) {
+      } catch {
         alert('Ошибка при создании клана');
       }
     }
@@ -187,9 +181,9 @@ const ChatModalComponent = ({ onClose, onCreateClan, sendMessage, prikolniyText 
         />
         <div style={{ color: '#ffd700', marginBottom: 6 }}>Добавить участников:</div>
         <UserList>
-          {loading && <LoadingSpinner>Загрузка пользователей...</LoadingSpinner>}
+          {isLoading && <LoadingSpinner>Загрузка пользователей...</LoadingSpinner>}
           {error && <div style={{ color: 'red', textAlign: 'center', padding: '20px' }}>Ошибка: {error}</div>}
-          {!loading && !error && uniqueUsers.map((user) => (
+          {!isLoading && !error && uniqueUsers.map((user) => (
             <UserItem
               key={user.id}
               selected={selectedUsers.includes(user.id)}
@@ -211,5 +205,9 @@ const ChatModalComponent = ({ onClose, onCreateClan, sendMessage, prikolniyText 
 };
 
 export default ChatModalComponent;
+
+
+
+
 
 

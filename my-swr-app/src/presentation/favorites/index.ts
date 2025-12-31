@@ -1,4 +1,4 @@
-export * from './AddFavorites'
-export * from './RemoveFavorites'
-export * from './ToggleFavorites'
+export * from './addFavorites'
+export * from './removeFavorites'
+export * from './toggleFavorites'
 export * from './useGetFavorites'

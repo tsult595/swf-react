@@ -1,4 +1,6 @@
 
 import * as FavoritesUseCases from './favorites';
+import * as UsersUseCases from './users';
+import * as ClansUseCases from './clans';
 
-export {FavoritesUseCases};
+export {FavoritesUseCases, UsersUseCases, ClansUseCases};

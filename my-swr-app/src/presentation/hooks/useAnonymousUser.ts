@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { generatePersonalizedUserId } from '../../utils/userId';
-import { createUser } from '../../data/api/userApi';
+import { UserRepository } from '../../data';
 import type { UserInfo } from '../../Domain/Entities/UserType';
 
 function getUserInfo(): Omit<UserInfo, 'id'> {
@@ -22,7 +22,7 @@ export function useAnonymousUser() {
         localStorage.setItem('userId', userId);
       }
       const user: UserInfo = { id: userId, ...getUserInfo() };
-      createUser(user).catch(console.error);
+      UserRepository.createUser(user).catch(console.error);
     }
     registerUser();
   }, []);
