@@ -196,7 +196,7 @@ const HeartButton = styled.button`
 const FavoriteHeroes = ({ onClose }: FavoriteHeroesProps) => { 
   const userId = 'user123';
 // const { favorites, isLoading, toggleFavorite } = useFavorites(userId);
- const {data : favorites, error , isLoading , mutate} = FavoritePresenter.useGetFavorites(userId);
+ const {data : favorites , isLoading , mutate} = FavoritePresenter.useGetFavorites(userId);
 
 const toogleFavorite = useCallback(async (heroId : number )=>{
    if (!favorites || !Array.isArray(favorites)) return;
@@ -205,6 +205,7 @@ const toogleFavorite = useCallback(async (heroId : number )=>{
  await FavoritePresenter.toggleFavorites(userId, heroId, isCurrentlyFavorite)
   .then(()=>{ mutate() });
 },[userId ,mutate, favorites]);
+
 
   if (!Array.isArray(favorites) || isLoading) {
     return (

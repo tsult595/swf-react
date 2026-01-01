@@ -46,7 +46,6 @@ const MainComponentChat = () => {
 const allMembers = selectedUsers.includes(ownerId) ? selectedUsers : [ownerId, ...selectedUsers];
   const onNewMessage = useCallback((message: Message) => {
     setMessages(prev => {
-      // Skip real messages from self to avoid duplicates
       if (message.userId === currentUserId && !message.id.startsWith('temp-')) return prev;
 
       const newPrev = [...prev];
