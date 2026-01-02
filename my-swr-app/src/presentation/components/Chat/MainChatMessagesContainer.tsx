@@ -184,7 +184,7 @@ const MainChatMessagesContainer: React.FC<MainChatMessagesContainerProps> = ({
         if (isPrivate && isOwn && message.text.includes('добавлены в клан')) {
           return null;
         }
-        console.log('MainChatMessagesContainer rendering messages:', messages.length, messages.map(m => m.text));
+        // console.log('MainChatMessagesContainer rendering messages:', messages.length, messages.map(m => m.text));
         return (
           <MessageWrapper key={message.uniqueKey || message.id} $isOwn={isOwn}>
             <MessageBubble $isOwn={isOwn}>

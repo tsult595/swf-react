@@ -1,6 +1,5 @@
 import styled, { css } from 'styled-components';
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { deleteMessageById } from '../../../data/api/messageApi';
 import { getAllClanMessagesForUI } from '../../clan-chat/getAllClanMessages';
 import { getAllPrivateMessagesForUI } from '../../private-message/getAllPrivateMessages';
 import { getAllPublicMessagesForUI } from '../../../presentation/public-chat/getAllPublicMessages';
@@ -15,6 +14,8 @@ import MainChatInputContainer from './MainChatInputContainer';
 import MainChatHeader from './MainChatHeader';
 import type { Message } from '../../../Domain/Entities/MessageTypes';
 import { ClanPresenter } from '../..';
+// import { MessagePresenter } from '../..';
+import { useMessageActions } from '../../message/useMessageActions';
 
 
 const FrameBorderModalMain = css`
@@ -43,22 +44,25 @@ const MainComponentChat = () => {
   const currentUsername = 'Tima';
   const clanIds = clans ? clans.map((c: ClanDocument) => c.id || c._id).filter(Boolean) as string[] : [];
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-const allMembers = selectedUsers.includes(ownerId) ? selectedUsers : [ownerId, ...selectedUsers];
+  const allMembers = selectedUsers.includes(ownerId) ? selectedUsers : [ownerId, ...selectedUsers];
   const onNewMessage = useCallback((message: Message) => {
     setMessages(prev => {
       if (message.userId === currentUserId && !message.id.startsWith('temp-')) return prev;
+
+      // Skip system messages sent by self (e.g., clan removal notifications)
+      if (message.userId === currentUserId && message.type === 'private' && message.text.includes('удалены из клана')) return prev;
 
       const newPrev = [...prev];
       if (message.id.startsWith('temp-')) {
         message.uniqueKey = message.id;
         newPrev.push(message);
       } else {
-        message.uniqueKey = message.id; // default for new messages
+        message.uniqueKey = message.id; 
         const tempIndex = newPrev.findIndex(m => m.text === message.text && m.userId === message.userId && m.type === message.type && m.recipientId === message.recipientId && m.id.startsWith('temp-'));
         if (tempIndex !== -1) {
           const temp = newPrev[tempIndex];
-          message.uniqueKey = temp.uniqueKey; // keep the same uniqueKey
-          Object.assign(temp, message); // update the existing object
+          message.uniqueKey = temp.uniqueKey;
+          Object.assign(temp, message); 
         } else {
           newPrev.push(message);
         }
@@ -66,7 +70,6 @@ const allMembers = selectedUsers.includes(ownerId) ? selectedUsers : [ownerId, .
       return newPrev;
     });
   }, [currentUserId]);
-
   const { sendMessage } = useChatSocket(currentUserId, currentUsername, clanIds, onNewMessage);
   const [inputValue, setInputValue] = useState('');
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
@@ -78,6 +81,7 @@ const allMembers = selectedUsers.includes(ownerId) ? selectedUsers : [ownerId, .
   const [seenNotifications, setSeenNotifications] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { deleteMessage } = useMessageActions(setMessages);
   
   
   useEffect(() => {
@@ -119,16 +123,6 @@ const allMembers = selectedUsers.includes(ownerId) ? selectedUsers : [ownerId, .
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       handleSendMessage();
-    }
-  };
-
-  const handleDeleteMessage = async (messageId: string) => {
-    try {
-      await deleteMessageById(messageId);
-      setMessages(prev => prev.filter(m => m.id !== messageId));
-    } catch (error) {
-      console.log('Failed to delete message', error);
-      alert('Failed to delete message');
     }
   };
 
@@ -245,11 +239,11 @@ const allMembers = selectedUsers.includes(ownerId) ? selectedUsers : [ownerId, .
     mutateClans();
   };
 
-  const handleRemoveUser = async (clanId: string, memberId: string) => {
+  const handleRemoveUser = async (clanId: string, memberId: string , clanName: string) => {
     ClanPresenter.removeUserFromClan(clanId, memberId);
-    if (memberId !== currentUserId) {
+    if (memberId !== ownerId) {
       sendMessage({
-        text: `Вы были удалены из клана!`,
+        text: `Вы были удалены из клана! ${clanName}`,
         recipientId: memberId,
         type: 'private',
       });
@@ -277,7 +271,7 @@ const allMembers = selectedUsers.includes(ownerId) ? selectedUsers : [ownerId, .
           clanChatId={clanChatId}
           selectedRecipientId={selectedRecipientId}
           clanName={clanName}
-          onDeleteMessage={handleDeleteMessage}
+          onDeleteMessage={deleteMessage}
           onSelectRecipient={setSelectedRecipientId}
           containerRef={messagesContainerRef}
         />

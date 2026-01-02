@@ -52,18 +52,18 @@ export const getAllMessages = async (): Promise<Message[]> => {
 //   return response.json();
 // };
 
-export const deleteMessageById = async (messageId: string): Promise<boolean> => {
-  console.log('Deleting message with ID:', messageId);
-  const response = await fetch(`${API_URL}/messages/${messageId}`, {
-    method: 'DELETE',
-  });
+// export const deleteMessageById = async (messageId: string): Promise<boolean> => {
+//   console.log('Deleting message with ID:', messageId);
+//   const response = await fetch(`${API_URL}/messages/${messageId}`, {
+//     method: 'DELETE',
+//   });
   
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.error || 'Failed to delete message');
-  }
+//   if (!response.ok) {
+//     const error = await response.json().catch(() => ({}));
+//     throw new Error(error.error || 'Failed to delete message');
+//   }
   
-  return true; 
-};
+//   return true; 
+// };
 
 // try catch block
