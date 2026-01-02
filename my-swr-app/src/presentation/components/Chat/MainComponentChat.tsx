@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components';
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { getAllClanMessagesForUI } from '../../clan-chat/getAllClanMessages';
-import { getAllPrivateMessagesForUI } from '../../private-message/getAllPrivateMessages';
+// import { getAllClanMessagesForUI } from '../../clan-chat/getAllClanMessages';
+// import { getAllPrivateMessagesForUI } from '../../private-message/getAllPrivateMessages';
 import { getAllPublicMessagesForUI } from '../../../presentation/public-chat/getAllPublicMessages';
 import { generatePersonalizedUserId } from '../../../utils/userId';
 import { useChatSocket } from '../../hooks/useChatSocket';
@@ -16,6 +16,8 @@ import type { Message } from '../../../Domain/Entities/MessageTypes';
 import { ClanPresenter } from '../..';
 // import { MessagePresenter } from '../..';
 import { useMessageActions } from '../../message/useMessageActions';
+import { useClanMessages } from '../../hooks/useClanMessages';
+import { usePrivateMessages } from '../../hooks/usePrivateMessages';
 
 
 const FrameBorderModalMain = css`
@@ -82,6 +84,8 @@ const MainComponentChat = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { deleteMessage } = useMessageActions(setMessages);
+  useClanMessages(clanChatId, setMessages);
+  usePrivateMessages(selectedRecipientId, currentUserId, setMessages);
   
   
   useEffect(() => {
@@ -125,45 +129,6 @@ const MainComponentChat = () => {
       handleSendMessage();
     }
   };
-
-  useEffect(() => {
-    if (clanChatId) {
-      const loadClanMessages = async () => {
-        try {
-          const msgs = await getAllClanMessagesForUI(
-            clanChatId,
-            (errorText) => console.error('Clan messages error:', errorText),
-            () => {} // loading callback, if needed
-          );
-          setMessages((prev) => [...prev, ...msgs.filter(m => !prev.some(p => p.id === m.id))]);
-        } catch (error) {
-          console.error('Failed to load clan messages:', error);
-        }
-      };
-      loadClanMessages();
-    }
-  }, [clanChatId]);
-
-  useEffect(() => {
-    if (selectedRecipientId) {
-      const loadPrivateMessages = async () => {
-        try {
-          const messages = await getAllPrivateMessagesForUI(
-            currentUserId,
-            (errorText) => console.error('Private messages error:', errorText),
-            () => {} 
-          );
-          const filtered = messages.filter(m =>
-             m.recipientId === selectedRecipientId ||
-             m.userId === selectedRecipientId);
-          setMessages((prev) => [...prev, ...filtered.filter(m => !prev.some(p => p.id === m.id))]);
-        } catch (error) {
-          console.error('Failed to load private messages:', error);
-        }
-      };
-      loadPrivateMessages();
-    }
-  }, [selectedRecipientId, currentUserId]);
 
   useEffect(() => {
     if (clanChatId) localStorage.setItem('clanChatId', clanChatId);
