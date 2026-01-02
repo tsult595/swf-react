@@ -34,6 +34,71 @@ const MessagesContainer = styled.div`
   }
 `;
 
+const SkeletonMessage = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  animation: pulse 1.5s ease-in-out infinite;
+  flex-shrink: 0;
+
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 0.6;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+`;
+
+const SkeletonHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+`;
+
+const SkeletonUsername = styled.div`
+  width: 80px;
+  height: 14px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+`;
+
+const SkeletonTimestamp = styled.div`
+  width: 60px;
+  height: 11px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+`;
+
+const SkeletonText = styled.div`
+  width: 200px;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  margin-bottom: 4px;
+
+  &:nth-child(2) {
+    width: 150px;
+  }
+`;
+
+const LoadingSkeleton = () => (
+  <>
+    {Array.from({ length: 5 }).map((_, i) => (
+      <SkeletonMessage key={i}>
+        <SkeletonHeader>
+          <SkeletonUsername />
+          <SkeletonTimestamp />
+        </SkeletonHeader>
+        <SkeletonText />
+        <SkeletonText />
+      </SkeletonMessage>
+    ))}
+  </>
+);
+
 const MessageWrapper = styled.div<{ $isOwn?: boolean; $type?: string }>`
   display: flex;
   flex-direction: column;
@@ -132,6 +197,7 @@ interface MainChatMessagesContainerProps {
   onDeleteMessage: (messageId: string) => void;
   onSelectRecipient: (recipientId: string | null) => void;
   containerRef: React.RefObject<HTMLElement | null>;
+  loading?: boolean;
 }
 
 const MainChatMessagesContainer: React.FC<MainChatMessagesContainerProps> = ({
@@ -143,11 +209,15 @@ const MainChatMessagesContainer: React.FC<MainChatMessagesContainerProps> = ({
   clanName,
   onDeleteMessage,
   onSelectRecipient,
-  containerRef
+  containerRef,
+  loading = false
 }) => {
   return (
     <MessagesContainer ref={containerRef}>
-      {messages.map((message) => {
+      {loading ? (
+        <LoadingSkeleton />
+      ) : (
+        messages.map((message) => {
         if (selectedRecipientId) {
           const isPrivateMessage = message.type === 'private' && (message.recipientId === selectedRecipientId || message.userId === selectedRecipientId);
           const isPublic = message.type === 'normal';
@@ -221,7 +291,8 @@ const MainChatMessagesContainer: React.FC<MainChatMessagesContainerProps> = ({
             </MessageBubble>
           </MessageWrapper>
         );
-      })}
+      })
+    )}
     </MessagesContainer>
   );
 };

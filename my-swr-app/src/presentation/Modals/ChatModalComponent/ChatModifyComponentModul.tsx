@@ -119,27 +119,26 @@ interface ChatModifyComponentModulProps {
 }
 
 
-const ChatModifyComponentModul = ({ userId, onClose, onOpenChat, handleAddUser: parentHandleAddUser, handleRemoveUser: parentHandleRemoveUser }: ChatModifyComponentModulProps) => {
+const ChatModifyComponentModul = ({ userId, onClose, onOpenChat, handleAddUser, handleRemoveUser }: ChatModifyComponentModulProps) => {
   const [selectedClan, setSelectedClan] = useState<ClanDocument | null>(null);
   const { data: clans, mutate: mutateClans } = ClanPresenter.useGetClansByUserId(userId);
   const { data: allUsers, mutate } = UserPresenter.useFetchUsers();
 
 
-  const handleAddUser = async (_clanId: string, userId: string) => {
+  const localHandleAddUser = async (_clanId: string, userId: string) => {
     const clanId = selectedClan?.id || selectedClan?._id;
     if (!clanId || !selectedClan) return;
-    await parentHandleAddUser(clanId, userId, selectedClan.name);
+    await handleAddUser(clanId, userId, selectedClan.name);
     setSelectedClan(selectedClan && {
       ...selectedClan,
       members: [...selectedClan.members, userId],
-      
     });
     mutate(); // Refresh users list
     mutateClans(); // Refresh clans list
   };
 
-  const handleRemoveUser = async (clanId: string, memberId: string, clanName: string) => {
-    await parentHandleRemoveUser(clanId, memberId, clanName);
+  const localHandleRemoveUser = async (clanId: string, memberId: string, clanName: string) => {
+    await handleRemoveUser(clanId, memberId, clanName);
     setSelectedClan(selectedClan && (selectedClan.id || selectedClan._id) === clanId ? {
       ...selectedClan,
       members: selectedClan.members.filter(id => id !== memberId),
@@ -148,8 +147,6 @@ const ChatModifyComponentModul = ({ userId, onClose, onOpenChat, handleAddUser: 
     mutateClans(); // Refresh clans list
   };
 
-
- 
 
   const renderUsers = (clan: ClanDocument) => (
     <MemberList style={{ border: '2px solid #ffd700', borderRadius: 8, padding: 8 }}>
@@ -168,13 +165,13 @@ const ChatModifyComponentModul = ({ userId, onClose, onOpenChat, handleAddUser: 
               <span style={{ marginLeft: 8, color: '#f0d332ff', fontWeight: 'bold' }}>(Владелец)</span>
             )}
             {isMember && !isOwner && isCurrentUser && (
-              <RemoveButton style={{ marginLeft: 12 }} onClick={e => { e.stopPropagation(); if (clan.id || clan._id) handleRemoveUser((clan.id || clan._id) as string, u.id, clan.name); }}>Покинуть</RemoveButton>
+              <RemoveButton style={{ marginLeft: 12 }} onClick={e => { e.stopPropagation(); if (clan.id || clan._id) localHandleRemoveUser((clan.id || clan._id) as string, u.id, clan.name); }}>Покинуть</RemoveButton>
             )}
             {isMember && isCurrentUserOwner && !isCurrentUser && (
-              <RemoveButton style={{ marginLeft: 12 }} onClick={e => { e.stopPropagation(); if (clan.id || clan._id) handleRemoveUser((clan.id || clan._id) as string, u.id, clan.name); }}>Удалить</RemoveButton>
+              <RemoveButton style={{ marginLeft: 12 }} onClick={e => { e.stopPropagation(); if (clan.id || clan._id) localHandleRemoveUser((clan.id || clan._id) as string, u.id, clan.name); }}>Удалить</RemoveButton>
             )}
             {!isMember && isCurrentUserOwner && (
-              <Button style={{ marginLeft: 12, background: '#00e676', color: '#232323' }} onClick={e => { e.stopPropagation(); if (clan.id || clan._id) handleAddUser((clan.id || clan._id) as string, u.id); }}>Добавить</Button>
+              <Button style={{ marginLeft: 12, background: '#00e676', color: '#232323' }} onClick={e => { e.stopPropagation(); if (clan.id || clan._id) localHandleAddUser((clan.id || clan._id) as string, u.id); }}>Добавить</Button>
             )}
           </MemberItem>
         );
@@ -215,7 +212,7 @@ const ChatModifyComponentModul = ({ userId, onClose, onOpenChat, handleAddUser: 
                     <Button style={{ marginLeft: 8, background: '#d43f3f', color: '#fff' }} onClick={async () => {
                       const clanId = clan.id || clan._id;
                       if (clanId && window.confirm('Покинуть клан?')) {
-                        await handleRemoveUser(clanId as string, userId, clan.name);
+                        await localHandleRemoveUser(clanId as string, userId, clan.name);
                         mutateClans(); // Refresh clans list
                         if (selectedClan && (selectedClan.id || selectedClan._id) === clanId) {
                           setSelectedClan(null);

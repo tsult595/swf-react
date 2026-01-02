@@ -5,29 +5,39 @@ import type { Message  } from '../../Domain/Entities/MessageTypes';
 export type SendMessageImport = Omit<Message, 'timestamp'>;
 
 export const sendMessage = async (data: SendMessageImport): Promise<Message> => {
-  const response = await fetch(`${API_URL}/messages/send_message`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  });
-  
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.error || 'Failed to send message');
+  try {
+    const response = await fetch(`${API_URL}/messages/send_message`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.error || 'Failed to send message');
+    }
+    
+    return response.json();
+  } catch (error) {
+    console.error('Error sending message:', error);
+    throw error;
   }
-  
-  return response.json();
 };
 
 export const getAllMessages = async (): Promise<Message[]> => {
-  const response = await fetch(`${API_URL}/messages/global`);
-  
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.error || 'Failed to get messages');
+  try {
+    const response = await fetch(`${API_URL}/messages/global`);
+    
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.error || 'Failed to get messages');
+    }
+    
+    return response.json();
+  } catch (error) {
+    console.error('Error getting messages:', error);
+    throw error;
   }
-  
-  return response.json();
 };
 
 // export const getAllPrivateMessages = async (userId: string): Promise<Message[]> => {

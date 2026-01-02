@@ -6,10 +6,10 @@ export const useMessageActions = (
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>
 ) => {
   const deleteMessage = useCallback(async (messageId: string) => {
-    if (messageId.startsWith('temp-')) {
-      alert('Нельзя удалить неотправленное сообщение');
-      return;
-    }
+    // if (messageId.startsWith('temp-')) {
+    //   alert('Нельзя удалить неотправленное сообщение');
+    //   return;
+    // }
     try {
       await MessagePresenter.deleteMessageById(messageId);
       setMessages(prev => prev.filter(m => m.id !== messageId));
