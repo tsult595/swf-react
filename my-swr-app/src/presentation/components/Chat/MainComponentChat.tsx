@@ -1,23 +1,24 @@
 import styled, { css } from 'styled-components';
 import { useState, useEffect, useRef, useCallback } from 'react';
-// import { getAllClanMessagesForUI } from '../../clan-chat/getAllClanMessages';
-// import { getAllPrivateMessagesForUI } from '../../private-message/getAllPrivateMessages';
 import { getAllPublicMessagesForUI } from '../../../presentation/public-chat/getAllPublicMessages';
-import { generatePersonalizedUserId } from '../../../utils/userId';
 import { useChatSocket } from '../../hooks/useChatSocket';
 import ChatModalComponent from '../../Modals/ChatModalComponent/ChatModalComponent';
 import ChatModifyComponentModul from '../../Modals/ChatModalComponent/ChatModifyComponentModul';
-import Swal from 'sweetalert2';
 import type { ClanDocument } from '../../../Domain/Entities/ClanTypes';
 import MainChatMessagesContainer from './MainChatMessagesContainer';
 import MainChatInputContainer from './MainChatInputContainer';
 import MainChatHeader from './MainChatHeader';
 import type { Message } from '../../../Domain/Entities/MessageTypes';
 import { ClanPresenter } from '../..';
-// import { MessagePresenter } from '../..';
 import { useMessageActions } from '../../message/useMessageActions';
 import { useClanMessages } from '../../hooks/useClanMessages';
 import { usePrivateMessages } from '../../hooks/usePrivateMessages';
+import { useClanActions } from '../../hooks/useClanActions';
+import { useLocalStorageSync } from '../../hooks/useLocalStorageSync';
+import { useChatInput } from '../../hooks/useChatInput';
+import { useScrollToBottom } from '../../hooks/useScrollToBottom';
+import { useUserId } from '../../hooks/useUserId';
+import { useClanNotifications } from '../../hooks/useClanNotifications';
 
 
 const FrameBorderModalMain = css`
@@ -39,7 +40,7 @@ const ChatContainer = styled.div`
 `;
 
 const MainComponentChat = () => {
-  const [currentUserId, setCurrentUserId] = useState<string>('');
+  const currentUserId = useUserId();
   const ownerId = localStorage.getItem('userId') || '';
   const { data: clans, mutate: mutateClans } = ClanPresenter.useGetClansByUserId(ownerId || currentUserId);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -50,8 +51,6 @@ const MainComponentChat = () => {
   const onNewMessage = useCallback((message: Message) => {
     setMessages(prev => {
       if (message.userId === currentUserId && !message.id.startsWith('temp-')) return prev;
-
-      // Skip system messages sent by self (e.g., clan removal notifications)
       if (message.userId === currentUserId && message.type === 'private' && message.text.includes('удалены из клана')) return prev;
 
       const newPrev = [...prev];
@@ -73,8 +72,7 @@ const MainComponentChat = () => {
     });
   }, [currentUserId]);
   const { sendMessage } = useChatSocket(currentUserId, currentUsername, clanIds, onNewMessage);
-  const [inputValue, setInputValue] = useState('');
-  const messagesContainerRef = useRef<HTMLDivElement | null>(null);
+  const messagesContainerRef = useRef<HTMLElement | null>(null);
   const [selectedRecipientId, setSelectedRecipientId] = useState<string | null>(localStorage.getItem('selectedRecipientId'));
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModifyModalOpen, setIsModifyModalOpen] = useState(false);
@@ -86,6 +84,10 @@ const MainComponentChat = () => {
   const { deleteMessage } = useMessageActions(setMessages);
   useClanMessages(clanChatId, setMessages);
   usePrivateMessages(selectedRecipientId, currentUserId, setMessages);
+  const { handleAddUser, handleRemoveUser } = useClanActions(ownerId, sendMessage, mutateClans);
+  useLocalStorageSync({ clanChatId, clanName, selectedRecipientId });
+  const { inputValue, setInputValue, handleSendMessage, handleKeyPress } = useChatInput(sendMessage, selectedRecipientId, clanChatId, clanName);
+  useScrollToBottom(messagesContainerRef, messages);
   
   
   useEffect(() => {
@@ -100,121 +102,16 @@ const MainComponentChat = () => {
   loadMessages();
 }, []);
 
-  const handleSendMessage = () => {
-    if (!inputValue.trim()) return;
-    if (selectedRecipientId) {
-      sendMessage({
-        text: inputValue,
-        recipientId: selectedRecipientId,
-        type: 'private',
-      });
-    } else if (clanChatId) {
-      sendMessage({
-        text: inputValue,
-        recipientId: clanChatId,
-        type: 'clanChat',
-        clanName: clanName || undefined,
-      });
-    } else {
-      sendMessage({
-        text: inputValue,
-        type: 'normal',
-      });
-    }
-    setInputValue('');
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleSendMessage();
-    }
-  };
-
-  useEffect(() => {
-    if (clanChatId) localStorage.setItem('clanChatId', clanChatId);
-    else localStorage.removeItem('clanChatId');
-  }, [clanChatId]);
-
-  useEffect(() => {
-    if (clanName) localStorage.setItem('clanName', clanName);
-    else localStorage.removeItem('clanName');
-  }, [clanName]);
-
-  useEffect(() => {
-    if (selectedRecipientId) localStorage.setItem('selectedRecipientId', selectedRecipientId);
-    else localStorage.removeItem('selectedRecipientId');
-  }, [selectedRecipientId]);
-
-  useEffect(() => {
-    async function getUserIdAndClans() {
-      let userId = localStorage.getItem('userId');
-      if (!userId) {
-        userId = await generatePersonalizedUserId();
-        localStorage.setItem('userId', userId);
-      }
-      setCurrentUserId(userId);
-    }
-    getUserIdAndClans();
-  }, []);
-
-  useEffect(() => {
-    const container = messagesContainerRef.current;
-    if (container) {
-      container.scrollTop = container.scrollHeight;
-    }
-  }, [messages]);
-
-  useEffect(() => {
-    messages.forEach((msg) => {
-      if (
-        msg.type === 'private' &&
-        msg.recipientId === currentUserId &&
-        msg.text.includes('added to clan') &&
-        !seenNotifications.has(String(msg.id))
-      ) {
-        Swal.fire('Вы были добавлены в клан!');
-        setSeenNotifications((prev) => new Set(prev).add(String(msg.id)));
-        mutateClans();
-      }
-      if (
-        msg.type === 'private' &&
-        msg.recipientId === currentUserId &&
-        msg.text.includes('удалены из клана') &&
-        !seenNotifications.has(String(msg.id))
-      ) {
-        // Swal.fire('Вы были удалены из клана!');
-        setSeenNotifications((prev) => new Set(prev).add(String(msg.id)));
-        if (clanChatId) {
-          setClanChatId(null);
-          setClanName(null);
-        }
-        mutateClans();
-      }
-    });
-  }, [messages, currentUserId, seenNotifications]);
-
-
-  const handleAddUser = async (clanId: string, userId: string, clanName: string) => {
-    ClanPresenter.addUserToClan(clanId, userId);
-    sendMessage({
-      text: `Вы были добавлены в клан ${clanName}!`,
-      recipientId: userId,
-      type: 'private',
-    });
-    mutateClans();
-  };
-
-  const handleRemoveUser = async (clanId: string, memberId: string , clanName: string) => {
-    ClanPresenter.removeUserFromClan(clanId, memberId);
-    if (memberId !== ownerId) {
-      sendMessage({
-        text: `Вы были удалены из клана! ${clanName}`,
-        recipientId: memberId,
-        type: 'private',
-      });
-    }
-    mutateClans();
-  };
+  useClanNotifications(
+    messages,
+    currentUserId,
+    seenNotifications,
+    setSeenNotifications,
+    mutateClans,
+    setClanChatId,
+    setClanName,
+    clanChatId
+  );
 
 
    if (loading) return <div>Загрузка сообщений.</div>;

@@ -1,7 +1,6 @@
 import styled from 'styled-components';
 import AsideBackGround from '../../../assets/auction_menu_background.png';
 import type { Message } from '../../../Domain/Entities/MessageTypes';
-import { useEffect } from 'react';
 
 const MessagesContainer = styled.div`
   flex: 1;
@@ -132,7 +131,7 @@ interface MainChatMessagesContainerProps {
   clanName: string | null;
   onDeleteMessage: (messageId: string) => void;
   onSelectRecipient: (recipientId: string | null) => void;
-  containerRef: React.RefObject<HTMLDivElement | null>;
+  containerRef: React.RefObject<HTMLElement | null>;
 }
 
 const MainChatMessagesContainer: React.FC<MainChatMessagesContainerProps> = ({
@@ -146,13 +145,6 @@ const MainChatMessagesContainer: React.FC<MainChatMessagesContainerProps> = ({
   onSelectRecipient,
   containerRef
 }) => {
-  useEffect(() => {
-    const container = containerRef.current;
-    if (container) {
-      container.scrollTop = container.scrollHeight;
-    }
-  }, [messages, containerRef]);
-
   return (
     <MessagesContainer ref={containerRef}>
       {messages.map((message) => {
