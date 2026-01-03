@@ -195,7 +195,7 @@ interface MainChatMessagesContainerProps {
   clanChatId: string | null;
   selectedRecipientId: string | null;
   clanName: string | null;
-  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+  mutateMessages: (updater: (prev: Message[] | undefined) => Message[], revalidate?: boolean) => void;
   onSelectRecipient: (recipientId: string | null) => void;
   containerRef: React.RefObject<HTMLElement | null>;
   loading?: boolean;
@@ -208,12 +208,12 @@ const MainChatMessagesContainer: React.FC<MainChatMessagesContainerProps> = ({
   clanChatId,
   selectedRecipientId,
   clanName,
-  setMessages,
+  mutateMessages,
   onSelectRecipient,
   containerRef,
   loading = false
 }) => {
-  const { deleteMessage } = useMessageActions(setMessages);
+  const { deleteMessage } = useMessageActions(mutateMessages);
   
   return (
     <MessagesContainer ref={containerRef}>

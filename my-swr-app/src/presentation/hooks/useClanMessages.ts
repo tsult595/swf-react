@@ -4,7 +4,7 @@ import type { Message } from '../../Domain/Entities/MessageTypes';
 
 export const useClanMessages = (
   clanChatId: string | null,
-  setMessages: React.Dispatch<React.SetStateAction<Message[]>>
+  mutateMessages: (updater: (prev: Message[] | undefined) => Message[], revalidate?: boolean) => void
 ) => {
   useEffect(() => {
     if (clanChatId) {
@@ -15,12 +15,12 @@ export const useClanMessages = (
             (errorText) => console.error('Clan messages error:', errorText),
             () => {} // loading callback, if needed
           );
-          setMessages((prev) => [...prev, ...msgs.filter(m => !prev.some(p => p.id === m.id))]);
+          mutateMessages((prev) => [...(prev || []), ...msgs.filter(m => !(prev || []).some(p => p.id === m.id))], false);
         } catch (error) {
           console.error('Failed to load clan messages:', error);
         }
       };
       loadClanMessages();
     }
-  }, [clanChatId, setMessages]);
+  }, [clanChatId, mutateMessages]);
 };

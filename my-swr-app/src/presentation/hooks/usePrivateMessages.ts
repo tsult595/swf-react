@@ -5,7 +5,7 @@ import type { Message } from '../../Domain/Entities/MessageTypes';
 export const usePrivateMessages = (
   selectedRecipientId: string | null,
   currentUserId: string,
-  setMessages: React.Dispatch<React.SetStateAction<Message[]>>
+  mutateMessages: (updater: (prev: Message[] | undefined) => Message[], revalidate?: boolean) => void
 ) => {
   useEffect(() => {
     if (selectedRecipientId) {
@@ -20,12 +20,12 @@ export const usePrivateMessages = (
             m.recipientId === selectedRecipientId ||
             m.userId === selectedRecipientId
           );
-          setMessages((prev) => [...prev, ...filtered.filter(m => !prev.some(p => p.id === m.id))]);
+          mutateMessages((prev) => [...(prev || []), ...filtered.filter(m => !(prev || []).some(p => p.id === m.id))], false);
         } catch (error) {
           console.error('Failed to load private messages:', error);
         }
       };
       loadPrivateMessages();
     }
-  }, [selectedRecipientId, currentUserId, setMessages]);
+  }, [selectedRecipientId, currentUserId, mutateMessages]);
 };

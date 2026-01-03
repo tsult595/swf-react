@@ -3,21 +3,17 @@ import { MessagePresenter } from '..';
 import type { Message } from '../../Domain/Entities/MessageTypes'; 
 
 export const useMessageActions = (
-  setMessages: React.Dispatch<React.SetStateAction<Message[]>>
+  mutateMessages: (updater: (prev: Message[] | undefined) => Message[], revalidate?: boolean) => void
 ) => {
   const deleteMessage = useCallback(async (messageId: string) => {
-    if (messageId.startsWith('temp-')) {
-      alert('Нельзя удалить неотправленное сообщение');
-      return;
-    }
     try {
       await MessagePresenter.deleteMessageById(messageId);
-      setMessages(prev => prev.filter(m => m.id !== messageId));
+      mutateMessages(prev => (prev || []).filter(m => m.id !== messageId), false);
     } catch (error) {
       console.log('Failed to delete message', error);
       alert('Failed to delete message');
     }
-  }, [setMessages]); 
+  }, [mutateMessages]); 
 
   return { deleteMessage };
 };

@@ -6,9 +6,6 @@ import heroFrame from '../../../assets/character_border_common.png';
 import heroFrameHigh from '../../../assets/character_border_violet.png'; 
 import heroFrameMiddle from '../../../assets/character_border_blue.png'; 
 import { Heart } from 'lucide-react';
-
-
-
 import { FavoritePresenter } from '../..';
 import { useCallback } from 'react';
 
@@ -223,7 +220,7 @@ const toogleFavorite = useCallback(async (heroId : number )=>{
     return (
       <Container>
         <Header>
-          <Title>Favorite Heroes</Title>
+          <Title>Favorite Heroesss</Title>
           <CloseButton onClick={onClose}>✖</CloseButton>
         </Header>
         <EmptyMessage>No favorite heroes yet. Click ❤️ to add</EmptyMessage>

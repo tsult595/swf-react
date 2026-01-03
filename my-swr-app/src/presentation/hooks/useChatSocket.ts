@@ -59,20 +59,20 @@ export function useChatSocket(
   }) => {
     if (!text.trim() || !socketRef.current) return;
 
-    const optimisticMessage: Message = {
-      id: `temp-${Date.now()}-${Math.random()}`,
-      userId: currentUserId,
-      username: currentUsername,
-      text: text.trim(),
-      type,
-      recipientId,
-      clanName,
-      timestamp: new Date().toISOString(),
-      uniqueKey: `temp-${Date.now()}-${Math.random()}`,
-    };
-
-    // Добавляем сразу локально
-    onNewMessage(optimisticMessage);
+    // Для приватных добавляем локально, чтобы отправитель видел
+    if (type === 'private' && recipientId) {
+      const localMessage: Message = {
+        id: `local-${Date.now()}-${Math.random()}`,
+        userId: currentUserId,
+        username: currentUsername,
+        text: text.trim(),
+        type,
+        recipientId,
+        clanName,
+        timestamp: new Date().toISOString(),
+      };
+      onNewMessage(localMessage);
+    }
 
     // Отправляем через сокет
     socketRef.current.emit('chat message', {

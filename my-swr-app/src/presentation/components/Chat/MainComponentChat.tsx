@@ -1,5 +1,6 @@
 import styled, { css } from 'styled-components';
 import { useState, useRef, useCallback} from 'react';
+import useSWR from 'swr';
 import { useChatSocket } from '../../hooks/useChatSocket';
 import ChatModalComponent from '../../Modals/ChatModalComponent/ChatModalComponent';
 import ChatModifyComponentModul from '../../Modals/ChatModalComponent/ChatModifyComponentModul';
@@ -10,7 +11,6 @@ import MainChatHeader from './MainChatHeader';
 import type { Message } from '../../../Domain/Entities/MessageTypes';
 import { ClanPresenter } from '../..';
 import { useClanMessages } from '../../hooks/useClanMessages';
-// import { useMessageActions } from '../../message/useMessageActions';
 import { usePrivateMessages } from '../../hooks/usePrivateMessages';
 import { useClanAddRemove } from '../../hooks/useClanAddRemove';
 import { useLocalStorageSync } from '../../hooks/useLocalStorageSync';
@@ -18,8 +18,6 @@ import { useScrollToBottom } from '../../hooks/useScrollToBottom';
 import { useUserId } from '../../hooks/useUserId';
 import { useClanNotifications } from '../../hooks/useClanNotifications';
 import { useLoadAllMessages } from '../../hooks/useLoadAllMessages';
-
-
 
 const FrameBorderModalMain = css`
   border-style: solid;
@@ -43,34 +41,19 @@ const MainComponentChat = () => {
   const currentUserId = useUserId();
   const ownerId = localStorage.getItem('userId') || '';
   const { data: clans, mutate: mutateClans } = ClanPresenter.useGetClansByUserId(ownerId || currentUserId);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const { data: messages = [], mutate: mutateMessages } = useSWR<Message[]>('messages', null, { fallbackData: [] });
   const currentUsername = 'Tima';
   const clanIds = clans ? clans.map((c: ClanDocument) => c.id || c._id).filter(Boolean) as string[] : [];
   const [selectedUsers] = useState<string[]>([]);
   const allMembers = selectedUsers.includes(ownerId) ? selectedUsers : [ownerId, ...selectedUsers];
   const onNewMessage = useCallback((message: Message) => {
-    setMessages(prev => {
-      if (message.userId === currentUserId && !message.id.startsWith('temp-')) return prev;
-      if (message.userId === currentUserId && message.type === 'private' && message.text.includes('удалены из клана')) return prev;
+    mutateMessages(prev => {
+      const currentPrev = prev || [];
+      if (message.userId === currentUserId && message.type === 'private' && message.text.includes('удалены из клана')) return currentPrev;
 
-      const newPrev = [...prev];
-      if (message.id.startsWith('temp-')) {
-        message.uniqueKey = message.id;
-        newPrev.push(message);
-      } else {
-        message.uniqueKey = message.id; 
-        const tempIndex = newPrev.findIndex(m => m.text === message.text && m.userId === message.userId && m.type === message.type && m.recipientId === message.recipientId && m.id.startsWith('temp-'));
-        if (tempIndex !== -1) {
-          const temp = newPrev[tempIndex];
-          message.uniqueKey = temp.uniqueKey;
-          Object.assign(temp, message); 
-        } else {
-          newPrev.push(message);
-        }
-      }
-      return newPrev;
-    });
-  }, [currentUserId]);
+      return [...currentPrev, message];
+    }, false);
+  }, [currentUserId, mutateMessages]);
   const { sendMessage } = useChatSocket(currentUserId, currentUsername, clanIds, onNewMessage);
   const messagesContainerRef = useRef<HTMLElement | null>(null);
   const [selectedRecipientId, setSelectedRecipientId] = useState<string | null>(localStorage.getItem('selectedRecipientId'));
@@ -79,12 +62,12 @@ const MainComponentChat = () => {
   const [clanChatId, setClanChatId] = useState<string | null>(localStorage.getItem('clanChatId'));
   const [clanName, setClanName] = useState<string | null>(localStorage.getItem('clanName'));
   const [seenNotifications, setSeenNotifications] = useState<Set<string>>(new Set());
-  useClanMessages(clanChatId, setMessages);
-  usePrivateMessages(selectedRecipientId, currentUserId, setMessages);
+  useClanMessages(clanChatId, mutateMessages);
+  usePrivateMessages(selectedRecipientId, currentUserId, mutateMessages);
   const { handleAddUser, handleRemoveUser } = useClanAddRemove(ownerId, sendMessage, mutateClans);
   useLocalStorageSync({ clanChatId, clanName, selectedRecipientId });
   useScrollToBottom(messagesContainerRef, messages);
-  const { loading, error } = useLoadAllMessages(setMessages);
+  const { loading, error } = useLoadAllMessages(mutateMessages);
   useClanNotifications(
     messages,
     currentUserId,
@@ -115,7 +98,7 @@ const MainComponentChat = () => {
           clanChatId={clanChatId}
           selectedRecipientId={selectedRecipientId}
           clanName={clanName}
-          setMessages={setMessages}
+          mutateMessages={mutateMessages}
           onSelectRecipient={setSelectedRecipientId}
           containerRef={messagesContainerRef}
           loading={loading}

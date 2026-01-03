@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { getAllPublicMessagesForUI } from '../../presentation/public-chat/getAllPublicMessages';
 import type { Message } from '../../Domain/Entities/MessageTypes';
 
-export const useLoadAllMessages = (setMessages: (msgs: Message[]) => void) => {
+export const useLoadAllMessages = (mutateMessages: (updater: (prev: Message[] | undefined) => Message[], revalidate?: boolean) => void) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);  
   
@@ -11,11 +11,11 @@ export const useLoadAllMessages = (setMessages: (msgs: Message[]) => void) => {
       await getAllPublicMessagesForUI(
         (loading) => setLoading(loading),         
         (errorText) => setError(errorText),        
-        (messages) => setMessages(messages)        
+        (messages) => mutateMessages(() => messages, false)        
       );
     };
     loadMessages();
-  }, [setMessages]); // Добавьте setMessages в зависимости, если нужно
+  }, [mutateMessages]);
 
   return { loading, error }; // Возвращаем, чтобы компонент мог использовать
 };
