@@ -76,10 +76,7 @@ const SelectedSpan = styled.span`
 `;
 
 interface MainChatInputContainerProps {
-  inputValue: string;
-  setInputValue: (value: string) => void;
-  onSendMessage: () => void;
-  onKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  sendMessage: (args: { text: string; recipientId?: string; type?: 'normal' | 'private' | 'clanChat'; clanName?: string }) => void;
   selectedRecipientId: string | null;
   clanChatId: string | null;
   clanName: string | null;
@@ -87,15 +84,13 @@ interface MainChatInputContainerProps {
 }
 
 const MainChatInputContainer: React.FC<MainChatInputContainerProps> = ({
-  inputValue,
-  setInputValue,
-  onSendMessage,
-  onKeyPress,
+  sendMessage,
   selectedRecipientId,
   clanChatId,
   clanName,
   onClearSelection
 }) => {
+  const { inputValue, setInputValue, handleSendMessage, handleKeyPress } = useChatInput(sendMessage, selectedRecipientId, clanChatId, clanName);  
   return (
     <InputContainer>
       {selectedRecipientId ? (
@@ -120,9 +115,9 @@ const MainChatInputContainer: React.FC<MainChatInputContainerProps> = ({
         }
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
-        onKeyUp={onKeyPress}
+        onKeyUp={handleKeyPress}
       />
-      <SendButton onClick={onSendMessage}>
+      <SendButton onClick={handleSendMessage}>
         <Send size={18} />
         Отправить
       </SendButton>

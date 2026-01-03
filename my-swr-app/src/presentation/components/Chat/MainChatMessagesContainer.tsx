@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import AsideBackGround from '../../../assets/auction_menu_background.png';
 import type { Message } from '../../../Domain/Entities/MessageTypes';
 import { MessageTypeEnum } from '../../../Domain/Entities/enums/messageEnum';
-
+import { useMessageActions } from '../../message/useMessageActions';
 const MessagesContainer = styled.div`
   flex: 1;
   overflow-y: auto;
@@ -195,7 +195,7 @@ interface MainChatMessagesContainerProps {
   clanChatId: string | null;
   selectedRecipientId: string | null;
   clanName: string | null;
-  onDeleteMessage: (messageId: string) => void;
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   onSelectRecipient: (recipientId: string | null) => void;
   containerRef: React.RefObject<HTMLElement | null>;
   loading?: boolean;
@@ -208,11 +208,13 @@ const MainChatMessagesContainer: React.FC<MainChatMessagesContainerProps> = ({
   clanChatId,
   selectedRecipientId,
   clanName,
-  onDeleteMessage,
+  setMessages,
   onSelectRecipient,
   containerRef,
   loading = false
 }) => {
+  const { deleteMessage } = useMessageActions(setMessages);
+  
   return (
     <MessagesContainer ref={containerRef}>
       {loading ? (
@@ -286,7 +288,7 @@ const MainChatMessagesContainer: React.FC<MainChatMessagesContainerProps> = ({
                     minute: '2-digit',
                   })}
                 </Timestamp>
-                <button onClick={() => onDeleteMessage(message.id)}>x</button>
+                <button onClick={() => deleteMessage(message.id)}>x</button>
               </MessageHeader>
               <MessageText>{message.text}</MessageText>
             </MessageBubble>

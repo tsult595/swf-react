@@ -9,12 +9,11 @@ import MainChatInputContainer from './MainChatInputContainer';
 import MainChatHeader from './MainChatHeader';
 import type { Message } from '../../../Domain/Entities/MessageTypes';
 import { ClanPresenter } from '../..';
-import { useMessageActions } from '../../message/useMessageActions';
 import { useClanMessages } from '../../hooks/useClanMessages';
+// import { useMessageActions } from '../../message/useMessageActions';
 import { usePrivateMessages } from '../../hooks/usePrivateMessages';
 import { useClanAddRemove } from '../../hooks/useClanAddRemove';
 import { useLocalStorageSync } from '../../hooks/useLocalStorageSync';
-import { useChatInput } from '../../hooks/useChatInput';
 import { useScrollToBottom } from '../../hooks/useScrollToBottom';
 import { useUserId } from '../../hooks/useUserId';
 import { useClanNotifications } from '../../hooks/useClanNotifications';
@@ -80,12 +79,10 @@ const MainComponentChat = () => {
   const [clanChatId, setClanChatId] = useState<string | null>(localStorage.getItem('clanChatId'));
   const [clanName, setClanName] = useState<string | null>(localStorage.getItem('clanName'));
   const [seenNotifications, setSeenNotifications] = useState<Set<string>>(new Set());
-  const { deleteMessage } = useMessageActions(setMessages);
   useClanMessages(clanChatId, setMessages);
   usePrivateMessages(selectedRecipientId, currentUserId, setMessages);
   const { handleAddUser, handleRemoveUser } = useClanAddRemove(ownerId, sendMessage, mutateClans);
   useLocalStorageSync({ clanChatId, clanName, selectedRecipientId });
-  const { inputValue, setInputValue, handleSendMessage, handleKeyPress } = useChatInput(sendMessage, selectedRecipientId, clanChatId, clanName);
   useScrollToBottom(messagesContainerRef, messages);
   const { loading, error } = useLoadAllMessages(setMessages);
   useClanNotifications(
@@ -118,16 +115,13 @@ const MainComponentChat = () => {
           clanChatId={clanChatId}
           selectedRecipientId={selectedRecipientId}
           clanName={clanName}
-          onDeleteMessage={deleteMessage}
+          setMessages={setMessages}
           onSelectRecipient={setSelectedRecipientId}
           containerRef={messagesContainerRef}
           loading={loading}
         />
         <MainChatInputContainer
-          inputValue={inputValue}
-          setInputValue={setInputValue}
-          onSendMessage={handleSendMessage}
-          onKeyPress={handleKeyPress}
+          sendMessage={sendMessage}
           selectedRecipientId={selectedRecipientId}
           clanChatId={clanChatId}
           clanName={clanName}
