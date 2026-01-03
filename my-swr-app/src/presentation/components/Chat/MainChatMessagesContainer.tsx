@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import AsideBackGround from '../../../assets/auction_menu_background.png';
 import type { Message } from '../../../Domain/Entities/MessageTypes';
+import { MessageTypeEnum } from '../../../Domain/Entities/enums/messageEnum';
 
 const MessagesContainer = styled.div`
   flex: 1;
@@ -219,29 +220,29 @@ const MainChatMessagesContainer: React.FC<MainChatMessagesContainerProps> = ({
       ) : (
         messages.map((message) => {
         if (selectedRecipientId) {
-          const isPrivateMessage = message.type === 'private' && (message.recipientId === selectedRecipientId || message.userId === selectedRecipientId);
-          const isPublic = message.type === 'normal';
+          const isPrivateMessage = message.type === MessageTypeEnum.PRIVATE && (message.recipientId === selectedRecipientId || message.userId === selectedRecipientId);
+          const isPublic = message.type === MessageTypeEnum.NORMAL;
           if (!isPrivateMessage && !isPublic) return null;
         } else if (clanChatId) {
-          const isClanMessage = message.type === 'clanChat' && message.recipientId === clanChatId;
-          const isPrivateMessage = message.type === 'private' && (message.recipientId === currentUserId || message.userId === currentUserId);
-          const isPublic = message.type === 'normal';
+          const isClanMessage = message.type === MessageTypeEnum.CLAN_CHAT && message.recipientId === clanChatId;
+          const isPrivateMessage = message.type === MessageTypeEnum.PRIVATE && (message.recipientId === currentUserId || message.userId === currentUserId);
+          const isPublic = message.type === MessageTypeEnum.NORMAL;
           if (!isClanMessage && !isPrivateMessage && !isPublic) return null;
         } else {
           if (
-            message.type === 'private' &&
+            message.type === MessageTypeEnum.PRIVATE &&
             message.recipientId !== currentUserId &&
             message.userId !== currentUserId
           ) {
             return null;
           }
-          if (message.type === 'clanChat' && message.recipientId && !clanIds.includes(message.recipientId)) {
+          if (message.type === MessageTypeEnum.CLAN_CHAT && message.recipientId && !clanIds.includes(message.recipientId)) {
             return null;
           }
         }
         const isOwn = message.userId === currentUserId;
-        const isPrivate = message.type === 'private';
-        const isClan = message.type === 'clanChat';
+        const isPrivate = message.type === MessageTypeEnum.PRIVATE;
+        const isClan = message.type === MessageTypeEnum.CLAN_CHAT;
         // Hide "added to clan" messages sent by the owner
         if (isPrivate && isOwn && message.text.includes('добавлены в клан')) {
           return null;

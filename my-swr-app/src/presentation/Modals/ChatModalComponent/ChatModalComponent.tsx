@@ -122,12 +122,10 @@ interface ChatModalComponentProps {
   allMembers: string[];
 }
 
-const ChatModalComponent = ({ onClose, onCreateClan, sendMessage, prikolniyText, ownerId, allMembers }: ChatModalComponentProps) => {
+const ChatModalComponent = ({ onClose, onCreateClan, sendMessage, prikolniyText, ownerId }: ChatModalComponentProps) => {
   const [clanName, setClanName] = useState('');
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-  // const [users, setUsers] = useState<UserInfo[]>([]);
-  // const [loading, setLoading] = useState(true);
-  // const [error, setError] = useState<string | null>(null);
+  
   const {data : users , isLoading , error , mutate } = UserPresenter.useFetchUsers();
  
 

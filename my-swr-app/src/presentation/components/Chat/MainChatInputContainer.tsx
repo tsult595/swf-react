@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { Send } from 'lucide-react';
 import HeaderBackGround from '../../../assets/page_header_background.png';
+import { useChatInput } from '../../hooks/useChatInput';
 
 const InputContainer = styled.div`
   flex-shrink: 0;

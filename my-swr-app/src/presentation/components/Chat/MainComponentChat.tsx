@@ -149,7 +149,7 @@ const MainComponentChat = () => {
             setClanName(clanName);
             setSelectedRecipientId(null);
             setIsModalOpen(false);
-            mutateClans(); // Refresh clans after creation
+            mutateClans(); 
           }}
           prikolniyText="welcome"
         />
