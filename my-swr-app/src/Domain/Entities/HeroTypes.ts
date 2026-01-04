@@ -28,7 +28,6 @@ export interface LotHistory {
 
 
 export interface LikedHeroesProps {
-  hero: Hero; 
   onClose: () => void;
 }
 

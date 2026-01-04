@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import heroFrameHigh from '../../../assets/character_border_violet.png';
 import heroFrameMiddle from '../../../assets/character_border_blue.png';
 import heroFrame from '../../../assets/character_border_common.png';
-import type { LikedHeroesProps , Hero } from '../../../Domain/Entities/HeroTypes';
+import type {  Hero } from '../../../Domain/Entities/HeroTypes';
 import { useState } from 'react';
 import useSWR from 'swr';
 import { fetcher } from '../../../utils/ApiFetcher';
@@ -167,16 +167,17 @@ const getFrameByRarity = (rarity: string) => {
 };
 
 
-const MainHeroComponent = ({hero} : LikedHeroesProps ) => {
-        const [openSections, setOpenSections] = useState({
-        auction: true,
-        nft: true,
-        experience: true,
-        create: true,
-        table : true
-      });
-    
-    const { data: fullHero} = useSWR<Hero>(
+const MainHeroComponent = ( { onClose }: { onClose: () => void }) => {
+  const { data: hero } = useSWR<Hero>('selectedHero');
+  const [openSections, setOpenSections] = useState({
+    auction: true,
+    nft: true,
+    experience: true,
+    create: true,
+    table : true
+  });
+
+  const { data: fullHero} = useSWR<Hero>(
     hero ? `/heroes/${hero.id}` : null,
     fetcher,
     {

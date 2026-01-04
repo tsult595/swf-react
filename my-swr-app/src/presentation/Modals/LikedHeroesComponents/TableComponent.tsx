@@ -1,9 +1,10 @@
 import styled from 'styled-components';
 import { useState } from 'react';
 import useSWR from 'swr';
-import type { LikedHeroesProps } from '../../../Domain/Entities/HeroTypes';
+// import type { LikedHeroesProps } from '../../../Domain/Entities/HeroTypes';
 import type { LotHistory } from '../../../Domain/Entities/HeroTypes';
 import { fetcher } from '../../../utils/ApiFetcher';
+import type { Hero } from '../../../Domain/Entities/HeroTypes';
 
 
 const HistoryTableWrapper = styled.div<{ $isOpen: boolean }>`
@@ -127,7 +128,8 @@ const EmptyText = styled.div`
   font-size: 14px;
 `;
 
-const TableComponent = ({ hero }: LikedHeroesProps) => {
+const TableComponent = ({ onClose }: { onClose: () => void }) => {
+  const { data: hero } = useSWR<Hero>('selectedHero');
   const [isOpen, setIsOpen] = useState(true);
 
 
@@ -143,6 +145,8 @@ const TableComponent = ({ hero }: LikedHeroesProps) => {
   const toggleSection = () => {
     setIsOpen(prev => !prev);
   };
+
+  if (!hero) return null;
 
   return (
     <LotHistorySection>

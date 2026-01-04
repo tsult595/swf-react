@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import type { Hero } from '../../Domain/Entities/HeroTypes';
 import { useState, useCallback } from 'react';
+import useSWR from 'swr';
  
 import heroFrame from '../../assets/character_border_common.png'; 
 import heroFrameHigh from '../../assets/character_border_violet.png'; 
@@ -290,7 +291,7 @@ const HeartButton = styled.button`
 `;
 
 function MainContent() {
-  const [selectedHero, setSelectedHero] = useState<Hero | null>(null); 
+  const { data: selectedHero, mutate: setSelectedHero } = useSWR<Hero | null>('selectedHero', null, { fallbackData: null });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
   const [activeTab, setActiveTab] = useState<'characters' | 'items' | 'chat'>('characters'); 
@@ -434,12 +435,9 @@ function MainContent() {
 
       <ModalOverlay $isOpen={isModalOpen} onClick={handleCloseModal}> 
         <div onClick={(e) => e.stopPropagation()}>
-          {selectedHero && (
-            <LikedHeroes 
-              hero={selectedHero}
-              onClose={handleCloseModal}
-            />
-          )}
+          <LikedHeroes 
+            onClose={handleCloseModal}
+          />
         </div>
       </ModalOverlay>
     </>

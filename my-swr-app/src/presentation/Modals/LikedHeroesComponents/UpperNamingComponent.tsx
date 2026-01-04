@@ -1,5 +1,7 @@
 import styled from 'styled-components';
-import type { LikedHeroesProps } from '../../../Domain/Entities/HeroTypes';
+// import type { LikedHeroesProps } from '../../../Domain/Entities/HeroTypes';
+import type { Hero } from '../../../Domain/Entities/HeroTypes';
+import useSWR from 'swr';
 
 
 const UpperNamingModul = styled.div`
@@ -51,7 +53,9 @@ const HeroStatus = styled.div<{ $status: string }>`
 `;
 
 
-const UpperNamingComponent = ({hero} : LikedHeroesProps) => {
+const UpperNamingComponent = ({ onClose }: { onClose: () => void }) => {
+  const { data: hero } = useSWR<Hero>('selectedHero');
+  if (!hero) return null;
   return (
       <UpperNamingModul>
           <HeroName>{hero.name}</HeroName>

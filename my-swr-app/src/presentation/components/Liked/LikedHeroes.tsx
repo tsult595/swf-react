@@ -4,6 +4,8 @@ import HeaderComponent from '../../Modals/LikedHeroesComponents/HeaderComponent'
 import TableComponent from '../../Modals/LikedHeroesComponents/TableComponent';
 import MainHeroComponent from '../../Modals/LikedHeroesComponents/MainHeroComponent';
 import UpperNamingComponent from '../../Modals/LikedHeroesComponents/UpperNamingComponent';
+import type { Hero } from '../../../Domain/Entities/HeroTypes';
+import useSWR from 'swr';
 
 const FrameBorderModalMain = css`
   border-style: solid;
@@ -61,15 +63,20 @@ const ScrollWrapper = styled.div`
 
 
 
-const LikedHeroes = ({ hero, onClose }: LikedHeroesProps) => {
+const LikedHeroes = ({ onClose }: LikedHeroesProps) => {
+  const { data: hero } = useSWR<Hero>('selectedHero');
  
   return (
     <Container>
       <HeaderComponent  onClose={onClose} />
       <ScrollWrapper>
-        <UpperNamingComponent hero={hero} onClose={onClose} />
-        <MainHeroComponent hero={hero} onClose={onClose} />
-       <TableComponent hero={hero} onClose={onClose} /> 
+        {hero && (
+          <>
+            <UpperNamingComponent onClose={onClose} />
+            <MainHeroComponent onClose={onClose} />
+            <TableComponent onClose={onClose} />
+          </>
+        )}
       </ScrollWrapper>
     </Container>
   );
