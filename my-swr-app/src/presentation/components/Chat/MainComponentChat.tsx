@@ -128,7 +128,7 @@ const MainComponentChat = () => {
             setIsModalOpen(false);
             mutateClans(); 
           }}
-          prikolniyText="welcome"
+          
         />
       )}
       {isModifyModalOpen && (

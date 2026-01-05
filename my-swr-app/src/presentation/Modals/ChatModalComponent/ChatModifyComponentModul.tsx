@@ -4,6 +4,7 @@ import { ClanPresenter } from '../..';
 import type { ClanDocument } from '../../../Domain/Entities/ClanTypes';
 // import type { UserInfo } from '../../../Domain/Entities/UserType';
 import { UserPresenter } from '../..';
+import {useDisappearWelcomeButton} from '../../hooks/useDisapearWelcomeButton';
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -123,7 +124,8 @@ const ChatModifyComponentModul = ({ userId, onClose, onOpenChat, handleAddUser, 
   const [selectedClan, setSelectedClan] = useState<ClanDocument | null>(null);
   const { data: clans, mutate: mutateClans } = ClanPresenter.useGetClansByUserId(userId);
   const { data: allUsers, mutate } = UserPresenter.useFetchUsers();
-
+  const { isVisible, hideButton } = useDisappearWelcomeButton();
+  const [welcomeText, setWelcomeText] = useState('Добро пожаловать');
 
   const localHandleAddUser = async (_clanId: string, userId: string) => {
     const clanId = selectedClan?.id || selectedClan?._id;
@@ -183,6 +185,9 @@ const ChatModifyComponentModul = ({ userId, onClose, onOpenChat, handleAddUser, 
     <ModalOverlay>
       <ModalContainer>
         <SectionTitle>Мои кланы</SectionTitle>
+         {isVisible && <button onClick={() => {
+        setWelcomeText('Новое приветствие');
+        hideButton(); }}>{welcomeText}</button>}
         <ClanList>
           {(clans as ClanDocument[] || []).map((clan) => {
             const isOwner = clan.ownerId === userId;

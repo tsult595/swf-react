@@ -3,6 +3,7 @@ import { useState} from 'react';
 // import type { UserInfo } from '../../../Domain/Entities/UserType';
 import { ClanPresenter } from '../..';
 import { UserPresenter } from '../..';
+import {useDisappearWelcomeButton} from '../../hooks/useDisapearWelcomeButton';
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -122,10 +123,11 @@ interface ChatModalComponentProps {
   allMembers: string[];
 }
 
-const ChatModalComponent = ({ onClose, onCreateClan, sendMessage, prikolniyText, ownerId }: ChatModalComponentProps) => {
+const ChatModalComponent = ({ onClose, onCreateClan, sendMessage, ownerId }: ChatModalComponentProps) => {
   const [clanName, setClanName] = useState('');
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-  
+  const [welcomeText, setWelcomeText] = useState('Добро пожаловать');
+  const { isVisible, hideButton } = useDisappearWelcomeButton();
   const {data : users , isLoading , error , mutate } = UserPresenter.useFetchUsers();
  
 
@@ -172,7 +174,10 @@ const ChatModalComponent = ({ onClose, onCreateClan, sendMessage, prikolniyText,
     <ModalOverlay>
       <ModalContainer>
         <Title>Создать клан</Title>
-        {prikolniyText}
+        {isVisible && <button onClick={() => {
+        setWelcomeText('Новое приветствие');
+        hideButton(); }}>{welcomeText}</button>}
+        
         <Input
           placeholder="Название клана"
           value={clanName}
