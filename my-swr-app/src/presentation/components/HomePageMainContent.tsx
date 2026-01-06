@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import type { Hero } from '../../Domain/Entities/HeroTypes';
+import type { Item } from '../../Domain/Entities/enums/ItemsTypes';
 import { useState, useCallback } from 'react';
 import useSWR from 'swr';
  
@@ -14,9 +15,11 @@ import FavoriteHeroes from './Favorites/FavoriteHeroes';
 import MainComponentChat from '../components/Chat/MainComponentChat'; 
 import { Heart } from 'lucide-react';
 
-// import { useFavorites } from '../hooks/useFavorites';
+
 import { useHeroes } from '../hooks/useHeroes';
 import { FavoritePresenter } from '..';
+import MainItemsComponent from './Items/MainItemsComponent';
+import ItemsDetailModal from '../Modals/ItemsModal/ItemsDetailModal';
 
 const LoadingWrapper = styled.div`
   display: flex;
@@ -292,7 +295,9 @@ const HeartButton = styled.button`
 
 function MainContent() {
   const { data: selectedHero, mutate: setSelectedHero } = useSWR<Hero | null>('selectedHero', null, { fallbackData: null });
+  const { data: selectedItem, mutate: setSelectedItem } = useSWR<Item | null>('selectedItem', null, { fallbackData: null });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isItemModalOpen, setIsItemModalOpen] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
   const [activeTab, setActiveTab] = useState<'characters' | 'items' | 'chat'>('characters'); 
   const userId = 'user123';
@@ -319,6 +324,16 @@ function MainContent() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedHero(null);
+  };
+
+  const handleItemClick = (item: Item) => {
+    setSelectedItem(item);
+    setIsItemModalOpen(true);
+  };
+
+  const handleCloseItemModal = () => {
+    setIsItemModalOpen(false);
+    setSelectedItem(null);
   };
 
   return (
@@ -418,9 +433,10 @@ function MainContent() {
        
         {activeTab === 'items' && (
           <MainHeroesWrapper>
-            <LoadingWrapper>
-              <div>Items section coming soon...</div>
-            </LoadingWrapper>
+            <MainItemsComponent onItemClick={handleItemClick}
+            text='meow'
+             />
+          
           </MainHeroesWrapper>
         )}
       </MainContentWrapper>
@@ -438,6 +454,12 @@ function MainContent() {
           <LikedHeroes 
             onClose={handleCloseModal}
           />
+        </div>
+      </ModalOverlay>
+
+      <ModalOverlay $isOpen={isItemModalOpen} onClick={handleCloseItemModal}>
+        <div onClick={(e) => e.stopPropagation()}>
+          <ItemsDetailModal onClose={handleCloseItemModal} />
         </div>
       </ModalOverlay>
     </>
