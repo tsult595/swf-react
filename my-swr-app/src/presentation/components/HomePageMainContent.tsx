@@ -242,6 +242,7 @@ function MainContent() {
         {activeTab === 'something' && (
           <ItemsWrapper>
             <Something onSomethingClick={handleSomethingClick}
+            handleHeroClick={handleHeroClick}
 
              />
           </ItemsWrapper>
