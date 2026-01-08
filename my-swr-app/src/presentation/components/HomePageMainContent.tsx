@@ -3,22 +3,18 @@ import type { Hero } from '../../Domain/Entities/HeroTypes';
 import type { Item } from '../../Domain/Entities/enums/ItemsTypes';
 import { useState, useCallback } from 'react';
 import useSWR from 'swr';
- 
-
 import ButtonMainImgDefault from '../../assets/toggle_button_default.png'
 import ButtonMainImgHover from '../../assets/toggle_button_hover.png'; 
 import ButtonMainImgTogled from '../../assets/toggle_button_toggled.png'; 
 import LikedHeroes from './Liked/LikedHeroes';
 import FavoriteHeroes from './Favorites/FavoriteHeroes';
 import MainComponentChat from '../components/Chat/MainComponentChat'; 
-
-
-
 import { useHeroes } from '../hooks/useHeroes';
 import { FavoritePresenter } from '..';
 import MainItemsComponent from './Items/MainItemsComponent';
 import ItemsDetailModal from '../Modals/ItemsModal/ItemsDetailModal';
 import MainHeroesSection from './Heroes/MainHeroesSection';
+import Something from './Heroes/Something';
 
 
 const MainContentWrapper = styled.main` 
@@ -133,7 +129,7 @@ function MainContent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isItemModalOpen, setIsItemModalOpen] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
-  const [activeTab, setActiveTab] = useState<'characters' | 'items' | 'chat'>('characters'); 
+  const [activeTab, setActiveTab] = useState<'characters' | 'items' | 'chat' | 'something'>('characters'); 
   const userId = 'user123';
   const { data: favorites,  mutate: mutateFavorites } = FavoritePresenter.useGetFavorites(userId);
   const { data: heroes, error, isLoading: isHeroesLoading, mutate } = useHeroes();
@@ -170,6 +166,13 @@ function MainContent() {
     setSelectedItem(null);
   };
 
+  const handleSomethingClick = (item: Item) => {
+    setSelectedItem(item);
+    setIsItemModalOpen(true);
+  }
+
+
+
   return (
     <>
       <MainContentWrapper> 
@@ -196,6 +199,13 @@ function MainContent() {
             onClick={() => setActiveTab('chat')}
           >
             <ButtonText>Chat</ButtonText>
+          </MainContentButtons>
+
+          <MainContentButtons 
+            $active={activeTab === 'something'} 
+            onClick={() => setActiveTab('something')}
+          >
+            <ButtonText>Something</ButtonText>
           </MainContentButtons>
         </MainContentButtonsWrapper>
 
@@ -226,6 +236,14 @@ function MainContent() {
             text='meow'
              />
           
+          </ItemsWrapper>
+        )}
+
+        {activeTab === 'something' && (
+          <ItemsWrapper>
+            <Something onSomethingClick={handleSomethingClick}
+
+             />
           </ItemsWrapper>
         )}
       </MainContentWrapper>

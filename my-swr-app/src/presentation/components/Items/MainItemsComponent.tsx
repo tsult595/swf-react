@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useGetAllItems } from '../../items/findAllItems';
+import { ItemsPresenter } from '../..';
 import type { Item } from '../../../Domain/Entities/enums/ItemsTypes';
 
 const MainItemsWrapper = styled.div`
@@ -134,7 +134,7 @@ interface MainItemsComponentProps {
 }
 
 const MainItemsComponent = ({ onItemClick, text }: MainItemsComponentProps) => {
-  const { data: items, error, isLoading, mutate } = useGetAllItems();
+  const { data: items, error, isLoading, mutate } = ItemsPresenter.useGetAllItems();
 
   return (
     <>

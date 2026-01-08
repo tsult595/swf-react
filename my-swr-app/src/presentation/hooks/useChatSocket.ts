@@ -59,7 +59,7 @@ export function useChatSocket(
   }) => {
     if (!text.trim() || !socketRef.current) return;
 
-    // Для приватных добавляем локально, чтобы отправитель видел
+  
     if (type === 'private' && recipientId) {
       const localMessage: Message = {
         id: `local-${Date.now()}-${Math.random()}`,
