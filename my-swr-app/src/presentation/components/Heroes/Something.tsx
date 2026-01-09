@@ -1,14 +1,14 @@
 
 import type { Item } from '../../../Domain/Entities/enums/ItemsTypes';
+import type { Hero } from '../../../Domain/Entities/HeroTypes';
 import styled from 'styled-components';
 import { ItemsPresenter } from '../..';
 import { useHeroes } from '../../hooks/useHeroes';
-import type { Hero } from '../../../Domain/Entities/HeroTypes';
+import { useState } from 'react';
 
 const Container = styled.div`
   width: 100%;
   padding: 20px;
-  background: linear-gradient(135deg, #1e1e2e 0%, #2a2a3e 100%);
   min-height: 100vh;
   color: white;
 `;
@@ -30,6 +30,7 @@ const GridWrapper = styled.div`
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 20px;
   justify-items: center;
+  margin-top: 20px;
 `;
 
 const ItemCard = styled.div<{ $rarity: string }>`
@@ -147,14 +148,54 @@ const ErrorWrapper = styled.div`
   }
 `;
 
-const Something = ({ onSomethingClick, handleHeroClick }: { onSomethingClick: (item: Item) => void, handleHeroClick: (hero: Hero) => void }) => {
+const Something = ({ onSomethingClick, handleHeroClick }: { onSomethingClick: (item: Item) => void, handleHeroClick?: (hero: Hero) => void }) => {
   const { data: items, error, isLoading, mutate } = ItemsPresenter.useGetAllItems();
   const { data: heroes, error: heroesError, isLoading: heroesLoading, mutate: mutateHeroes } = useHeroes();
+  const [searchItems, setSearchItems] = useState<string>('');
+  const [searchHeroes, setSearchHeroes] = useState<string>('');
+  const [itemCategory, setItemCategory] = useState<string>('all');
+
+
+  // Фильтруем предметы по поисковому запросу (по имени или описанию) и категории
+  const filteredItems = items?.filter(item =>
+    (itemCategory === 'all' || item.category === itemCategory) &&
+    (item.name.toLowerCase().includes(searchItems.toLowerCase()) ||
+    item.description.toLowerCase().includes(searchItems.toLowerCase()))
+  );
+
+  // Фильтруем героев по поисковому запросу (по имени)
+  const filteredHeroes = heroes?.filter(hero =>
+    hero.name.toLowerCase().includes(searchHeroes.toLowerCase())
+  );
 
   return (
     <Container>
       <Section>
         <SectionTitle>Items Collection</SectionTitle>
+        <select onChange={(e) => setItemCategory(e.target.value)} name="itemCategory" id="itemCategory" >
+          <option value="all">All Categories</option>
+          <option value="weapon">Weapons</option>
+          <option value="armor">Armor</option>
+          <option value="potion">Potions</option>
+        </select>
+        <input
+          type="text"
+          placeholder="Search items by name or description..."
+          value={searchItems}
+          onChange={(e) => setSearchItems(e.target.value)}
+          style={{
+            width: '100%',
+            maxWidth: '400px',
+            padding: '10px',
+            borderRadius: '5px',
+            border: '1px solid #ffd700',
+            background: 'rgba(39, 43, 54, 0.8)',
+            color: 'white',
+            fontSize: '1rem',
+            marginBottom: '20px'
+          }}
+        />
+    
         {isLoading && <LoadingWrapper>Loading items...</LoadingWrapper>}
         {error && (
           <ErrorWrapper>
@@ -163,10 +204,12 @@ const Something = ({ onSomethingClick, handleHeroClick }: { onSomethingClick: (i
           </ErrorWrapper>
         )}
         <GridWrapper>
-          {items && items.map((item) => (
+          {filteredItems && filteredItems.map((item) => (
             <ItemCard key={item.id} $rarity={item.rarity} onClick={() => onSomethingClick(item)}>
               <CardTitle>{item.name}</CardTitle>
               <CardDescription>{item.description}</CardDescription>
+              <CardPrice>Rarity: {item.rarity}</CardPrice>
+              <CardPrice>Category: {item.category}</CardPrice>
             </ItemCard>
           ))}
         </GridWrapper>
@@ -174,6 +217,23 @@ const Something = ({ onSomethingClick, handleHeroClick }: { onSomethingClick: (i
 
       <Section>
         <SectionTitle>Heroes Collection</SectionTitle>
+        <input
+          type="text"
+          placeholder="Search heroes by name..."
+          value={searchHeroes}
+          onChange={(e) => setSearchHeroes(e.target.value)}
+          style={{
+            width: '100%',
+            maxWidth: '400px',
+            padding: '10px',
+            borderRadius: '5px',
+            border: '1px solid #ffd700',
+            background: 'rgba(39, 43, 54, 0.8)',
+            color: 'white',
+            fontSize: '1rem',
+            marginBottom: '20px'
+          }}
+        />
         {heroesLoading && <LoadingWrapper>Loading heroes...</LoadingWrapper>}
         {heroesError && (
           <ErrorWrapper>
@@ -182,8 +242,8 @@ const Something = ({ onSomethingClick, handleHeroClick }: { onSomethingClick: (i
           </ErrorWrapper>
         )}
         <GridWrapper>
-          {heroes?.map((hero) => (
-            <HeroCard key={hero.id} $status={hero.status} onClick={() => handleHeroClick(hero)}>
+          {filteredHeroes?.map((hero) => (
+            <HeroCard key={hero.id} $status={hero.status} onClick={() => handleHeroClick?.(hero)}>
               <CardTitle>{hero.name}</CardTitle>
               <CardPrice>Price: {hero.price}</CardPrice>
               <StatusBadge $status={hero.status}>{hero.status}</StatusBadge>
