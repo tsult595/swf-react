@@ -4,4 +4,5 @@ export type Item = {
   name: string;
   description: string;
   rarity: 'Common' | 'Rare' | 'Epic' | 'Legendary';
+  category: string;
 };
