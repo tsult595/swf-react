@@ -6,8 +6,9 @@ import heroFrame from '../../../assets/character_border_common.png';
 import heroFrameHigh from '../../../assets/character_border_violet.png'; 
 import heroFrameMiddle from '../../../assets/character_border_blue.png'; 
 import { Heart } from 'lucide-react';
-import { FavoritePresenter } from '../..';
-import { useCallback } from 'react';
+// import { FavoritePresenter } from '../..';
+// import { useCallback } from 'react';
+import { useFavorites } from '../../hooks/useFavorites';
 
 
 const FrameBorderModalMain = css`
@@ -190,21 +191,12 @@ const HeartButton = styled.button`
 
 `;
 
-const FavoriteHeroes = ({ onClose }: FavoriteHeroesProps) => { 
+const FavoriteHeroes = ({ onClose }: FavoriteHeroesProps) => {
   const userId = 'user123';
-// const { favorites, isLoading, toggleFavorite } = useFavorites(userId);
- const {data : favorites , isLoading , mutate} = FavoritePresenter.useGetFavorites(userId);
 
-const toogleFavorite = useCallback(async (heroId : number )=>{
-   if (!favorites || !Array.isArray(favorites)) return;
-   const isCurrentlyFavorite = favorites.some(f => f.id === heroId);
+  const { favorites, isLoading, toggleFavorite } = useFavorites(userId);
 
- await FavoritePresenter.toggleFavorites(userId, heroId, isCurrentlyFavorite)
-  .then(()=>{ mutate() });
-},[userId ,mutate, favorites]);
-
-
-  if (!Array.isArray(favorites) || isLoading) {
+  if (isLoading) {
     return (
       <Container>
         <Header>
@@ -220,7 +212,7 @@ const toogleFavorite = useCallback(async (heroId : number )=>{
     return (
       <Container>
         <Header>
-          <Title>Favorite Heroesss</Title>
+          <Title>Favorite Heroes</Title>
           <CloseButton onClick={onClose}>✖</CloseButton>
         </Header>
         <EmptyMessage>No favorite heroes yet. Click ❤️ to add</EmptyMessage>
@@ -234,32 +226,26 @@ const toogleFavorite = useCallback(async (heroId : number )=>{
         <Title>Favorite Heroes ({favorites.length})</Title>
         <CloseButton onClick={onClose}>✖</CloseButton>
       </Header>
+
       <HeroCardWrapper>
-        {favorites.map((hero) => (
+        {favorites.map(hero => (
           <HeroCard key={hero.id}>
             <HeroFrame $rarity={hero.rarity}>
-              <HeroImage 
-                src={`/src/assets/characterAvatars/${hero.fileName}`} 
+              <HeroImage
+                src={`/src/assets/characterAvatars/${hero.fileName}`}
                 alt={hero.name}
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                }}
               />
             </HeroFrame>
-            <HeroInfo> 
-              <HeartButton onClick={() => toogleFavorite(hero.id)}> 
-                <Heart 
-                  size={20} 
-                  color="red" 
-                  fill="red"
-                />
+
+            <HeroInfo>
+              <HeartButton onClick={() => toggleFavorite(hero)}>
+                <Heart size={20} color="red" fill="red" />
               </HeartButton>
+
               <h3>{hero.name}</h3>
-              <p>ID: {hero.id}</p>
               <p>Level: {hero.level}</p>
               <p>Rarity: {hero.rarity}</p>
-              <p>Price: {hero.price} SWR</p>
-              <p>Status: {hero.status}</p>
+              <p>Price: {hero.price}</p>
             </HeroInfo>
           </HeroCard>
         ))}
@@ -267,6 +253,7 @@ const toogleFavorite = useCallback(async (heroId : number )=>{
     </Container>
   );
 };
+
 
 export default FavoriteHeroes;
 
