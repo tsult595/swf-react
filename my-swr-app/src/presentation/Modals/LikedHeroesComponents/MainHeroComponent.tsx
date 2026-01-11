@@ -167,7 +167,7 @@ const getFrameByRarity = (rarity: string) => {
 };
 
 
-const MainHeroComponent = ( { onClose }: { onClose: () => void }) => {
+const MainHeroComponent = () => {
   const { data: hero } = useSWR<Hero>('selectedHero');
   const [openSections, setOpenSections] = useState({
     auction: true,

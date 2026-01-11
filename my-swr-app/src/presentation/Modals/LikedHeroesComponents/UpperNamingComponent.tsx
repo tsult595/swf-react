@@ -53,7 +53,7 @@ const HeroStatus = styled.div<{ $status: string }>`
 `;
 
 
-const UpperNamingComponent = ({ onClose }: { onClose: () => void }) => {
+const UpperNamingComponent = () => {
   const { data: hero } = useSWR<Hero>('selectedHero');
   if (!hero) return null;
   return (

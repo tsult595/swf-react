@@ -2,13 +2,13 @@ import styled, { css } from 'styled-components';
 import type { FavoriteHeroesProps} from '../../../Domain/Entities/HeroTypes';
 import SocialsFrameHover from '../../../assets/small_button_hover.png';
 import SocialFrameActive from '../../../assets/small_button_pressed.png';
-import heroFrame from '../../../assets/character_border_common.png'; 
-import heroFrameHigh from '../../../assets/character_border_violet.png'; 
-import heroFrameMiddle from '../../../assets/character_border_blue.png'; 
+import heroFrame from '../../../assets/character_border_common.png';
+import heroFrameHigh from '../../../assets/character_border_violet.png';
+import heroFrameMiddle from '../../../assets/character_border_blue.png';
 import { Heart } from 'lucide-react';
-// import { FavoritePresenter } from '../..';
+import { FavoritePresenter } from '../..';
+import type { Hero } from '../../../Domain/Entities/HeroTypes';
 // import { useCallback } from 'react';
-import { useFavorites } from '../../hooks/useFavorites';
 
 
 const FrameBorderModalMain = css`
@@ -194,7 +194,31 @@ const HeartButton = styled.button`
 const FavoriteHeroes = ({ onClose }: FavoriteHeroesProps) => {
   const userId = 'user123';
 
-  const { favorites, isLoading, toggleFavorite } = useFavorites(userId);
+  const { data: favorites, mutate: mutateFavorites } = FavoritePresenter.useGetFavorites(userId);
+
+  const toggleFavorite = async (hero: Hero) => {
+    const isCurrentlyFavorite = favorites?.some((f: Hero) => f.id === hero.id) || false;
+
+    // Optimistic update
+    mutateFavorites(
+      isCurrentlyFavorite
+        ? favorites?.filter((f: Hero) => f.id !== hero.id) // Remove from favorites
+        : [...(favorites || []), hero], // Add to favorites
+      false // Don't revalidate immediately
+    );
+
+    try {
+      await FavoritePresenter.toggleFavorites(userId, hero.id, isCurrentlyFavorite);
+      // Success - data is already updated optimistically
+    } catch (error) {
+      // Rollback on error
+      mutateFavorites();
+      console.error('Failed to toggle favorite:', error);
+    }
+  };
+
+  const isLoading = !favorites;
+  const favoritesList = favorites || [];
 
   if (isLoading) {
     return (
@@ -208,7 +232,7 @@ const FavoriteHeroes = ({ onClose }: FavoriteHeroesProps) => {
     );
   }
 
-  if (favorites.length === 0) {
+  if (favoritesList.length === 0) {
     return (
       <Container>
         <Header>
@@ -223,12 +247,12 @@ const FavoriteHeroes = ({ onClose }: FavoriteHeroesProps) => {
   return (
     <Container>
       <Header>
-        <Title>Favorite Heroes ({favorites.length})</Title>
+        <Title>Favorite Heroes ({favoritesList.length})</Title>
         <CloseButton onClick={onClose}>✖</CloseButton>
       </Header>
 
       <HeroCardWrapper>
-        {favorites.map(hero => (
+        {favoritesList.map((hero: Hero) => (
           <HeroCard key={hero.id}>
             <HeroFrame $rarity={hero.rarity}>
               <HeroImage

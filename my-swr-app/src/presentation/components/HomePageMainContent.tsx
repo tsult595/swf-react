@@ -10,7 +10,7 @@ import LikedHeroes from './Liked/LikedHeroes';
 import FavoriteHeroes from './Favorites/FavoriteHeroes';
 import MainComponentChat from '../components/Chat/MainComponentChat'; 
 import { useHeroes } from '../hooks/useHeroes';
-import { useFavorites } from '../hooks/useFavorites';
+import { FavoritePresenter } from '..';
 import MainItemsComponent from './Items/MainItemsComponent';
 import ItemsDetailModal from '../Modals/ItemsModal/ItemsDetailModal';
 import MainHeroesSection from './Heroes/MainHeroesSection';
@@ -131,13 +131,19 @@ function MainContent() {
   const [showFavorites, setShowFavorites] = useState(false);
   const [activeTab, setActiveTab] = useState<'characters' | 'items' | 'chat' | 'something'>('characters'); 
   const userId = 'user123';
-  const { favorites, toggleFavorite, isFavorite, isLoading: isFavoritesLoading } = useFavorites(userId);
+  const { data: favorites,  mutate: mutateFavorites } = FavoritePresenter.useGetFavorites(userId);
   const { data: heroes, error, isLoading: isHeroesLoading, mutate } = useHeroes();
 
-  const toggleFavoriteHandler = useCallback(async (hero: Hero, e?: React.MouseEvent) => {
+  const toggleFavorite = useCallback(async (hero: Hero, e?: React.MouseEvent) => {
     e?.stopPropagation();
-    await toggleFavorite(hero);
-  }, [toggleFavorite]);
+
+    const isCurrentlyFavorite = favorites?.some((f: Hero) => f.id === hero.id) || false;
+
+    await FavoritePresenter.toggleFavorites(userId, hero.id, isCurrentlyFavorite);
+    mutateFavorites();
+  }, [userId, favorites, mutateFavorites]);
+
+  const isFavorite = (heroId: string | number) => favorites?.some((f: Hero) => f.id === heroId) || false;
 
 
   const handleHeroClick = (hero: Hero) => {
@@ -210,7 +216,7 @@ function MainContent() {
             isHeroesLoading={isHeroesLoading}
             error={error}
             onHeroClick={handleHeroClick}
-            onToggleFavorite={toggleFavoriteHandler}
+            onToggleFavorite={toggleFavorite}
             isFavorite={isFavorite}
             onRetry={() => mutate()}
           />
@@ -236,7 +242,9 @@ function MainContent() {
         {activeTab === 'something' && (
           <ItemsWrapper>
             <Something onSomethingClick={handleSomethingClick}
-             handleHeroClick={handleHeroClick} />
+            handleHeroClick={handleHeroClick}
+
+             />
           </ItemsWrapper>
         )}
       </MainContentWrapper>

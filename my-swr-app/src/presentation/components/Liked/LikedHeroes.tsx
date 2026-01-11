@@ -72,9 +72,9 @@ const LikedHeroes = ({ onClose }: LikedHeroesProps) => {
       <ScrollWrapper>
         {hero && (
           <>
-            <UpperNamingComponent onClose={onClose} />
-            <MainHeroComponent onClose={onClose} />
-            <TableComponent onClose={onClose} />
+            <UpperNamingComponent />
+            <MainHeroComponent />
+            <TableComponent  />
           </>
         )}
       </ScrollWrapper>

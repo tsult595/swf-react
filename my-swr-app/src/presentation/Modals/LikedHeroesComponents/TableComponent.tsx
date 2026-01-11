@@ -128,7 +128,7 @@ const EmptyText = styled.div`
   font-size: 14px;
 `;
 
-const TableComponent = ({ onClose }: { onClose: () => void }) => {
+const TableComponent = () => {
   const { data: hero } = useSWR<Hero>('selectedHero');
   const [isOpen, setIsOpen] = useState(true);
 
