@@ -2,7 +2,6 @@ import styled from 'styled-components';
 import { useState } from 'react';
 import { ClanPresenter } from '../..';
 import type { ClanDocument } from '../../../Domain/Entities/ClanTypes';
-// import type { UserInfo } from '../../../Domain/Entities/UserType';
 import { UserPresenter } from '../..';
 import {useDisappearWelcomeButton} from '../../hooks/useDisapearWelcomeButton';
 
