@@ -1,9 +1,7 @@
 
 import styled from 'styled-components';
-import type { Hero } from '../../../Domain/Entities/HeroTypes';
-import type { Item } from '../../../Domain/Entities/enums/ItemsTypes';
-import { useHeroes } from '../../hooks/useHeroes';
-import { ItemsPresenter } from '../..';
+import type { MysteryBox } from '../../../Domain/Entities/MystoryBoxTypes';
+import { MysteryBoxPresenter } from '../..';
 
 
 
@@ -29,17 +27,7 @@ const HeroSection = styled.div`
   margin-bottom: 30px;
 `;
 
-const ItemSection = styled.div`
-   width: 90%;
-  height: auto;
 
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 20px;
-  align-items: center;
-  border-radius: 15px;
-`;
 
 
 
@@ -50,16 +38,10 @@ const HeroCard = styled.div<{ $rarity: string }>`
   border-image-repeat: stretch;
   border-radius: 10px;
   background: yellow;
+  color: white;
 `;
 
-const ItemCard = styled.div<{ $rarity: string }>`
-   width: 250px;
-  height: 350px;
-  border: 5px solid transparent;
-  border-image-repeat: stretch;
-  border-radius: 10px;
-  background: yellow;
-`;
+
 const ErrorWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -95,48 +77,39 @@ const LoadingWrapper = styled.div`
 `;
 
 
-const Something = ({ onSomethingClick, handleHeroClick }: { onSomethingClick: (item: Item) => void, handleHeroClick?: (hero: Hero) => void }) => {
-   const { data: heroes, error: heroesError, isLoading: heroesLoading, mutate: mutateHeroes } = useHeroes();
-   const { data: items, error, isLoading, mutate } = ItemsPresenter.useGetAllItems();
+const Something =({onBoxClick}: {onBoxClick: (box: MysteryBox) => void}) => {
+   const {data : boxes , error: boxesError, isLoading: boxesLoading, mutate: mutateBoxes} = MysteryBoxPresenter.useGetAllMystoryBoxes();
+   console.log("Boxes data in Something component:", boxes);
+   
   return (
     <>
     <Container>
-      {isLoading && <LoadingWrapper>Loading items...</LoadingWrapper>}
-        {error && (
+      {boxesLoading && <LoadingWrapper>Loading items...</LoadingWrapper>}
+        {boxesError && (
           <ErrorWrapper>
             <div>Error loading items</div>
-            <button onClick={() => mutate()}>Retry</button>
+            <button onClick={() => mutateBoxes()}>Retry</button>
           </ErrorWrapper>
         )}
-         {heroesLoading && <LoadingWrapper>Loading heroes...</LoadingWrapper>}
-        {heroesError && (
+         {boxesLoading && <LoadingWrapper>Loading heroes...</LoadingWrapper>}
+        {boxesError && (
           <ErrorWrapper>
             <div>Error loading heroes</div>
-            <button onClick={() => mutateHeroes()}>Retry</button>
+            <button onClick={() => mutateBoxes()}>Retry</button>
           </ErrorWrapper>
         )}
       <HeroSection>
       {
-        heroes?.map((hero)=>(
-          <HeroCard key={hero.id} $rarity={hero.rarity} onClick={() => handleHeroClick?.(hero)}>
-            <p>{hero.name}</p>
-            <p>Rarity: {hero.rarity}</p>
-            <p>Level: {hero.level}</p>
+        boxes?.map((box)=>(
+          <HeroCard key={box.id} $rarity={box.rarity} onClick={() => onBoxClick?.(box)}>
+            <p>{box.name}</p>
+            <p>Rarity: {box.rarity}</p>
+          
           </HeroCard>
         ))
       }
       </HeroSection>
-      <ItemSection>
-        {
-        items?.map((items)=>(
-          <ItemCard key={items.id} $rarity={items.rarity} onClick={() => onSomethingClick(items)}>
-            <p>{items.name}</p>
-            <p>{items.description}</p>
-            <p>{items.rarity}</p>
-          </ItemCard>
-        ))
-      }
-      </ItemSection>
+
     </Container>
     </>
   )

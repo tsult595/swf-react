@@ -4,5 +4,6 @@ import * as UsersUseCases from './users';
 import * as ClansUseCases from './clans';
 import * as MessageUseCases from './message';
 import * as ItemUseCases from './items';
+import * as MysteryBoxUseCases from './mysteryBox';
 
-export {FavoritesUseCases, UsersUseCases, ClansUseCases, MessageUseCases, ItemUseCases};
+export {FavoritesUseCases, UsersUseCases, ClansUseCases, MessageUseCases, ItemUseCases, MysteryBoxUseCases};

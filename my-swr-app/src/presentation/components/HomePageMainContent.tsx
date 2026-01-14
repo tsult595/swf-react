@@ -13,8 +13,10 @@ import { useHeroes } from '../hooks/useHeroes';
 import { FavoritePresenter } from '..';
 import MainItemsComponent from './Items/MainItemsComponent';
 import ItemsDetailModal from '../Modals/ItemsModal/ItemsDetailModal';
+import BoxDetailModal from '../Modals/BoxModal/BoxDetailModal';
 import MainHeroesSection from './Heroes/MainHeroesSection';
 import Something from './Heroes/Something';
+import type { MysteryBox } from '../../Domain/Entities/MystoryBoxTypes';
 
 
 const MainContentWrapper = styled.main` 
@@ -126,8 +128,10 @@ const ModalOverlay = styled.div<{ $isOpen: boolean }>`
 function MainContent() {
   const { mutate: setSelectedHero } = useSWR<Hero | null>('selectedHero', null, { fallbackData: null });
   const { mutate: setSelectedItem } = useSWR<Item | null>('selectedItem', null, { fallbackData: null });
+  const {mutate: setSelectedBox} = useSWR<MysteryBox | null>('selectedBox', null, {fallbackData: null});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isItemModalOpen, setIsItemModalOpen] = useState(false);
+  const [isBoxModalOpen, setIsBoxModalOpen] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
   const [activeTab, setActiveTab] = useState<'characters' | 'items' | 'chat' | 'something'>('characters'); 
   const userId = 'user123';
@@ -166,9 +170,14 @@ function MainContent() {
     setSelectedItem(null);
   };
 
-  const handleSomethingClick = (item: Item) => {
-    setSelectedItem(item);
-    setIsItemModalOpen(true);
+  const handleBoxgClick = (box: MysteryBox) => {
+    setSelectedBox(box);
+    setIsBoxModalOpen(true);
+  }
+
+  const handleCloseBoxModal = () => {
+    setIsBoxModalOpen(false);
+    setSelectedBox(null);
   }
 
 
@@ -241,9 +250,7 @@ function MainContent() {
 
         {activeTab === 'something' && (
           <ItemsWrapper>
-            <Something onSomethingClick={handleSomethingClick}
-            handleHeroClick={handleHeroClick}
-
+            <Something onBoxClick={handleBoxgClick}
              />
           </ItemsWrapper>
         )}
@@ -268,6 +275,12 @@ function MainContent() {
       <ModalOverlay $isOpen={isItemModalOpen} onClick={handleCloseItemModal}>
         <div onClick={(e) => e.stopPropagation()}>
           <ItemsDetailModal onClose={handleCloseItemModal} />
+        </div>
+      </ModalOverlay>
+      
+      <ModalOverlay $isOpen={isBoxModalOpen} onClick={handleCloseBoxModal}>
+        <div onClick={(e) => e.stopPropagation()}>
+          <BoxDetailModal onClosee={handleCloseBoxModal} />
         </div>
       </ModalOverlay>
     </>
