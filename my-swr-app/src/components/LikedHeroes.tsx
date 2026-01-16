@@ -1,9 +1,9 @@
 import styled, { css } from 'styled-components';
 import type {LikedHeroesProps} from '../Domain/Entities/HeroTypes';
-import HeaderComponent from '../presentation/Modals/LikedHeroesComponents/HeaderComponent';
-import TableComponent from '../presentation/Modals/LikedHeroesComponents/TableComponent';
-import MainHeroComponent from '../presentation/Modals/LikedHeroesComponents/MainHeroComponent';
-import UpperNamingComponent from '../presentation/Modals/LikedHeroesComponents/UpperNamingComponent';
+import HeaderComponent from '../presentation/Modals/LikedHeroesModal/HeaderComponent';
+import TableComponent from '../presentation/Modals/LikedHeroesModal/TableComponent';
+import MainHeroComponent from '../presentation/Modals/LikedHeroesModal/MainHeroComponent';
+import UpperNamingComponent from '../presentation/Modals/LikedHeroesModal/UpperNamingComponent';
 
 const FrameBorderModalMain = css`
   border-style: solid;

@@ -1,7 +1,7 @@
 import backgroundImage from '../../assets/background.png';
-import Header from '../components/HomePageHeader';
-import AsideLeft from '../components/HomePageAsideLeft';
-import MainContent from '../components/HomePageMainContent'; 
+import Header from '../components/HomePageComponents/HomePageHeader';
+import AsideLeft from '../components/HomePageComponents/HomePageAsideLeft';
+import HomePageMainContent from '../components/HomePageComponents/HomePageMainContent'; 
 import styled from 'styled-components';
 
 const HomePageBackground = styled.div`
@@ -33,7 +33,7 @@ function HomePage() {
       <Header />
       <ContentWrapper>
         <AsideLeft />
-        <MainContent /> 
+        <HomePageMainContent /> 
       </ContentWrapper>
     </HomePageBackground>
   );

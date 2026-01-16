@@ -1,18 +1,17 @@
 import styled from 'styled-components';
 
-import Divider from '../../assets/auction_menu_divider.png';
+import Divider from '../../../assets/auction_menu_divider.png';
 
-import PrimaryLeftDefault from '../../assets/primary_button_left.png';
-import PrimaryCenterDefault from '../../assets/primary_button_center.png';
-import PrimaryRightDefault from '../../assets/primary_button_right.png';
-import SocialsFrame from '../../assets/social_button_default.png';
-import SocialsFrameHover from '../../assets/small_button_hover.png';
-import SocialFrameActive from '../../assets/small_button_pressed.png';
-import Discord from '../../assets/social_discord_icon.svg';
-import Twitter from '../../assets/social_twitter_icon.svg';
-import AsideBackGround from '../../assets/auction_menu_background.png';
-// import Facebook from '../assets/facebook_icon.png';
-// import Instagram from '../assets/instagram_icon.png';
+import PrimaryLeftDefault from '../../../assets/primary_button_left.png';
+import PrimaryCenterDefault from '../../../assets/primary_button_center.png';
+import PrimaryRightDefault from '../../../assets/primary_button_right.png';
+import SocialsFrame from '../../../assets/social_button_default.png';
+import SocialsFrameHover from '../../../assets/small_button_hover.png';
+import SocialFrameActive from '../../../assets/small_button_pressed.png';
+import Discord from '../../../assets/social_discord_icon.svg';
+import Twitter from '../../../assets/social_twitter_icon.svg';
+import AsideBackGround from '../../../assets/auction_menu_background.png';
+
 
 const AsideLeftContainer = styled.div`
    padding: 40px;

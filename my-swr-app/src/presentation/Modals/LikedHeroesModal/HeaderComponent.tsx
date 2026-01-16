@@ -63,11 +63,12 @@ const CloseIconImage = styled.div`
     width: 24px;
     height: 24px;
     cursor: pointer;
-
     background-image: url(${CloseIcon});
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
+    display: flex;
+    justify-content: center;
 `;
 
 const AsideInfoWebSiteLink = styled.a`
@@ -112,6 +113,7 @@ const HeaderComponent = ({ onClose } : ClosingProps) => {
           <LikedHeroesHeaderTitle>Auction Item</LikedHeroesHeaderTitle>
           <AsideInfoWebSiteLink onClick={onClose}>
             <CloseIconImage>
+              ✖
             </CloseIconImage>
           </AsideInfoWebSiteLink>
         </HeaderSectionCenter>

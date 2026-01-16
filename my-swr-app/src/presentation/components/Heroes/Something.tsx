@@ -2,6 +2,7 @@
 import styled from 'styled-components';
 import type { MysteryBox } from '../../../Domain/Entities/MystoryBoxTypes';
 import { MysteryBoxPresenter } from '../..';
+import { useState } from 'react';
 
 
 
@@ -38,7 +39,7 @@ const HeroCard = styled.div<{ $rarity: string }>`
   border-image-repeat: stretch;
   border-radius: 10px;
   background: yellow;
-  color: white;
+  color: black;
 `;
 
 
@@ -80,6 +81,20 @@ const LoadingWrapper = styled.div`
 const Something =({onBoxClick}: {onBoxClick: (box: MysteryBox) => void}) => {
    const {data : boxes , error: boxesError, isLoading: boxesLoading, mutate: mutateBoxes} = MysteryBoxPresenter.useGetAllMystoryBoxes();
    console.log("Boxes data in Something component:", boxes);
+   const [inputValue, setInputValue] = useState<string>("");
+   const [addNewText, setAddNewText] = useState<string[]>([]);
+
+   const handleAddNew = () => {
+    if(inputValue.trim() !== ''){
+      setAddNewText([inputValue, ...addNewText]);
+      setInputValue('');
+    }
+   }
+
+   const handleDelete = (index: number) => {
+    const newText = addNewText.filter((_, i) => i !== index);
+    setAddNewText(newText);
+   }
    
   return (
     <>
@@ -109,7 +124,15 @@ const Something =({onBoxClick}: {onBoxClick: (box: MysteryBox) => void}) => {
         ))
       }
       </HeroSection>
-
+       <input type="text" 
+        placeholder="Search..."
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+       />
+       <button onClick={()=>handleAddNew()}>add</button>
+       <ul>
+        {addNewText.map((text,index)=>(<><button onClick={()=>handleDelete(index)}>delete</button><li key={index}>{text}</li></>))}
+       </ul>
     </Container>
     </>
   )

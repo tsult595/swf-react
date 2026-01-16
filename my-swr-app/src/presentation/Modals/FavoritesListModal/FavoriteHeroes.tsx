@@ -111,14 +111,14 @@ const HeroFrame = styled.div<{ $rarity: string }>`
   border-image: url(${props => getFrameByRarity(props.$rarity)}) 25 fill;
   border-image-repeat: stretch;
   transition: all 0.3s ease;
-  overflow: hidden; /* 👈 Добавили */
+  overflow: hidden; 
 `;
 
 const HeroImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block; /* 👈 Добавили */
+  display: block; 
 `;
 
 const HeroInfo = styled.div`

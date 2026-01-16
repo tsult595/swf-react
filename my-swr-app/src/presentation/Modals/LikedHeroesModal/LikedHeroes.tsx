@@ -1,9 +1,9 @@
 import styled, { css } from 'styled-components';
 import type {LikedHeroesProps} from '../../../Domain/Entities/HeroTypes';
-import HeaderComponent from '../../Modals/LikedHeroesComponents/HeaderComponent';
-import TableComponent from '../../Modals/LikedHeroesComponents/TableComponent';
-import MainHeroComponent from '../../Modals/LikedHeroesComponents/MainHeroComponent';
-import UpperNamingComponent from '../../Modals/LikedHeroesComponents/UpperNamingComponent';
+import HeaderComponent from './HeaderComponent';
+import TableComponent from './TableComponent';
+import MainHeroComponent from './MainHeroComponent';
+import UpperNamingComponent from './UpperNamingComponent';
 import type { Hero } from '../../../Domain/Entities/HeroTypes';
 import useSWR from 'swr';
 

@@ -1,22 +1,22 @@
 import styled from 'styled-components';
-import type { Hero } from '../../Domain/Entities/HeroTypes';
-import type { Item } from '../../Domain/Entities/enums/ItemsTypes';
+import type { Hero } from '../../../Domain/Entities/HeroTypes';
+import type { Item } from '../../../Domain/Entities/enums/ItemsTypes';
 import { useState, useCallback } from 'react';
 import useSWR from 'swr';
-import ButtonMainImgDefault from '../../assets/toggle_button_default.png'
-import ButtonMainImgHover from '../../assets/toggle_button_hover.png'; 
-import ButtonMainImgTogled from '../../assets/toggle_button_toggled.png'; 
-import LikedHeroes from './Liked/LikedHeroes';
-import FavoriteHeroes from './Favorites/FavoriteHeroes';
-import MainComponentChat from '../components/Chat/MainComponentChat'; 
-import { useHeroes } from '../hooks/useHeroes';
-import { FavoritePresenter } from '..';
-import MainItemsComponent from './Items/MainItemsComponent';
-import ItemsDetailModal from '../Modals/ItemsModal/ItemsDetailModal';
-import BoxDetailModal from '../Modals/BoxModal/BoxDetailModal';
-import MainHeroesSection from './Heroes/MainHeroesSection';
-import Something from './Heroes/Something';
-import type { MysteryBox } from '../../Domain/Entities/MystoryBoxTypes';
+import ButtonMainImgDefault from '../../../assets/toggle_button_default.png'
+import ButtonMainImgHover from '../../../assets/toggle_button_hover.png'; 
+import ButtonMainImgTogled from '../../../assets/toggle_button_toggled.png'; 
+import LikedHeroes from '../../Modals/LikedHeroesModal/LikedHeroes';
+import FavoriteHeroes from '../../Modals/FavoritesListModal/FavoriteHeroes';
+import MainComponentChat from '../Chat/MainComponentChat'; 
+import { useHeroes } from '../../hooks/useHeroes';
+import { FavoritePresenter } from '../..';
+import MainItemsComponent from '../Items/MainItemsComponent';
+import ItemsDetailModal from '../../Modals/ItemsModal/ItemsDetailModal';
+import BoxDetailModal from '../../Modals/BoxModal/BoxDetailModal';
+import MainHeroesSection from '../Heroes/MainHeroesSection';
+import Something from '../Heroes/Something';
+import type { MysteryBox } from '../../../Domain/Entities/MystoryBoxTypes';
 
 
 const MainContentWrapper = styled.main` 

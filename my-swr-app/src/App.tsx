@@ -5,7 +5,7 @@ import HomePage from './presentation/Pages/HomePage';
 import MainComponentChat from './presentation/components/Chat/MainComponentChat';
 import MainWelcomePage from './presentation/Pages/MainWelcomePage';
 import { useAnonymousUser } from './presentation/hooks/useAnonymousUser';
-import TelegramNews from './presentation/Pages/News';
+// import TelegramNews from './presentation/Pages/News';
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -51,7 +51,7 @@ function App() {
             <Route path="/home-page" element={<HomePage />} />
             <Route path="/chat" element={<MainComponentChat />} />
             <Route path="/welcome" element={<MainWelcomePage />} />
-            <Route path="/news" element={<TelegramNews />} />
+            {/* <Route path="/news" element={<TelegramNews />} /> */}
           </Routes>
         </BrowserRouter>
       </SWRConfig>
