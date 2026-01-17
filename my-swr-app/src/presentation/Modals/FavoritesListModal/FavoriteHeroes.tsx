@@ -199,17 +199,17 @@ const FavoriteHeroes = ({ onClose }: FavoriteHeroesProps) => {
   const toggleFavorite = async (hero: Hero) => {
     const isCurrentlyFavorite = favorites?.some((f: Hero) => f.id === hero.id) || false;
 
-    // Optimistic update
+    
     mutateFavorites(
       isCurrentlyFavorite
-        ? favorites?.filter((f: Hero) => f.id !== hero.id) // Remove from favorites
-        : [...(favorites || []), hero], // Add to favorites
-      false // Don't revalidate immediately
+        ? favorites?.filter((f: Hero) => f.id !== hero.id) 
+        : [...(favorites || []), hero], 
+      false 
     );
 
     try {
       await FavoritePresenter.toggleFavorites(userId, hero.id, isCurrentlyFavorite);
-      // Success - data is already updated optimistically
+     
     } catch (error) {
       // Rollback on error
       mutateFavorites();

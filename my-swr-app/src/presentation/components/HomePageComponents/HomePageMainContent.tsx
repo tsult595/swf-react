@@ -6,7 +6,7 @@ import useSWR from 'swr';
 import ButtonMainImgDefault from '../../../assets/toggle_button_default.png'
 import ButtonMainImgHover from '../../../assets/toggle_button_hover.png'; 
 import ButtonMainImgTogled from '../../../assets/toggle_button_toggled.png'; 
-import LikedHeroes from '../../Modals/LikedHeroesModal/LikedHeroes';
+import LikedHeroes from '../../Modals/LikedHeroModal/LikedHeroes';
 import FavoriteHeroes from '../../Modals/FavoritesListModal/FavoriteHeroes';
 import MainComponentChat from '../Chat/MainComponentChat'; 
 import { useHeroes } from '../../hooks/useHeroes';
