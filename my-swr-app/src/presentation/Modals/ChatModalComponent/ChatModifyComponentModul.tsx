@@ -4,8 +4,8 @@ import { ClanPresenter } from '../..';
 import type { ClanDocument } from '../../../Domain/Entities/ClanTypes';
 import { UserPresenter } from '../..';
 import {useDisappearWelcomeButton} from '../../hooks/useDisapearWelcomeButton';
-// import { sendMessage } from '../../../data/api/messageApi';
 import { useClanAddRemove } from '../../hooks/useClanAddRemove';
+
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -122,6 +122,7 @@ interface ChatModifyComponentModulProps {
 
 
 const ChatModifyComponentModul = ({ userId, onClose, onOpenChat , sendMessage , ownerId }: ChatModifyComponentModulProps) => {
+  
   const [selectedClan, setSelectedClan] = useState<ClanDocument | null>(null);
   const { data: clans, mutate: mutateClans } = ClanPresenter.useGetClansByUserId(userId);
   const { data: allUsers, mutate } = UserPresenter.useFetchUsers();
