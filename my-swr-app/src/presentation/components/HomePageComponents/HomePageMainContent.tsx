@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import type { Hero } from '../../../Domain/Entities/HeroTypes';
 import type { Item } from '../../../Domain/Entities/enums/ItemsTypes';
-import { useState, useCallback } from 'react';
+import { useState} from 'react';
 import useSWR from 'swr';
 import ButtonMainImgDefault from '../../../assets/toggle_button_default.png'
 import ButtonMainImgHover from '../../../assets/toggle_button_hover.png'; 
@@ -9,7 +9,6 @@ import ButtonMainImgTogled from '../../../assets/toggle_button_toggled.png';
 import LikedHeroes from '../../Modals/LikedHeroModal/LikedHeroes';
 import FavoriteHeroes from '../../Modals/FavoritesListModal/FavoriteHeroes';
 import MainComponentChat from '../Chat/MainComponentChat'; 
-import { useHeroes } from '../../hooks/useHeroes';
 import { FavoritePresenter } from '../..';
 import MainItemsComponent from '../Items/MainItemsComponent';
 import ItemsDetailModal from '../../Modals/ItemsModal/ItemsDetailModal';
@@ -135,19 +134,8 @@ function MainContent() {
   const [showFavorites, setShowFavorites] = useState(false);
   const [activeTab, setActiveTab] = useState<'characters' | 'items' | 'chat' | 'something'>('characters'); 
   const userId = 'user123';
-  const { data: favorites,  mutate: mutateFavorites } = FavoritePresenter.useGetFavorites(userId);
-  const { data: heroes, error, isLoading: isHeroesLoading, mutate } = useHeroes();
-
-  const toggleFavorite = useCallback(async (hero: Hero, e?: React.MouseEvent) => {
-    e?.stopPropagation();
-
-    const isCurrentlyFavorite = favorites?.some((f: Hero) => f.id === hero.id) || false;
-
-    await FavoritePresenter.toggleFavorites(userId, hero.id, isCurrentlyFavorite);
-    mutateFavorites();
-  }, [userId, favorites, mutateFavorites]);
-
-  const isFavorite = (heroId: string | number) => favorites?.some((f: Hero) => f.id === heroId) || false;
+  const { data: favorites } = FavoritePresenter.useGetFavorites(userId);
+ 
 
 
   const handleHeroClick = (hero: Hero) => {
@@ -221,13 +209,7 @@ function MainContent() {
       
         {activeTab === 'characters' && (
           <MainHeroesSection
-            heroes={heroes}
-            isHeroesLoading={isHeroesLoading}
-            error={error}
             onHeroClick={handleHeroClick}
-            onToggleFavorite={toggleFavorite}
-            isFavorite={isFavorite}
-            onRetry={() => mutate()}
           />
         )}
 

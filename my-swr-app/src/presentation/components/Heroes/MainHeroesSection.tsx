@@ -1,6 +1,10 @@
 import styled from 'styled-components';
 import type { Hero } from '../../../Domain/Entities/HeroTypes';
 import { Heart } from 'lucide-react';
+import { useHeroes } from '../../hooks/useHeroes';
+import { FavoritePresenter } from '../..';
+import { useCallback } from 'react';
+ 
 
 const MainHeroesWrapper = styled.div`
   display: flex;
@@ -208,24 +212,31 @@ const ErrorWrapper = styled.div`
 `;
 
 interface MainHeroesSectionProps {
-  heroes: Hero[] | undefined;
-  isHeroesLoading: boolean;
-  error: Error | null;
   onHeroClick: (hero: Hero) => void;
-  onToggleFavorite: (hero: Hero, e?: React.MouseEvent) => void;
-  isFavorite: (heroId: string | number) => boolean;
-  onRetry: () => void;
 }
 
 const MainHeroesSection = ({
-  heroes,
-  isHeroesLoading,
-  error,
   onHeroClick,
-  onToggleFavorite,
-  isFavorite,
-  onRetry,
+ 
+ 
+ 
 }: MainHeroesSectionProps) => {
+  const userId = 'user123';
+  const { data: heroes, error, isLoading: isHeroesLoading, mutate } = useHeroes();
+  const { data: favorites,  mutate: mutateFavorites } = FavoritePresenter.useGetFavorites(userId);
+  
+
+  const toggleFavorite = useCallback(async (hero: Hero, e?: React.MouseEvent) => {
+      e?.stopPropagation();
+  
+      const isCurrentlyFavorite = favorites?.some((f: Hero) => f.id === hero.id) || false;
+  
+      await FavoritePresenter.toggleFavorites(userId, hero.id, isCurrentlyFavorite);
+      mutateFavorites();
+    }, [userId, favorites, mutateFavorites]);
+    
+
+     const isFavorite = (heroId: string | number) => favorites?.some((f: Hero) => f.id === heroId) || false;
   return (
     <>
       {isHeroesLoading && (
@@ -238,7 +249,7 @@ const MainHeroesSection = ({
         <ErrorWrapper>
           <div>❌ Failed to load heroes</div>
           <div>Please check if server is running on port 3001</div>
-          <button onClick={onRetry}>Retry</button>
+          <button onClick={() => mutate()}>Retry</button>
         </ErrorWrapper>
       )}
 
@@ -252,7 +263,7 @@ const MainHeroesSection = ({
                 </MainHeroCardUpper>
                 <MainHeroCardLower>
                   <p>ID: {hero.id}</p>
-                  <HeartButton onClick={(e) => onToggleFavorite(hero, e)}> 
+                  <HeartButton onClick={(e) => toggleFavorite(hero, e)}> 
                     <Heart 
                       size={20} 
                       color={isFavorite(hero.id) ? "red" : "#fff"} 

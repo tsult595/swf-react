@@ -12,7 +12,6 @@ import type { Message } from '../../../Domain/Entities/MessageTypes';
 import { ClanPresenter } from '../..';
 import { useClanMessages } from '../../hooks/useClanMessages';
 import { usePrivateMessages } from '../../hooks/usePrivateMessages';
-import { useClanAddRemove } from '../../hooks/useClanAddRemove';
 import { useLocalStorageSync } from '../../hooks/useLocalStorageSync';
 import { useScrollToBottom } from '../../hooks/useScrollToBottom';
 import { useUserId } from '../../hooks/useUserId';
@@ -64,7 +63,6 @@ const MainComponentChat = () => {
   const [seenNotifications, setSeenNotifications] = useState<Set<string>>(new Set());
   useClanMessages(clanChatId, mutateMessages);
   usePrivateMessages(selectedRecipientId, currentUserId, mutateMessages);
-  const { handleAddUser, handleRemoveUser } = useClanAddRemove(ownerId, sendMessage, mutateClans);
   useLocalStorageSync({ clanChatId, clanName, selectedRecipientId });
   useScrollToBottom(messagesContainerRef, messages);
   const { loading, error } = useLoadAllMessages(mutateMessages);
@@ -134,8 +132,7 @@ const MainComponentChat = () => {
       {isModifyModalOpen && (
         <ChatModifyComponentModul
           userId={currentUserId}
-          handleAddUser={handleAddUser}
-          handleRemoveUser={handleRemoveUser}
+          ownerId={ownerId}
           onClose={() => setIsModifyModalOpen(false)}
           sendMessage={sendMessage}
           onOpenChat={async ({ clanId, clanName }) => {

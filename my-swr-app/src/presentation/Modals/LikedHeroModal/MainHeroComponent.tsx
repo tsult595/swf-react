@@ -5,7 +5,7 @@ import heroFrame from '../../../assets/character_border_common.png';
 import type {  Hero } from '../../../Domain/Entities/HeroTypes';
 import { useState } from 'react';
 import useSWR from 'swr';
-import { fetcher } from '../../../utils/ApiFetcher';
+import { useHeroById } from '../../hooks/useHeroById';
 
 const MainHeroSection = styled.div`
   width: 100%;
@@ -169,6 +169,7 @@ const getFrameByRarity = (rarity: string) => {
 
 const MainHeroComponent = () => {
   const { data: hero } = useSWR<Hero>('selectedHero');
+  const { data: fullHero } = useHeroById(hero?.id ?? null, hero);
   const [openSections, setOpenSections] = useState({
     auction: true,
     nft: true,
@@ -177,14 +178,7 @@ const MainHeroComponent = () => {
     table : true
   });
 
-  const { data: fullHero} = useSWR<Hero>(
-    hero ? `/heroes/${hero.id}` : null,
-    fetcher,
-    {
-      fallbackData: hero, 
-      revalidateOnFocus: false,
-    }
-  );
+ 
       
   const toggleSection = (section: keyof typeof openSections) => {
     setOpenSections(prev => ({

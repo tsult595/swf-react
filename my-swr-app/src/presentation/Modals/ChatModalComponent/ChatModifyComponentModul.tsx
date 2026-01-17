@@ -4,6 +4,8 @@ import { ClanPresenter } from '../..';
 import type { ClanDocument } from '../../../Domain/Entities/ClanTypes';
 import { UserPresenter } from '../..';
 import {useDisappearWelcomeButton} from '../../hooks/useDisapearWelcomeButton';
+// import { sendMessage } from '../../../data/api/messageApi';
+import { useClanAddRemove } from '../../hooks/useClanAddRemove';
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -114,17 +116,18 @@ interface ChatModifyComponentModulProps {
   onClose: () => void;
   onOpenChat: (data: { clanId: string, clanName: string }) => void;
   sendMessage: (args: { text: string; recipientId: string; type: 'private' }) => void;
-  handleAddUser: (clanId: string, userId: string, clanName: string) => Promise<void>;
-  handleRemoveUser: (clanId: string, memberId: string , clanName: string) => Promise<void>;
+  ownerId: string;
+
 }
 
 
-const ChatModifyComponentModul = ({ userId, onClose, onOpenChat, handleAddUser, handleRemoveUser }: ChatModifyComponentModulProps) => {
+const ChatModifyComponentModul = ({ userId, onClose, onOpenChat , sendMessage , ownerId }: ChatModifyComponentModulProps) => {
   const [selectedClan, setSelectedClan] = useState<ClanDocument | null>(null);
   const { data: clans, mutate: mutateClans } = ClanPresenter.useGetClansByUserId(userId);
   const { data: allUsers, mutate } = UserPresenter.useFetchUsers();
   const { isVisible, hideButton } = useDisappearWelcomeButton();
   const [welcomeText, setWelcomeText] = useState('Добро пожаловать');
+  const { handleAddUser, handleRemoveUser } = useClanAddRemove(ownerId, sendMessage, mutateClans);
 
   const localHandleAddUser = async (_clanId: string, userId: string) => {
     const clanId = selectedClan?.id || selectedClan?._id;
