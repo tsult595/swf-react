@@ -43,8 +43,6 @@ const MainComponentChat = () => {
   const { data: messages = [], mutate: mutateMessages } = useSWR<Message[]>('messages', null, { fallbackData: [] });
   const currentUsername = 'Tima';
   const clanIds = clans ? clans.map((c: ClanDocument) => c.id || c._id).filter(Boolean) as string[] : [];
-  const [selectedUsers] = useState<string[]>([]);
-  const allMembers = selectedUsers.includes(ownerId) ? selectedUsers : [ownerId, ...selectedUsers];
   const onNewMessage = useCallback((message: Message) => {
     mutateMessages(prev => {
       const currentPrev = prev || [];
@@ -87,7 +85,7 @@ const MainComponentChat = () => {
           onCreateClanClick={() => setIsModalOpen(true)}
           onModifyClanClick={() => setIsModifyModalOpen(true)}
           currentUserId={currentUserId}
-          clanName={clanName || undefined}
+          clanName={clanName}
         />
         <MainChatMessagesContainer
           messages={messages}
@@ -115,10 +113,7 @@ const MainComponentChat = () => {
       </ChatContainer>
       {isModalOpen && (
         <ChatModalComponent
-          ownerId={ownerId}
-          allMembers={allMembers}
           onClose={() => setIsModalOpen(false)}
-          sendMessage={sendMessage}
           onCreateClan={async (clanId: string, clanName: string) => {
             setClanChatId(clanId);
             setClanName(clanName);
@@ -126,15 +121,11 @@ const MainComponentChat = () => {
             setIsModalOpen(false);
             mutateClans(); 
           }}
-          
         />
       )}
       {isModifyModalOpen && (
         <ChatModifyComponentModul
-          userId={currentUserId}
-          ownerId={ownerId}
           onClose={() => setIsModifyModalOpen(false)}
-          sendMessage={sendMessage}
           onOpenChat={async ({ clanId, clanName }) => {
             setClanChatId(clanId);
             setClanName(clanName);

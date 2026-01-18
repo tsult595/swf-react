@@ -1,11 +1,14 @@
 import styled from 'styled-components';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { ClanPresenter } from '../..';
 import type { ClanDocument } from '../../../Domain/Entities/ClanTypes';
 import { UserPresenter } from '../..';
-import {useDisappearWelcomeButton} from '../../hooks/useDisapearWelcomeButton';
+import { useDisappearWelcomeButton } from '../../hooks/useDisapearWelcomeButton';
 import { useClanAddRemove } from '../../hooks/useClanAddRemove';
-
+import { useChatSocket } from '../../hooks/useChatSocket';
+import { useUserId } from '../../hooks/useUserId';
+// import useSWR from 'swr';
+// import type { Message } from '../../../Domain/Entities/MessageTypes';
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -112,22 +115,22 @@ const SectionTitle = styled.h3`
 `;
 
 interface ChatModifyComponentModulProps {
-  userId: string;
   onClose: () => void;
   onOpenChat: (data: { clanId: string, clanName: string }) => void;
-  sendMessage: (args: { text: string; recipientId: string; type: 'private' }) => void;
-  ownerId: string;
-
 }
 
 
-const ChatModifyComponentModul = ({ userId, onClose, onOpenChat , sendMessage , ownerId }: ChatModifyComponentModulProps) => {
-  
+const ChatModifyComponentModul = ({ onClose, onOpenChat }: ChatModifyComponentModulProps) => {
+  const userId = useUserId();
+  const ownerId = localStorage.getItem('userId') || userId;
   const [selectedClan, setSelectedClan] = useState<ClanDocument | null>(null);
   const { data: clans, mutate: mutateClans } = ClanPresenter.useGetClansByUserId(userId);
   const { data: allUsers, mutate } = UserPresenter.useFetchUsers();
   const { isVisible, hideButton } = useDisappearWelcomeButton();
   const [welcomeText, setWelcomeText] = useState('Добро пожаловать');
+  const clanIds = clans?.map((c: ClanDocument) => c.id || c._id).filter(Boolean) as string[] || [];
+  const onNewMessage = useCallback(() => {}, []);
+  const { sendMessage } = useChatSocket(ownerId, 'User', clanIds, onNewMessage);
   const { handleAddUser, handleRemoveUser } = useClanAddRemove(ownerId, sendMessage, mutateClans);
 
   const localHandleAddUser = async (_clanId: string, userId: string) => {

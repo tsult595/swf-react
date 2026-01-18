@@ -1,9 +1,13 @@
 import styled from 'styled-components';
-import { useState} from 'react';
-// import type { UserInfo } from '../../../Domain/Entities/UserType';
+import { useState, useCallback } from 'react';
 import { ClanPresenter } from '../..';
 import { UserPresenter } from '../..';
-import {useDisappearWelcomeButton} from '../../hooks/useDisapearWelcomeButton';
+import { useDisappearWelcomeButton } from '../../hooks/useDisapearWelcomeButton';
+import { useUserId } from '../../hooks/useUserId';
+import { useChatSocket } from '../../hooks/useChatSocket';
+// import useSWR from 'swr';
+// import type { Message } from '../../../Domain/Entities/MessageTypes';
+// import type { ClanDocument } from '../../../Domain/Entities/ClanTypes';
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -117,21 +121,18 @@ const StyledButton = styled.button`
 interface ChatModalComponentProps {
   onClose: () => void;
   onCreateClan: (clanId: string, clanName: string) => void;
-  sendMessage: (args: { text: string; recipientId: string; type: 'private' }) => void;
-  prikolniyText?: string;
-  ownerId: string;
-  allMembers: string[];
 }
 
-const ChatModalComponent = ({ onClose, onCreateClan, sendMessage, ownerId }: ChatModalComponentProps) => {
+const ChatModalComponent = ({ onClose, onCreateClan }: ChatModalComponentProps) => {
+  const ownerId = useUserId();
+  const onNewMessage = useCallback(() => {}, []);
+  const { sendMessage } = useChatSocket(ownerId, 'User', [], onNewMessage);
   const [clanName, setClanName] = useState('');
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [welcomeText, setWelcomeText] = useState('Добро пожаловать');
   const { isVisible, hideButton } = useDisappearWelcomeButton();
-  const {data : users , isLoading , error , mutate } = UserPresenter.useFetchUsers();
+  const { data: users, isLoading, error, mutate } = UserPresenter.useFetchUsers();
  
-
-
 
   const toggleUser = (id: string) => {
     setSelectedUsers((prev) =>
@@ -144,7 +145,7 @@ const ChatModalComponent = ({ onClose, onCreateClan, sendMessage, ownerId }: Cha
   const handleCreate = async () => {
     if (clanName.trim() && selectedUsers.length > 0) {
       try {
-        const members = [ownerId, ...selectedUsers]; // Включаем ownerId в members
+        const members = [ownerId, ...selectedUsers]; 
         const clan = await ClanPresenter.createClan(clanName.trim(), members, ownerId);
     
         selectedUsers.forEach((memberId) => {
@@ -157,7 +158,7 @@ const ChatModalComponent = ({ onClose, onCreateClan, sendMessage, ownerId }: Cha
           }
         });
         onCreateClan(clan.id || clan._id, clan.name);
-        mutate(); // Refresh users list to update clan memberships
+        mutate(); 
         onClose();
       } catch {
         alert('Ошибка при создании клана');

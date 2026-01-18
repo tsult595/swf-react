@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { Scroll } from 'lucide-react';
 import HeaderBackGround from '../../../assets/page_header_background.png';
 
+
 const ChatHeader = styled.div`
   background-image: url(${HeaderBackGround});
   border: 3px solid #57503aff;
@@ -47,18 +48,26 @@ const CreateGroupButton = styled.button`
   }
 `;
 
+const ClanName = styled.span`
+  color: #ffd700;
+  font-size: 18px;
+  font-weight: bold;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+`;
+
 interface MainChatHeaderProps {
   onCreateClanClick: () => void;
   onModifyClanClick: () => void;
   currentUserId: string;
-  clanName?: string;
+  clanName?: string | null;
 }
 
 const MainChatHeader: React.FC<MainChatHeaderProps> = ({ onCreateClanClick, onModifyClanClick, currentUserId, clanName }) => {
+  
   return (
     <ChatHeader>
-        {currentUserId}
-        {clanName}
+      {clanName && <ClanName>Клан: {clanName}</ClanName>}
+      {currentUserId}
       <Scroll size={28} color="#665d3fff" />
       <CreateGroupButton onClick={onCreateClanClick}>
         Создать свой клан
