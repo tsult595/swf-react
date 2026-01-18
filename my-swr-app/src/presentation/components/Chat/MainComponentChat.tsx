@@ -12,7 +12,6 @@ import { useLocalStorageSync } from '../../hooks/useLocalStorageSync';
 import { useUserId } from '../../hooks/useUserId';
 import { useClanNotifications } from '../../hooks/useClanNotifications';
 
-
 const FrameBorderModalMain = css`
   border-style: solid;
   border-image-width: 40px;
@@ -55,21 +54,18 @@ const MainComponentChat = () => {
     clanChatId
   );
 
-
   return (
     <>
       <ChatContainer>
         <MainChatHeader
           onCreateClanClick={() => setIsModalOpen(true)}
           onModifyClanClick={() => setIsModifyModalOpen(true)}
-          
         />
         <MainChatMessagesContainer
           clanChatId={clanChatId}
           selectedRecipientId={selectedRecipientId}
           clanName={clanName}
           onSelectRecipient={setSelectedRecipientId}
-         
         />
         <MainChatInputContainer
           selectedRecipientId={selectedRecipientId}

@@ -198,7 +198,7 @@ const Timestamp = styled.span`
 `;
 
 interface MainChatMessagesContainerProps {
-  // currentUserId: string;
+ 
   clanChatId: string | null;
   selectedRecipientId: string | null;
   clanName: string | null;
@@ -221,7 +221,7 @@ const MainChatMessagesContainer: React.FC<MainChatMessagesContainerProps> = ({
   const { deleteMessage } = useMessageActions(mutateMessages);
   const { data: clans } = ClanPresenter.useGetClansByUserId(ownerId);
   const clanIds = clans ? clans.map((c: ClanDocument) => c.id || c._id).filter(Boolean) as string[] : [];
-  const messagesContainerRef = useRef<HTMLElement | null>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   
   useScrollToBottom(messagesContainerRef, messages);
 
