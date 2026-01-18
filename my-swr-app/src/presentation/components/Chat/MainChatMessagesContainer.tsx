@@ -3,6 +3,15 @@ import AsideBackGround from '../../../assets/auction_menu_background.png';
 import type { Message } from '../../../Domain/Entities/MessageTypes';
 import { MessageTypeEnum } from '../../../Domain/Entities/enums/messageEnum';
 import { useMessageActions } from '../../message/useMessageActions';
+import type { ClanDocument } from '../../../Domain/Entities/ClanTypes';
+import { ClanPresenter } from '../..';
+import { useUserId } from '../../hooks/useUserId';
+import { useRef } from 'react';
+import { useScrollToBottom } from '../../hooks/useScrollToBottom';
+import { useLoadAllMessages } from '../../hooks/useLoadAllMessages';
+import { usePrivateMessages } from '../../hooks/usePrivateMessages';
+import { useClanMessages } from '../../hooks/useClanMessages';
+import useSWR from 'swr';
 const MessagesContainer = styled.div`
   flex: 1;
   overflow-y: auto;
@@ -189,34 +198,36 @@ const Timestamp = styled.span`
 `;
 
 interface MainChatMessagesContainerProps {
-  messages: Message[];
-  currentUserId: string;
-  clanIds: string[];
+  // currentUserId: string;
   clanChatId: string | null;
   selectedRecipientId: string | null;
   clanName: string | null;
-  mutateMessages: (updater: (prev: Message[] | undefined) => Message[], revalidate?: boolean) => void;
   onSelectRecipient: (recipientId: string | null) => void;
-  containerRef: React.RefObject<HTMLElement | null>;
-  loading?: boolean;
+
 }
 
 const MainChatMessagesContainer: React.FC<MainChatMessagesContainerProps> = ({
-  messages,
-  currentUserId,
-  clanIds,
   clanChatId,
   selectedRecipientId,
   clanName,
-  mutateMessages,
   onSelectRecipient,
-  containerRef,
-  loading = false
+
 }) => {
+   const { data: messages = [], mutate: mutateMessages } = useSWR<Message[]>('messages', null, { fallbackData: [] });
+  const { loading, error } = useLoadAllMessages(mutateMessages);
+  const ownerId = useUserId();
+  useClanMessages(clanChatId, mutateMessages);
+  usePrivateMessages(selectedRecipientId, ownerId, mutateMessages);
   const { deleteMessage } = useMessageActions(mutateMessages);
+  const { data: clans } = ClanPresenter.useGetClansByUserId(ownerId);
+  const clanIds = clans ? clans.map((c: ClanDocument) => c.id || c._id).filter(Boolean) as string[] : [];
+  const messagesContainerRef = useRef<HTMLElement | null>(null);
   
+  useScrollToBottom(messagesContainerRef, messages);
+
+   if (error) return <div style={{ color: 'red' }}>{error}</div>;
   return (
-    <MessagesContainer ref={containerRef}>
+    <MessagesContainer ref={messagesContainerRef}>
       {loading ? (
         <LoadingSkeleton />
       ) : (
@@ -227,14 +238,14 @@ const MainChatMessagesContainer: React.FC<MainChatMessagesContainerProps> = ({
           if (!isPrivateMessage && !isPublic) return null;
         } else if (clanChatId) {
           const isClanMessage = message.type === MessageTypeEnum.CLAN_CHAT && message.recipientId === clanChatId;
-          const isPrivateMessage = message.type === MessageTypeEnum.PRIVATE && (message.recipientId === currentUserId || message.userId === currentUserId);
+          const isPrivateMessage = message.type === MessageTypeEnum.PRIVATE && (message.recipientId === ownerId || message.userId === ownerId);
           const isPublic = message.type === MessageTypeEnum.NORMAL;
           if (!isClanMessage && !isPrivateMessage && !isPublic) return null;
         } else {
           if (
             message.type === MessageTypeEnum.PRIVATE &&
-            message.recipientId !== currentUserId &&
-            message.userId !== currentUserId
+            message.recipientId !== ownerId &&
+            message.userId !== ownerId
           ) {
             return null;
           }
@@ -242,10 +253,10 @@ const MainChatMessagesContainer: React.FC<MainChatMessagesContainerProps> = ({
             return null;
           }
         }
-        const isOwn = message.userId === currentUserId;
+        const isOwn = message.userId === ownerId;
         const isPrivate = message.type === MessageTypeEnum.PRIVATE;
         const isClan = message.type === MessageTypeEnum.CLAN_CHAT;
-        // Hide "added to clan" messages sent by the owner
+  
         if (isPrivate && isOwn && message.text.includes('добавлены в клан')) {
           return null;
         }
@@ -258,12 +269,12 @@ const MainChatMessagesContainer: React.FC<MainChatMessagesContainerProps> = ({
                 <Username
                   $type={message.userId}
                   style={{
-                    cursor: message.userId !== currentUserId ? 'pointer' : 'default',
+                    cursor: message.userId !== ownerId ? 'pointer' : 'default',
                     textDecoration: selectedRecipientId === message.userId ? 'underline' : 'none',
                     color: selectedRecipientId === message.userId ? '#ffd700' : undefined
                   }}
                   onClick={() => {
-                    if (message.userId !== currentUserId) {
+                    if (message.userId !== ownerId) {
                       onSelectRecipient(
                         selectedRecipientId === message.userId ? null : message.userId
                       );

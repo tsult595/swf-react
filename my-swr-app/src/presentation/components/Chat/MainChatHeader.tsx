@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { Scroll } from 'lucide-react';
 import HeaderBackGround from '../../../assets/page_header_background.png';
+import { useUserId } from '../../hooks/useUserId';
 
 
 const ChatHeader = styled.div`
@@ -48,25 +49,19 @@ const CreateGroupButton = styled.button`
   }
 `;
 
-const ClanName = styled.span`
-  color: #ffd700;
-  font-size: 18px;
-  font-weight: bold;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
-`;
+
 
 interface MainChatHeaderProps {
   onCreateClanClick: () => void;
   onModifyClanClick: () => void;
-  currentUserId: string;
-  clanName?: string | null;
+  // currentUserId: string;
 }
 
-const MainChatHeader: React.FC<MainChatHeaderProps> = ({ onCreateClanClick, onModifyClanClick, currentUserId, clanName }) => {
-  
+const MainChatHeader: React.FC<MainChatHeaderProps> = ({ onCreateClanClick, onModifyClanClick }) => {
+   const currentUserId = useUserId();
   return (
     <ChatHeader>
-      {clanName && <ClanName>Клан: {clanName}</ClanName>}
+     
       {currentUserId}
       <Scroll size={28} color="#665d3fff" />
       <CreateGroupButton onClick={onCreateClanClick}>

@@ -1,21 +1,17 @@
 import styled, { css } from 'styled-components';
-import { useState, useRef} from 'react';
+import { useState} from 'react';
 import useSWR from 'swr';
 import ChatModalComponent from '../../Modals/ChatModalComponent/ChatModalComponent';
 import ChatModifyComponentModul from '../../Modals/ChatModalComponent/ChatModifyComponentModul';
-import type { ClanDocument } from '../../../Domain/Entities/ClanTypes';
 import MainChatMessagesContainer from './MainChatMessagesContainer';
 import MainChatInputContainer from './MainChatInputContainer';
 import MainChatHeader from './MainChatHeader';
 import type { Message } from '../../../Domain/Entities/MessageTypes';
 import { ClanPresenter } from '../..';
-import { useClanMessages } from '../../hooks/useClanMessages';
-import { usePrivateMessages } from '../../hooks/usePrivateMessages';
 import { useLocalStorageSync } from '../../hooks/useLocalStorageSync';
-import { useScrollToBottom } from '../../hooks/useScrollToBottom';
 import { useUserId } from '../../hooks/useUserId';
 import { useClanNotifications } from '../../hooks/useClanNotifications';
-import { useLoadAllMessages } from '../../hooks/useLoadAllMessages';
+
 
 const FrameBorderModalMain = css`
   border-style: solid;
@@ -38,21 +34,16 @@ const ChatContainer = styled.div`
 const MainComponentChat = () => {
   const currentUserId = useUserId();
   const ownerId = localStorage.getItem('userId') || '';
-  const { data: clans, mutate: mutateClans } = ClanPresenter.useGetClansByUserId(ownerId || currentUserId);
-  const { data: messages = [], mutate: mutateMessages } = useSWR<Message[]>('messages', null, { fallbackData: [] });
-  const clanIds = clans ? clans.map((c: ClanDocument) => c.id || c._id).filter(Boolean) as string[] : [];
-  const messagesContainerRef = useRef<HTMLElement | null>(null);
+  const { mutate: mutateClans } = ClanPresenter.useGetClansByUserId(ownerId || currentUserId);
+  const { data: messages = []} = useSWR<Message[]>('messages', null, { fallbackData: [] });
   const [selectedRecipientId, setSelectedRecipientId] = useState<string | null>(localStorage.getItem('selectedRecipientId'));
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModifyModalOpen, setIsModifyModalOpen] = useState(false);
   const [clanChatId, setClanChatId] = useState<string | null>(localStorage.getItem('clanChatId'));
   const [clanName, setClanName] = useState<string | null>(localStorage.getItem('clanName'));
   const [seenNotifications, setSeenNotifications] = useState<Set<string>>(new Set());
-  useClanMessages(clanChatId, mutateMessages);
-  usePrivateMessages(selectedRecipientId, currentUserId, mutateMessages);
   useLocalStorageSync({ clanChatId, clanName, selectedRecipientId });
-  useScrollToBottom(messagesContainerRef, messages);
-  const { loading, error } = useLoadAllMessages(mutateMessages);
+
   useClanNotifications(
     messages,
     currentUserId,
@@ -65,28 +56,20 @@ const MainComponentChat = () => {
   );
 
 
-   if (error) return <div style={{ color: 'red' }}>{error}</div>;
-
   return (
     <>
       <ChatContainer>
         <MainChatHeader
           onCreateClanClick={() => setIsModalOpen(true)}
           onModifyClanClick={() => setIsModifyModalOpen(true)}
-          currentUserId={currentUserId}
-          clanName={clanName}
+          
         />
         <MainChatMessagesContainer
-          messages={messages}
-          currentUserId={currentUserId}
-          clanIds={clanIds}
           clanChatId={clanChatId}
           selectedRecipientId={selectedRecipientId}
           clanName={clanName}
-          mutateMessages={mutateMessages}
           onSelectRecipient={setSelectedRecipientId}
-          containerRef={messagesContainerRef}
-          loading={loading}
+         
         />
         <MainChatInputContainer
           selectedRecipientId={selectedRecipientId}

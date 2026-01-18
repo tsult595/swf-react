@@ -9,6 +9,7 @@ import { useUserId } from '../../hooks/useUserId';
 import { ClanPresenter } from '../..';
 import type { ClanDocument } from '../../../Domain/Entities/ClanTypes';
 import type { Message } from '../../../Domain/Entities/MessageTypes';
+import { useLocalStorageSync } from '../../hooks/useLocalStorageSync';
 
 const InputContainer = styled.div`
   flex-shrink: 0;
@@ -109,7 +110,7 @@ const MainChatInputContainer: React.FC<MainChatInputContainerProps> = ({
       return [...currentPrev, message];
     }, false);
   }, [currentUserId, mutateMessages]);
-  
+  useLocalStorageSync({ clanChatId, clanName, selectedRecipientId }); 
   const { sendMessage } = useChatSocket(currentUserId, 'User', clanIds, onNewMessage);
   const { inputValue, setInputValue, handleSendMessage, handleKeyPress } = useChatInput(sendMessage, selectedRecipientId, clanChatId, clanName);
   return (
