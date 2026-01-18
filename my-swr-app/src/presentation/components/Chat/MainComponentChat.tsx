@@ -1,7 +1,6 @@
 import styled, { css } from 'styled-components';
-import { useState, useRef, useCallback} from 'react';
+import { useState, useRef} from 'react';
 import useSWR from 'swr';
-import { useChatSocket } from '../../hooks/useChatSocket';
 import ChatModalComponent from '../../Modals/ChatModalComponent/ChatModalComponent';
 import ChatModifyComponentModul from '../../Modals/ChatModalComponent/ChatModifyComponentModul';
 import type { ClanDocument } from '../../../Domain/Entities/ClanTypes';
@@ -41,17 +40,7 @@ const MainComponentChat = () => {
   const ownerId = localStorage.getItem('userId') || '';
   const { data: clans, mutate: mutateClans } = ClanPresenter.useGetClansByUserId(ownerId || currentUserId);
   const { data: messages = [], mutate: mutateMessages } = useSWR<Message[]>('messages', null, { fallbackData: [] });
-  const currentUsername = 'Tima';
   const clanIds = clans ? clans.map((c: ClanDocument) => c.id || c._id).filter(Boolean) as string[] : [];
-  const onNewMessage = useCallback((message: Message) => {
-    mutateMessages(prev => {
-      const currentPrev = prev || [];
-      if (message.userId === currentUserId && message.type === 'private' && message.text.includes('удалены из клана')) return currentPrev;
-
-      return [...currentPrev, message];
-    }, false);
-  }, [currentUserId, mutateMessages]);
-  const { sendMessage } = useChatSocket(currentUserId, currentUsername, clanIds, onNewMessage);
   const messagesContainerRef = useRef<HTMLElement | null>(null);
   const [selectedRecipientId, setSelectedRecipientId] = useState<string | null>(localStorage.getItem('selectedRecipientId'));
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -100,7 +89,6 @@ const MainComponentChat = () => {
           loading={loading}
         />
         <MainChatInputContainer
-          sendMessage={sendMessage}
           selectedRecipientId={selectedRecipientId}
           clanChatId={clanChatId}
           clanName={clanName}

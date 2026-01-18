@@ -1,7 +1,14 @@
 import styled from 'styled-components';
 import { Send } from 'lucide-react';
+import { useCallback } from 'react';
+import useSWR from 'swr';
 import HeaderBackGround from '../../../assets/page_header_background.png';
 import { useChatInput } from '../../hooks/useChatInput';
+import { useChatSocket } from '../../hooks/useChatSocket';
+import { useUserId } from '../../hooks/useUserId';
+import { ClanPresenter } from '../..';
+import type { ClanDocument } from '../../../Domain/Entities/ClanTypes';
+import type { Message } from '../../../Domain/Entities/MessageTypes';
 
 const InputContainer = styled.div`
   flex-shrink: 0;
@@ -76,7 +83,6 @@ const SelectedSpan = styled.span`
 `;
 
 interface MainChatInputContainerProps {
-  sendMessage: (args: { text: string; recipientId?: string; type?: 'normal' | 'private' | 'clanChat'; clanName?: string }) => void;
   selectedRecipientId: string | null;
   clanChatId: string | null;
   clanName: string | null;
@@ -84,13 +90,28 @@ interface MainChatInputContainerProps {
 }
 
 const MainChatInputContainer: React.FC<MainChatInputContainerProps> = ({
-  sendMessage,
   selectedRecipientId,
   clanChatId,
   clanName,
   onClearSelection
 }) => {
-  const { inputValue, setInputValue, handleSendMessage, handleKeyPress } = useChatInput(sendMessage, selectedRecipientId, clanChatId, clanName);  
+  const currentUserId = useUserId();
+  const ownerId = localStorage.getItem('userId') || currentUserId;
+  const { data: clans } = ClanPresenter.useGetClansByUserId(ownerId);
+  const { mutate: mutateMessages } = useSWR<Message[]>('messages', null, { fallbackData: [] });
+  const clanIds = clans?.map((c: ClanDocument) => c.id || c._id).filter(Boolean) as string[] || [];
+  
+  const onNewMessage = useCallback((message: Message) => {
+    mutateMessages(prev => {
+      const currentPrev = prev || [];
+      if (message.userId === currentUserId && message.type === 'private' && message.text.includes('удалены из клана')) 
+        return currentPrev;
+      return [...currentPrev, message];
+    }, false);
+  }, [currentUserId, mutateMessages]);
+  
+  const { sendMessage } = useChatSocket(currentUserId, 'User', clanIds, onNewMessage);
+  const { inputValue, setInputValue, handleSendMessage, handleKeyPress } = useChatInput(sendMessage, selectedRecipientId, clanChatId, clanName);
   return (
     <InputContainer>
       {selectedRecipientId ? (
