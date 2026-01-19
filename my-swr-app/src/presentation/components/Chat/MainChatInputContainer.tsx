@@ -10,6 +10,7 @@ import { ClanPresenter } from '../..';
 import type { ClanDocument } from '../../../Domain/Entities/ClanTypes';
 import type { Message } from '../../../Domain/Entities/MessageTypes';
 import { useLocalStorageSync } from '../../hooks/useLocalStorageSync';
+import { MessageTypeEnum } from '../../../Domain/Entities/enums/messageEnum';
 
 const InputContainer = styled.div`
   flex-shrink: 0;
@@ -83,19 +84,12 @@ const SelectedSpan = styled.span`
   margin-top: 10px;
 `;
 
-interface MainChatInputContainerProps {
-  selectedRecipientId: string | null;
-  clanChatId: string | null;
-  clanName: string | null;
-  onClearSelection: () => void;
-}
 
-const MainChatInputContainer: React.FC<MainChatInputContainerProps> = ({
-  selectedRecipientId,
-  clanChatId,
-  clanName,
-  onClearSelection
-}) => {
+
+const MainChatInputContainer = () => {
+  const { data: selectedRecipientId = null, mutate: mutateSelectedRecipient } = useSWR<string | null>('selectedRecipientId', null, { fallbackData: null });
+  const { data: clanChatId = null, mutate: mutateClanChatId } = useSWR<string | null>('clanChatId', null, { fallbackData: null });
+  const { data: clanName = null, mutate: mutateClanName } = useSWR<string | null>('clanName', null, { fallbackData: null });
   const currentUserId = useUserId();
   const ownerId = localStorage.getItem('userId') || currentUserId;
   const { data: clans } = ClanPresenter.useGetClansByUserId(ownerId);
@@ -105,7 +99,7 @@ const MainChatInputContainer: React.FC<MainChatInputContainerProps> = ({
   const onNewMessage = useCallback((message: Message) => {
     mutateMessages(prev => {
       const currentPrev = prev || [];
-      if (message.userId === currentUserId && message.type === 'private' && message.text.includes('удалены из клана')) 
+      if (message.userId === currentUserId && message.type === MessageTypeEnum.PRIVATE && message.text.includes('удалены из клана')) 
         return currentPrev;
       return [...currentPrev, message];
     }, false);
@@ -118,12 +112,20 @@ const MainChatInputContainer: React.FC<MainChatInputContainerProps> = ({
       {selectedRecipientId ? (
         <SelectedSpan>
           Приватный чат с: {selectedRecipientId}
-          <PrivateButton onClick={onClearSelection}>X</PrivateButton>
+          <PrivateButton onClick={() => {
+            mutateSelectedRecipient(null, false);
+            localStorage.setItem('selectedRecipientId', '');
+          }}>X</PrivateButton>
         </SelectedSpan>
       ) : clanChatId ? (
         <SelectedSpan>
           Клановый чат: {clanName || clanChatId}
-          <PrivateButton onClick={onClearSelection}>X</PrivateButton>
+          <PrivateButton onClick={() => {
+            mutateClanChatId(null, false);
+            mutateClanName(null, false);
+            localStorage.setItem('clanChatId', '');
+            localStorage.setItem('clanName', '');
+          }}>X</PrivateButton>
         </SelectedSpan>
       ) : null}
       <Input

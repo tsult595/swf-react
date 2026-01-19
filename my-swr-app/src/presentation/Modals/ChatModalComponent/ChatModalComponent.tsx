@@ -5,9 +5,7 @@ import { UserPresenter } from '../..';
 import { useDisappearWelcomeButton } from '../../hooks/useDisapearWelcomeButton';
 import { useUserId } from '../../hooks/useUserId';
 import { useChatSocket } from '../../hooks/useChatSocket';
-// import useSWR from 'swr';
-// import type { Message } from '../../../Domain/Entities/MessageTypes';
-// import type { ClanDocument } from '../../../Domain/Entities/ClanTypes';
+
 
 const ModalOverlay = styled.div`
   position: fixed;

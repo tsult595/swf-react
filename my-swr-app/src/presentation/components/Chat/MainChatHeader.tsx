@@ -54,7 +54,6 @@ const CreateGroupButton = styled.button`
 interface MainChatHeaderProps {
   onCreateClanClick: () => void;
   onModifyClanClick: () => void;
-  // currentUserId: string;
 }
 
 const MainChatHeader: React.FC<MainChatHeaderProps> = ({ onCreateClanClick, onModifyClanClick }) => {

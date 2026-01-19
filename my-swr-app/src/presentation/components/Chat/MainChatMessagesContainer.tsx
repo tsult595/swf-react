@@ -197,23 +197,13 @@ const Timestamp = styled.span`
   font-family: 'Arial', sans-serif;
 `;
 
-interface MainChatMessagesContainerProps {
- 
-  clanChatId: string | null;
-  selectedRecipientId: string | null;
-  clanName: string | null;
-  onSelectRecipient: (recipientId: string | null) => void;
 
-}
 
-const MainChatMessagesContainer: React.FC<MainChatMessagesContainerProps> = ({
-  clanChatId,
-  selectedRecipientId,
-  clanName,
-  onSelectRecipient,
-
-}) => {
+const MainChatMessagesContainer = () => {
    const { data: messages = [], mutate: mutateMessages } = useSWR<Message[]>('messages', null, { fallbackData: [] });
+   const { data: selectedRecipientId = null, mutate: mutateSelectedRecipient } = useSWR<string | null>('selectedRecipientId', null, { fallbackData: null });
+   const { data: clanChatId = null } = useSWR<string | null>('clanChatId', null, { fallbackData: null });
+   const { data: clanName = null } = useSWR<string | null>('clanName', null, { fallbackData: null });
   const { loading, error } = useLoadAllMessages(mutateMessages);
   const ownerId = useUserId();
   useClanMessages(clanChatId, mutateMessages);
@@ -275,9 +265,9 @@ const MainChatMessagesContainer: React.FC<MainChatMessagesContainerProps> = ({
                   }}
                   onClick={() => {
                     if (message.userId !== ownerId) {
-                      onSelectRecipient(
-                        selectedRecipientId === message.userId ? null : message.userId
-                      );
+                      const newValue = selectedRecipientId === message.userId ? null : message.userId;
+                      mutateSelectedRecipient(newValue, false);
+                      localStorage.setItem('selectedRecipientId', newValue || '');
                     }
                   }}
                 >
