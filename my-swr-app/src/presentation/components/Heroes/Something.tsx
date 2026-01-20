@@ -30,15 +30,13 @@ const HeroSection = styled.div`
 
 
 
-
-
-const HeroCard = styled.div<{ $rarity: string }>`
+const HeroCard = styled.div<{ $rarity: string; $isDark?: boolean; $isOpen?: boolean }>`
   width: 250px;
   height: 350px;
-  border: 5px solid transparent;
+  border: 5px solid ${props => props.$isOpen ? 'blue' : 'transparent'};
   border-image-repeat: stretch;
   border-radius: 10px;
-  background: yellow;
+  background: ${props => props.$isDark ? 'white' : 'yellow'};
   color: black;
 `;
 
@@ -83,6 +81,8 @@ const Something =({onBoxClick}: {onBoxClick: (box: MysteryBox) => void}) => {
    console.log("Boxes data in Something component:", boxes);
    const [inputValue, setInputValue] = useState<string>("");
    const [addNewText, setAddNewText] = useState<string[]>([]);
+   const [darkMode, setDarkMode] = useState <Record<string, boolean>>({});
+   const [selectedBoxId, setSelectedBoxId] = useState<string | null>(null);
 
    const handleAddNew = () => {
     if(inputValue.trim() !== ''){
@@ -90,6 +90,8 @@ const Something =({onBoxClick}: {onBoxClick: (box: MysteryBox) => void}) => {
       setInputValue('');
     }
    }
+
+  
 
    const handleDelete = (index: number) => {
     const newText = addNewText.filter((_, i) => i !== index);
@@ -116,10 +118,21 @@ const Something =({onBoxClick}: {onBoxClick: (box: MysteryBox) => void}) => {
       <HeroSection>
       {
         boxes?.map((box)=>(
-          <HeroCard key={box.id} $rarity={box.rarity} onClick={() => onBoxClick?.(box)}>
+          <HeroCard 
+            key={box.id} 
+            $rarity={box.rarity} 
+            $isDark={darkMode[box.id]} 
+            $isOpen={selectedBoxId === box.id}
+            onClick={() => {
+              setSelectedBoxId(box.id);
+              onBoxClick?.(box);
+            }}
+          >
+            <button onClick={(e) => { e.stopPropagation(); setDarkMode(prev => ({ ...prev, [box.id]: !prev[box.id] })); }}>
+              dark
+            </button>
             <p>{box.name}</p>
             <p>Rarity: {box.rarity}</p>
-          
           </HeroCard>
         ))
       }

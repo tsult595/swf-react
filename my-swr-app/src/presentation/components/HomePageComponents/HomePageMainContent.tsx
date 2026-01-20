@@ -16,7 +16,7 @@ import BoxDetailModal from '../../Modals/BoxModal/BoxDetailModal';
 import MainHeroesSection from '../Heroes/MainHeroesSection';
 import Something from '../Heroes/Something';
 import type { MysteryBox } from '../../../Domain/Entities/MystoryBoxTypes';
-
+import { HomePageTabEnum } from '../../../Domain/Entities/enums/homePageEnum';
 
 const MainContentWrapper = styled.main` 
   flex: 1;
@@ -132,7 +132,7 @@ function MainContent() {
   const [isItemModalOpen, setIsItemModalOpen] = useState(false);
   const [isBoxModalOpen, setIsBoxModalOpen] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
-  const [activeTab, setActiveTab] = useState<'characters' | 'items' | 'chat' | 'something'>('characters'); 
+  const [activeTab, setActiveTab] = useState<typeof HomePageTabEnum[keyof typeof HomePageTabEnum]>(HomePageTabEnum.CHARACTERS);
   const userId = 'user123';
   const { data: favorites } = FavoritePresenter.useGetFavorites(userId);
  
@@ -175,14 +175,14 @@ function MainContent() {
       <MainContentWrapper> 
         <MainContentButtonsWrapper>
           <MainContentButtons 
-            $active={activeTab === 'characters'} 
-            onClick={() => setActiveTab('characters')}
+            $active={activeTab === HomePageTabEnum.CHARACTERS} 
+            onClick={() => setActiveTab(HomePageTabEnum.CHARACTERS)}
           >
             <ButtonText>Characters</ButtonText>
           </MainContentButtons>
           <MainContentButtons 
-            $active={activeTab === 'items'} 
-            onClick={() => setActiveTab('items')}
+            $active={activeTab === HomePageTabEnum.ITEMS} 
+            onClick={() => setActiveTab(HomePageTabEnum.ITEMS)}
           >
             <ButtonText>Items</ButtonText>
           </MainContentButtons>
@@ -192,36 +192,36 @@ function MainContent() {
             </ButtonText>
           </MainContentButtons>
           <MainContentButtons 
-            $active={activeTab === 'chat'} 
-            onClick={() => setActiveTab('chat')}
+            $active={activeTab === HomePageTabEnum.CHAT} 
+            onClick={() => setActiveTab(HomePageTabEnum.CHAT)}
           >
             <ButtonText>Chat</ButtonText>
           </MainContentButtons>
 
           <MainContentButtons 
-            $active={activeTab === 'something'} 
-            onClick={() => setActiveTab('something')}
+            $active={activeTab === HomePageTabEnum.SOMETHING} 
+            onClick={() => setActiveTab(HomePageTabEnum.SOMETHING)}
           >
             <ButtonText>Something</ButtonText>
           </MainContentButtons>
         </MainContentButtonsWrapper>
 
       
-        {activeTab === 'characters' && (
+        {activeTab === HomePageTabEnum.CHARACTERS && (
           <MainHeroesSection
             onHeroClick={handleHeroClick}
           />
         )}
 
      
-        {activeTab === 'chat' && (
+        {activeTab === HomePageTabEnum.CHAT && (
           <ChatWrapper>
             <MainComponentChat />
           </ChatWrapper>
         )}
 
        
-        {activeTab === 'items' && (
+        {activeTab === HomePageTabEnum.ITEMS && (
           <ItemsWrapper>
             <MainItemsComponent onItemClick={handleItemClick}
             text='meow'
@@ -230,7 +230,7 @@ function MainContent() {
           </ItemsWrapper>
         )}
 
-        {activeTab === 'something' && (
+        {activeTab === HomePageTabEnum.SOMETHING && (
           <ItemsWrapper>
             <Something onBoxClick={handleBoxgClick}
              />
