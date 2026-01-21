@@ -3,6 +3,7 @@ import { generatePersonalizedUserId } from '../../utils/userId';
 
 export const useUserId = () => {
   const [currentUserId, setCurrentUserId] = useState<string>('');
+  
 
   useEffect(() => {
     async function getUserId() {

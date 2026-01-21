@@ -8,8 +8,8 @@ export const useClanNotifications = (
   seenNotifications: Set<string>,
   setSeenNotifications: React.Dispatch<React.SetStateAction<Set<string>>>,
   mutateClans: () => void,
-  setClanChatId: React.Dispatch<React.SetStateAction<string | null>>,
-  setClanName: React.Dispatch<React.SetStateAction<string | null>>,
+  mutateClanChatId: (value: string | null, options?: boolean) => void,
+  mutateClanName: (value: string | null, options?: boolean) => void,
   clanChatId: string | null
 ) => {
   useEffect(() => {
@@ -33,11 +33,11 @@ export const useClanNotifications = (
         // Swal.fire('Вы были удалены из клана!');
         setSeenNotifications((prev) => new Set(prev).add(String(msg.id)));
         if (clanChatId) {
-          setClanChatId(null);
-          setClanName(null);
+          mutateClanChatId(null, false);
+          mutateClanName(null, false);
         }
         mutateClans();
       }
     });
-  }, [messages, currentUserId, seenNotifications, mutateClans, setClanChatId, setClanName, clanChatId, setSeenNotifications]);
+  }, [messages, currentUserId, seenNotifications, mutateClans, mutateClanChatId, mutateClanName, clanChatId, setSeenNotifications]);
 };

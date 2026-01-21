@@ -200,6 +200,7 @@ const Timestamp = styled.span`
 
 
 const MainChatMessagesContainer = () => {
+  // todo: clanChatId = null?
    const { data: messages = [], mutate: mutateMessages } = useSWR<Message[]>('messages', null, { fallbackData: [] });
    const { data: selectedRecipientId = null, mutate: mutateSelectedRecipient } = useSWR<string | null>('selectedRecipientId', null, { fallbackData: null });
    const { data: clanChatId = null } = useSWR<string | null>('clanChatId', null, { fallbackData: null });

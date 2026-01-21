@@ -31,12 +31,11 @@ const ChatContainer = styled.div`
 
 const MainComponentChat = () => {
   const currentUserId = useUserId();
-  const ownerId = localStorage.getItem('userId') || '';
-  const { mutate: mutateClans } = ClanPresenter.useGetClansByUserId(ownerId || currentUserId);
+  const { mutate: mutateClans } = ClanPresenter.useGetClansByUserId(currentUserId);
   const { data: messages = []} = useSWR<Message[]>('messages', null, { fallbackData: [] });
   const { mutate: mutateSelectedRecipient } = useSWR<string | null>('selectedRecipientId', null);
-  const [clanChatId, setClanChatId] = useState<string | null>(localStorage.getItem('clanChatId'));
-  const [_ , setClanName] = useState<string | null>(localStorage.getItem('clanName'));
+  const { data: clanChatId = null, mutate: mutateClanChatId } = useSWR<string | null>('clanChatId', null, { fallbackData: localStorage.getItem('clanChatId') });
+  const { mutate: mutateClanName } = useSWR<string | null>('clanName', null, { fallbackData: localStorage.getItem('clanName') });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModifyModalOpen, setIsModifyModalOpen] = useState(false);
   const [seenNotifications, setSeenNotifications] = useState<Set<string>>(new Set());
@@ -47,11 +46,11 @@ const MainComponentChat = () => {
     seenNotifications,
     setSeenNotifications,
     mutateClans,
-    setClanChatId,
-    setClanName,
+    mutateClanChatId,
+    mutateClanName,
     clanChatId
   );
-
+  // TODO: usehandleModalPopUp
   return (
     <>
       <ChatContainer>
@@ -68,8 +67,8 @@ const MainComponentChat = () => {
         <ChatModalComponent
           onClose={() => setIsModalOpen(false)}
           onCreateClan={async (clanId: string, clanName: string) => {
-            setClanChatId(clanId);
-            setClanName(clanName);
+            mutateClanChatId(clanId, false);
+            mutateClanName(clanName, false);
             mutateSelectedRecipient(null, false);
             setIsModalOpen(false);
             mutateClans(); 
@@ -80,8 +79,8 @@ const MainComponentChat = () => {
         <ChatModifyComponentModul
           onClose={() => setIsModifyModalOpen(false)}
           onOpenChat={async ({ clanId, clanName }) => {
-            setClanChatId(clanId);
-            setClanName(clanName);
+            mutateClanChatId(clanId, false);
+            mutateClanName(clanName, false);
             mutateSelectedRecipient(null, false);
             setIsModifyModalOpen(false);
             mutateClans();

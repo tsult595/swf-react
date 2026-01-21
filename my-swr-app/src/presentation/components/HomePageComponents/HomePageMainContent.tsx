@@ -134,6 +134,8 @@ function MainContent() {
   const [showFavorites, setShowFavorites] = useState(false);
   const [activeTab, setActiveTab] = useState<typeof HomePageTabEnum[keyof typeof HomePageTabEnum]>(HomePageTabEnum.CHARACTERS);
   const userId = 'user123';
+  //TODO:
+  // userid no hardcode
   const { data: favorites } = FavoritePresenter.useGetFavorites(userId);
  
 

@@ -26,9 +26,26 @@ const HeroSection = styled.div`
   align-items: center;
   border-radius: 15px;
   margin-bottom: 30px;
+  position: relative;
 `;
 
-
+const LoadingOverlay = styled.div<{ $isError?: boolean }>`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: ${props => props.$isError ? 'rgba(239, 68, 68, 0.8)' : 'rgba(0, 0, 0, 0.5)'};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #ffd700;
+  font-size: 1.2rem;
+  border-radius: 15px;
+  z-index: 10;
+  cursor: ${props => props.$isError ? 'pointer' : 'default'};
+`;
 
 const HeroCard = styled.div<{ $rarity: string; $isDark?: boolean; $isOpen?: boolean }>`
   width: 250px;
@@ -41,30 +58,36 @@ const HeroCard = styled.div<{ $rarity: string; $isDark?: boolean; $isOpen?: bool
 `;
 
 
-const ErrorWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid #ef4444;
-  border-radius: 10px;
-  color: #ef4444;
+const Button = styled.button<{$isColorBlue?: boolean}>`
+  padding: 8px 16px;
+  background: ${props => props.$isColorBlue ? 'blue' : 'gray'};
+  color: white;
+  `;
+
+// const ErrorWrapper = styled.div`
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   padding: 20px;
+//   background: rgba(239, 68, 68, 0.1);
+//   border: 1px solid #ef4444;
+//   border-radius: 10px;
+//   color: #ef4444;
   
-  button {
-    margin-top: 10px;
-    padding: 8px 16px;
-    background: #ef4444;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+//   button {
+//     margin-top: 10px;
+//     padding: 8px 16px;
+//     background: #ef4444;
+//     color: white;
+//     border: none;
+//     border-radius: 5px;
+//     cursor: pointer;
     
-    &:hover {
-      background: #dc2626;
-    }
-  }
-`;
+//     &:hover {
+//       background: #dc2626;
+//     }
+//   }
+// `;
 
 const LoadingWrapper = styled.div`
   display: flex;
@@ -76,13 +99,15 @@ const LoadingWrapper = styled.div`
 `;
 
 
+
 const Something =({onBoxClick}: {onBoxClick: (box: MysteryBox) => void}) => {
-   const {data : boxes , error: boxesError, isLoading: boxesLoading, mutate: mutateBoxes} = MysteryBoxPresenter.useGetAllMystoryBoxes();
+   const {data : boxes , error: boxesError, isValidating, isLoading: boxesLoading, mutate: mutateBoxes} = MysteryBoxPresenter.useGetAllMystoryBoxes();
    console.log("Boxes data in Something component:", boxes);
    const [inputValue, setInputValue] = useState<string>("");
    const [addNewText, setAddNewText] = useState<string[]>([]);
-   const [darkMode, setDarkMode] = useState <Record<string, boolean>>({});
-   const [selectedBoxId, setSelectedBoxId] = useState<string | null>(null);
+   const [darkMode, setDarkMode] = useState <Record<number, boolean>>({});
+   const [selectedBoxId, setSelectedBoxId] = useState<number | null>(null);
+   const [shapeMode, setShapeMode] = useState<Record<number, boolean>>({});
 
    const handleAddNew = () => {
     if(inputValue.trim() !== ''){
@@ -102,19 +127,7 @@ const Something =({onBoxClick}: {onBoxClick: (box: MysteryBox) => void}) => {
     <>
     <Container>
       {boxesLoading && <LoadingWrapper>Loading items...</LoadingWrapper>}
-        {boxesError && (
-          <ErrorWrapper>
-            <div>Error loading items</div>
-            <button onClick={() => mutateBoxes()}>Retry</button>
-          </ErrorWrapper>
-        )}
          {boxesLoading && <LoadingWrapper>Loading heroes...</LoadingWrapper>}
-        {boxesError && (
-          <ErrorWrapper>
-            <div>Error loading heroes</div>
-            <button onClick={() => mutateBoxes()}>Retry</button>
-          </ErrorWrapper>
-        )}
       <HeroSection>
       {
         boxes?.map((box)=>(
@@ -131,11 +144,22 @@ const Something =({onBoxClick}: {onBoxClick: (box: MysteryBox) => void}) => {
             <button onClick={(e) => { e.stopPropagation(); setDarkMode(prev => ({ ...prev, [box.id]: !prev[box.id] })); }}>
               dark
             </button>
+            <Button onClick={(e)=>{e.stopPropagation(); 
+            setShapeMode(prev => ({ ...prev, [box.id]: !prev[box.id] }));
+            }} $isColorBlue={shapeMode[box.id]}>shape</Button>
             <p>{box.name}</p>
             <p>Rarity: {box.rarity}</p>
           </HeroCard>
         ))
       }
+      {isValidating && !boxesLoading && (
+        <LoadingOverlay>Загрузка новых данных...</LoadingOverlay>
+      )}
+      {boxesError && !isValidating && (
+        <LoadingOverlay $isError onClick={() => mutateBoxes()}>
+          Ошибка загрузки. Нажмите для повторной попытки.
+        </LoadingOverlay>
+      )}
       </HeroSection>
        <input type="text" 
         placeholder="Search..."

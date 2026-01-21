@@ -87,6 +87,7 @@ const SelectedSpan = styled.span`
 
 
 const MainChatInputContainer = () => {
+  // todo usegetclandata  const { data: clanChatId = null, mutate: mutateClanChatId } = useSWR<string | null>('clanChatId', null, { fallbackData: null });
   const { data: selectedRecipientId = null, mutate: mutateSelectedRecipient } = useSWR<string | null>('selectedRecipientId', null, { fallbackData: null });
   const { data: clanChatId = null, mutate: mutateClanChatId } = useSWR<string | null>('clanChatId', null, { fallbackData: null });
   const { data: clanName = null, mutate: mutateClanName } = useSWR<string | null>('clanName', null, { fallbackData: null });
