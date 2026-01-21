@@ -17,6 +17,7 @@ import MainHeroesSection from '../Heroes/MainHeroesSection';
 import Something from '../Heroes/Something';
 import type { MysteryBox } from '../../../Domain/Entities/MystoryBoxTypes';
 import { HomePageTabEnum } from '../../../Domain/Entities/enums/homePageEnum';
+import { useUserId } from '../../hooks/useUserId';
 
 const MainContentWrapper = styled.main` 
   flex: 1;
@@ -133,9 +134,7 @@ function MainContent() {
   const [isBoxModalOpen, setIsBoxModalOpen] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
   const [activeTab, setActiveTab] = useState<typeof HomePageTabEnum[keyof typeof HomePageTabEnum]>(HomePageTabEnum.CHARACTERS);
-  const userId = 'user123';
-  //TODO:
-  // userid no hardcode
+   const userId = useUserId(); 
   const { data: favorites } = FavoritePresenter.useGetFavorites(userId);
  
 

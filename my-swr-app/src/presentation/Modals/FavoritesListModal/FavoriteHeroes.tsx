@@ -8,6 +8,7 @@ import heroFrameMiddle from '../../../assets/character_border_blue.png';
 import { Heart } from 'lucide-react';
 import { FavoritePresenter } from '../..';
 import type { Hero } from '../../../Domain/Entities/HeroTypes';
+import { useUserId } from '../../hooks/useUserId';
 // import { useCallback } from 'react';
 
 
@@ -192,7 +193,7 @@ const HeartButton = styled.button`
 `;
 
 const FavoriteHeroes = ({ onClose }: FavoriteHeroesProps) => {
-  const userId = 'user123';
+  const userId = useUserId();
 
   const { data: favorites, mutate: mutateFavorites } = FavoritePresenter.useGetFavorites(userId);
 
