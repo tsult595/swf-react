@@ -11,6 +11,7 @@ import type { ClanDocument } from '../../../Domain/Entities/ClanTypes';
 import type { Message } from '../../../Domain/Entities/MessageTypes';
 import { useLocalStorageSync } from '../../hooks/useLocalStorageSync';
 import { MessageTypeEnum } from '../../../Domain/Entities/enums/messageEnum';
+import { useClanChat } from '../../hooks/useClanChat';
 
 const InputContainer = styled.div`
   flex-shrink: 0;
@@ -87,10 +88,8 @@ const SelectedSpan = styled.span`
 
 
 const MainChatInputContainer = () => {
-  // todo usegetclandata  const { data: clanChatId = null, mutate: mutateClanChatId } = useSWR<string | null>('clanChatId', null, { fallbackData: null });
   const { data: selectedRecipientId = null, mutate: mutateSelectedRecipient } = useSWR<string | null>('selectedRecipientId', null, { fallbackData: null });
-  const { data: clanChatId = null, mutate: mutateClanChatId } = useSWR<string | null>('clanChatId', null, { fallbackData: null });
-  const { data: clanName = null, mutate: mutateClanName } = useSWR<string | null>('clanName', null, { fallbackData: null });
+  const { clanChatId, clanName, mutateClanChatId, mutateClanName } = useClanChat();
   const currentUserId = useUserId();
   const ownerId = localStorage.getItem('userId') || currentUserId;
   const { data: clans } = ClanPresenter.useGetClansByUserId(ownerId);

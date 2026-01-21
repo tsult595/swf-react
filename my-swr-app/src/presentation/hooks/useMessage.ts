@@ -1,6 +1,13 @@
 import useSWR from 'swr';
 import { sendMessage } from '../../data/api/messageApi';
 import type { Message } from '../../Domain/Entities/MessageTypes';
+import { MessageTypeEnum } from '../../Domain/Entities/enums/messageEnum';
+
+const tabTypeMap = {
+  global: MessageTypeEnum.NORMAL,
+  guild: MessageTypeEnum.CLAN_CHAT,
+  battle: MessageTypeEnum.NORMAL,
+};
 
 export const useMessage = (
   activeTab: 'global' | 'guild' | 'battle',
