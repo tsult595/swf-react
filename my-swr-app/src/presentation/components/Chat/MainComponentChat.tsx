@@ -6,11 +6,11 @@ import ChatModifyComponentModul from '../../Modals/ChatModalComponent/ChatModify
 import MainChatMessagesContainer from './MainChatMessagesContainer';
 import MainChatInputContainer from './MainChatInputContainer';
 import MainChatHeader from './MainChatHeader';
-import type { Message } from '../../../Domain/Entities/MessageTypes';
 import { ClanPresenter } from '../..';
 import { useUserId } from '../../hooks/useUserId';
 import { useClanNotifications } from '../../hooks/useClanNotifications';
 import { useClanChat } from '../../hooks/useClanChat';
+import { useMessageChat } from '../../hooks/useMessageChat';
 
 const FrameBorderModalMain = css`
   border-style: solid;
@@ -33,7 +33,7 @@ const ChatContainer = styled.div`
 const MainComponentChat = () => {
   const currentUserId = useUserId();
   const { mutate: mutateClans } = ClanPresenter.useGetClansByUserId(currentUserId);
-  const { data: messages = []} = useSWR<Message[]>('messages', null, { fallbackData: [] });
+  const {messages} = useMessageChat();
   const { mutate: mutateSelectedRecipient } = useSWR<string | null>('selectedRecipientId', null);
   const { clanChatId, mutateClanChatId, mutateClanName } = useClanChat();
   const [isModalOpen, setIsModalOpen] = useState(false);

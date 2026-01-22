@@ -301,26 +301,3 @@ const MainHeroesSection = ({
 };
 
 export default MainHeroesSection;
-
-
-// const toggleFavorite = useCallback(async (hero: Hero, e?: React.MouseEvent) => {
-//       e?.stopPropagation();
-  
-//       const isCurrentlyFavorite = favorites?.some((f: Hero) => f.id === hero.id) || false;
-  
-//       // Оптимистичное обновление
-//       mutateFavorites(
-//         isCurrentlyFavorite
-//           ? favorites?.filter((f: Hero) => f.id !== hero.id)
-//           : [...(favorites || []), hero],
-//         false
-//       );
-
-//       try {
-//         await FavoritePresenter.toggleFavorites(userId, hero.id, isCurrentlyFavorite);
-//         mutateFavorites(); // Ревалидация для синхронизации
-//       } catch (error) {
-//         mutateFavorites(); // Откат при ошибке
-//         console.error('Failed to toggle favorite:', error);
-//       }
-//     }, [userId, favorites, mutateFavorites]);

@@ -12,6 +12,7 @@ import type { Message } from '../../../Domain/Entities/MessageTypes';
 import { useLocalStorageSync } from '../../hooks/useLocalStorageSync';
 import { MessageTypeEnum } from '../../../Domain/Entities/enums/messageEnum';
 import { useClanChat } from '../../hooks/useClanChat';
+import { useMessageChat } from '../../hooks/useMessageChat';
 
 const InputContainer = styled.div`
   flex-shrink: 0;
@@ -93,7 +94,7 @@ const MainChatInputContainer = () => {
   const currentUserId = useUserId();
   const ownerId = localStorage.getItem('userId') || currentUserId;
   const { data: clans } = ClanPresenter.useGetClansByUserId(ownerId);
-  const { mutate: mutateMessages } = useSWR<Message[]>('messages', null, { fallbackData: [] });
+  const {mutateMessages} = useMessageChat();
   const clanIds = clans?.map((c: ClanDocument) => c.id || c._id).filter(Boolean) as string[] || [];
   
   const onNewMessage = useCallback((message: Message) => {

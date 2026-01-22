@@ -13,6 +13,7 @@ import { usePrivateMessages } from '../../hooks/usePrivateMessages';
 import { useClanMessages } from '../../hooks/useClanMessages';
 import useSWR from 'swr';
 import { useClanChat } from '../../hooks/useClanChat';
+import { useMessageChat } from '../../hooks/useMessageChat';
 const MessagesContainer = styled.div`
   flex: 1;
   overflow-y: auto;
@@ -202,7 +203,7 @@ const Timestamp = styled.span`
 
 const MainChatMessagesContainer = () => {
   // todo: clanChatId = null? Это дефолтное значение на случай, если data из useSWR будет undefined
-   const { data: messages = [], mutate: mutateMessages } = useSWR<Message[]>('messages', null, { fallbackData: [] });
+   const {messages , mutateMessages} = useMessageChat();
    const { data: selectedRecipientId = null, mutate: mutateSelectedRecipient } = useSWR<string | null>('selectedRecipientId', null, { fallbackData: null });
    const { clanChatId, clanName} = useClanChat();
   const { loading, error } = useLoadAllMessages(mutateMessages);
