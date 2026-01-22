@@ -10,7 +10,6 @@ import { ClanPresenter } from '../..';
 import { useUserId } from '../../hooks/useUserId';
 import { useClanNotifications } from '../../hooks/useClanNotifications';
 import { useClanChat } from '../../hooks/useClanChat';
-import { useMessageChat } from '../../hooks/useMessageChat';
 
 const FrameBorderModalMain = css`
   border-style: solid;
@@ -33,22 +32,16 @@ const ChatContainer = styled.div`
 const MainComponentChat = () => {
   const currentUserId = useUserId();
   const { mutate: mutateClans } = ClanPresenter.useGetClansByUserId(currentUserId);
-  const {messages} = useMessageChat();
   const { mutate: mutateSelectedRecipient } = useSWR<string | null>('selectedRecipientId', null);
-  const { clanChatId, mutateClanChatId, mutateClanName } = useClanChat();
+  const { mutateClanChatId, mutateClanName } = useClanChat();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModifyModalOpen, setIsModifyModalOpen] = useState(false);
-  const [seenNotifications, setSeenNotifications] = useState<Set<string>>(new Set());
 
   useClanNotifications(
-    messages,
     currentUserId,
-    seenNotifications,
-    setSeenNotifications,
     mutateClans,
     mutateClanChatId,
-    mutateClanName,
-    clanChatId
+    mutateClanName
   );
   // TODO: usehandleModalPopUp
   return (

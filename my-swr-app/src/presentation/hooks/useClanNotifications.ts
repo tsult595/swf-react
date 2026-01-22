@@ -1,17 +1,17 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
-import type { Message } from '../../Domain/Entities/MessageTypes';
+import { useMessageChat } from './useMessageChat';
+import { useClanChat } from './useClanChat';
 
 export const useClanNotifications = (
-  messages: Message[],
   currentUserId: string,
-  seenNotifications: Set<string>,
-  setSeenNotifications: React.Dispatch<React.SetStateAction<Set<string>>>,
   mutateClans: () => void,
   mutateClanChatId: (value: string | null, options?: boolean) => void,
-  mutateClanName: (value: string | null, options?: boolean) => void,
-  clanChatId: string | null
+  mutateClanName: (value: string | null, options?: boolean) => void
 ) => {
+  const [seenNotifications, setSeenNotifications] = useState<Set<string>>(new Set());
+  const { messages } = useMessageChat();
+  const { clanChatId } = useClanChat();
   useEffect(() => {
     messages.forEach((msg) => {
       if (
