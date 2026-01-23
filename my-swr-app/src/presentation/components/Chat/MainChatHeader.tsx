@@ -63,6 +63,7 @@ const MainChatHeader: React.FC<MainChatHeaderProps> = ({ onCreateClanClick, onMo
      
       {currentUserId}
       <Scroll size={28} color="#665d3fff" />
+      {/* setIsModalOpen(true)} stanovitsa true */}
       <CreateGroupButton onClick={onCreateClanClick}>
         Создать свой клан
       </CreateGroupButton>
