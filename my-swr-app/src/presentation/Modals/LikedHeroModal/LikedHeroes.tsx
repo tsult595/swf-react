@@ -4,8 +4,7 @@ import HeaderComponent from './HeaderComponent';
 import TableComponent from './TableComponent';
 import MainHeroComponent from './MainHeroComponent';
 import UpperNamingComponent from './UpperNamingComponent';
-import type { Hero } from '../../../Domain/Entities/HeroTypes';
-import useSWR from 'swr';
+import { useSelectedOnes } from '../../hooks/useSelectedOnes';
 
 const FrameBorderModalMain = css`
   border-style: solid;
@@ -64,13 +63,13 @@ const ScrollWrapper = styled.div`
 
 
 const LikedHeroes = ({ onClose }: LikedHeroesProps) => {
-  const { data: hero } = useSWR<Hero>('selectedHero');
+  const { selectedHero } = useSelectedOnes();
  
   return (
     <Container>
       <HeaderComponent  onClose={onClose} />
       <ScrollWrapper>
-        {hero && (
+        {selectedHero && (
           <>
             <UpperNamingComponent />
             <MainHeroComponent />

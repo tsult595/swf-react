@@ -7,7 +7,7 @@ export const useClanIds = () => {
   const { data: clans } = ClanPresenter.useGetClansByUserId(userId);
   
   return useMemo(
-    () => clans?.map(c => c.id || c._id).filter(Boolean) as string[] || [],
+    () => clans?.map((c: any) => c.id || c._id).filter(Boolean) as string[] || [],
     [clans]
   );
 };

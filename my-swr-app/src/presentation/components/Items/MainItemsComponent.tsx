@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { ItemsPresenter } from '../..';
-import type { Item } from '../../../Domain/Entities/enums/ItemsTypes';
+import { useSelectedOnes } from '../../hooks/useSelectedOnes';
 
 const MainItemsWrapper = styled.div`
   display: flex;
@@ -129,12 +129,12 @@ const ErrorWrapper = styled.div`
 `;
 
 interface MainItemsComponentProps {
-  onItemClick: (item: Item) => void;
   text ?: string;
 }
 
-const MainItemsComponent = ({ onItemClick, text }: MainItemsComponentProps) => {
+const MainItemsComponent = ({ text }: MainItemsComponentProps) => {
   const { data: items, error, isLoading, mutate } = ItemsPresenter.useGetAllItems();
+  const { setSelectedItem } = useSelectedOnes();
 
   return (
     <>
@@ -154,7 +154,7 @@ const MainItemsComponent = ({ onItemClick, text }: MainItemsComponentProps) => {
       {!isLoading && !error && items && (
         <MainItemsWrapper>
           {items.map((item) => (
-            <MainItemCard key={item.id} onClick={() => onItemClick(item)}>
+            <MainItemCard key={item.id} onClick={() => setSelectedItem(item)}>
               <MainItemCardUpper>
                 <p>{text}</p>
                 <h2>{item.name}</h2>

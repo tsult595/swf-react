@@ -1,6 +1,5 @@
 import styled from 'styled-components';
-import useSWR from 'swr';
-import type { Item } from '../../../Domain/Entities/enums/ItemsTypes';
+import { useSelectedOnes } from '../../hooks/useSelectedOnes';
 
 const ModalContainer = styled.div`
   background: #232323;
@@ -85,7 +84,7 @@ interface ItemsDetailModalProps {
 }
 
 const ItemsDetailModal = ({ onClose }: ItemsDetailModalProps) => {
-  const { data: selectedItem } = useSWR<Item | null>('selectedItem');
+  const { selectedItem } = useSelectedOnes();
 
   if (!selectedItem) {
     return (

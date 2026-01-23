@@ -1,7 +1,7 @@
 
 import styled from 'styled-components';
-import type { MysteryBox } from '../../../Domain/Entities/MystoryBoxTypes';
 import { MysteryBoxPresenter } from '../..';
+import { useSelectedOnes } from '../../hooks/useSelectedOnes';
 import { useState } from 'react';
 
 
@@ -100,8 +100,9 @@ const LoadingWrapper = styled.div`
 
 
 
-const Something =({onBoxClick}: {onBoxClick: (box: MysteryBox) => void}) => {
+const Something = () => {
    const {data : boxes , error: boxesError, isValidating, isLoading: boxesLoading, mutate: mutateBoxes} = MysteryBoxPresenter.useGetAllMystoryBoxes();
+   const { setSelectedBox } = useSelectedOnes();
    console.log("Boxes data in Something component:", boxes);
    const [inputValue, setInputValue] = useState<string>("");
    const [addNewText, setAddNewText] = useState<string[]>([]);
@@ -138,7 +139,7 @@ const Something =({onBoxClick}: {onBoxClick: (box: MysteryBox) => void}) => {
             $isOpen={selectedBoxId === box.id}
             onClick={() => {
               setSelectedBoxId(box.id);
-              onBoxClick?.(box);
+              setSelectedBox(box);
             }}
           >
             <button onClick={(e) => { e.stopPropagation(); setDarkMode(prev => ({ ...prev, [box.id]: !prev[box.id] })); }}>

@@ -5,6 +5,7 @@ import { useHeroes } from '../../hooks/useHeroes';
 import { FavoritePresenter } from '../..';
 import { useCallback } from 'react';
 import { useUserId } from '../../hooks/useUserId';
+import { useSelectedOnes } from '../../hooks/useSelectedOnes';
  
 
 const MainHeroesWrapper = styled.div`
@@ -212,17 +213,9 @@ const ErrorWrapper = styled.div`
   }
 `;
 
-interface MainHeroesSectionProps {
-  onHeroClick: (hero: Hero) => void;
-}
-
-const MainHeroesSection = ({
-  onHeroClick,
- 
- 
- 
-}: MainHeroesSectionProps) => {
+const MainHeroesSection = () => {
   const userId = useUserId();
+  const { setSelectedHero } = useSelectedOnes();
   const { data: heroes, error, isLoading: isHeroesLoading, mutate } = useHeroes();
   const { data: favorites,  mutate: mutateFavorites } = FavoritePresenter.useGetFavorites(userId);
   
@@ -257,7 +250,7 @@ const MainHeroesSection = ({
       {!isHeroesLoading && !error && heroes && (
         <MainHeroesWrapper>
           {heroes.map((hero) => (
-            <MainHeroCard key={hero.id} onClick={() => onHeroClick(hero)}>
+            <MainHeroCard key={hero.id} onClick={() => setSelectedHero(hero)}>
               <MainHeroCardInner>
                 <MainHeroCardUpper>
                   <h2>{hero.name}</h2>

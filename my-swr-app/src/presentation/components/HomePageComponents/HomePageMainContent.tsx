@@ -1,8 +1,6 @@
 import styled from 'styled-components';
-import type { Hero } from '../../../Domain/Entities/HeroTypes';
-import type { Item } from '../../../Domain/Entities/enums/ItemsTypes';
-import { useState} from 'react';
-import useSWR from 'swr';
+import { useState } from 'react';
+import { useSelectedOnes } from '../../hooks/useSelectedOnes';
 import ButtonMainImgDefault from '../../../assets/toggle_button_default.png'
 import ButtonMainImgHover from '../../../assets/toggle_button_hover.png'; 
 import ButtonMainImgTogled from '../../../assets/toggle_button_toggled.png'; 
@@ -15,7 +13,6 @@ import ItemsDetailModal from '../../Modals/ItemsModal/ItemsDetailModal';
 import BoxDetailModal from '../../Modals/BoxModal/BoxDetailModal';
 import MainHeroesSection from '../Heroes/MainHeroesSection';
 import Something from '../Heroes/Something';
-import type { MysteryBox } from '../../../Domain/Entities/MystoryBoxTypes';
 import { HomePageTabEnum } from '../../../Domain/Entities/enums/homePageEnum';
 import { useUserId } from '../../hooks/useUserId';
 
@@ -126,48 +123,12 @@ const ModalOverlay = styled.div<{ $isOpen: boolean }>`
 
 
 function MainContent() {
-  const { mutate: setSelectedHero } = useSWR<Hero | null>('selectedHero', null, { fallbackData: null });
-  const { mutate: setSelectedItem } = useSWR<Item | null>('selectedItem', null, { fallbackData: null });
-  const {mutate: setSelectedBox} = useSWR<MysteryBox | null>('selectedBox', null, {fallbackData: null});
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isItemModalOpen, setIsItemModalOpen] = useState(false);
-  const [isBoxModalOpen, setIsBoxModalOpen] = useState(false);
+  const { selectedHero, setSelectedHero, selectedItem, setSelectedItem, selectedBox, setSelectedBox } = useSelectedOnes();
   const [showFavorites, setShowFavorites] = useState(false);
   const [activeTab, setActiveTab] = useState<typeof HomePageTabEnum[keyof typeof HomePageTabEnum]>(HomePageTabEnum.CHARACTERS);
    const userId = useUserId(); 
   const { data: favorites } = FavoritePresenter.useGetFavorites(userId);
- 
 
-
-  const handleHeroClick = (hero: Hero) => {
-    setSelectedHero(hero);
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedHero(null);
-  };
-
-  const handleItemClick = (item: Item) => {
-    setSelectedItem(item);
-    setIsItemModalOpen(true);
-  };
-
-  const handleCloseItemModal = () => {
-    setIsItemModalOpen(false);
-    setSelectedItem(null);
-  };
-
-  const handleBoxgClick = (box: MysteryBox) => {
-    setSelectedBox(box);
-    setIsBoxModalOpen(true);
-  }
-
-  const handleCloseBoxModal = () => {
-    setIsBoxModalOpen(false);
-    setSelectedBox(null);
-  }
 
 
 
@@ -209,9 +170,7 @@ function MainContent() {
 
       
         {activeTab === HomePageTabEnum.CHARACTERS && (
-          <MainHeroesSection
-            onHeroClick={handleHeroClick}
-          />
+          <MainHeroesSection />
         )}
 
      
@@ -224,17 +183,13 @@ function MainContent() {
        
         {activeTab === HomePageTabEnum.ITEMS && (
           <ItemsWrapper>
-            <MainItemsComponent onItemClick={handleItemClick}
-            text='meow'
-             />
-          
+            <MainItemsComponent text='meow' />
           </ItemsWrapper>
         )}
 
         {activeTab === HomePageTabEnum.SOMETHING && (
           <ItemsWrapper>
-            <Something onBoxClick={handleBoxgClick}
-             />
+            <Something />
           </ItemsWrapper>
         )}
       </MainContentWrapper>
@@ -247,23 +202,23 @@ function MainContent() {
         </div>
       </ModalOverlay>
 
-      <ModalOverlay $isOpen={isModalOpen} onClick={handleCloseModal}> 
+      <ModalOverlay $isOpen={selectedHero !== null} onClick={() => setSelectedHero(null)}> 
         <div onClick={(e) => e.stopPropagation()}>
           <LikedHeroes 
-            onClose={handleCloseModal}
+            onClose={() => setSelectedHero(null)}
           />
         </div>
       </ModalOverlay>
 
-      <ModalOverlay $isOpen={isItemModalOpen} onClick={handleCloseItemModal}>
+      <ModalOverlay $isOpen={selectedItem !== null} onClick={() => setSelectedItem(null)}>
         <div onClick={(e) => e.stopPropagation()}>
-          <ItemsDetailModal onClose={handleCloseItemModal} />
+          <ItemsDetailModal onClose={() => setSelectedItem(null)} />
         </div>
       </ModalOverlay>
       
-      <ModalOverlay $isOpen={isBoxModalOpen} onClick={handleCloseBoxModal}>
+      <ModalOverlay $isOpen={selectedBox !== null} onClick={() => setSelectedBox(null)}>
         <div onClick={(e) => e.stopPropagation()}>
-          <BoxDetailModal onClosee={handleCloseBoxModal} />
+          <BoxDetailModal onClosee={() => setSelectedBox(null)} />
         </div>
       </ModalOverlay>
     </>

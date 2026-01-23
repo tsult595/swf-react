@@ -1,6 +1,5 @@
 import styled from 'styled-components';
-import useSWR from 'swr';
-import type { MysteryBox } from '../../../Domain/Entities/MystoryBoxTypes';
+import { useSelectedOnes } from '../../hooks/useSelectedOnes';
 
 const ModalContainer = styled.div`
   background: #232323;
@@ -82,7 +81,7 @@ interface BoxDetailModalProps {
 }
 
 const BoxDetailModal = ({ onClosee }: BoxDetailModalProps) => {
-  const { data: selectedBox } = useSWR<MysteryBox>('selectedBox');
+  const {selectedBox} = useSelectedOnes();
 
   if (!selectedBox) {
     return (

@@ -194,7 +194,6 @@ const HeartButton = styled.button`
 
 const FavoriteHeroes = ({ onClose }: FavoriteHeroesProps) => {
   const userId = useUserId();
-
   const { data: favorites, mutate: mutateFavorites } = FavoritePresenter.useGetFavorites(userId);
 
   const toggleFavorite = async (hero: Hero) => {
