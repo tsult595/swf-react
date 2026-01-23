@@ -6,9 +6,8 @@ import HeaderBackGround from '../../../assets/page_header_background.png';
 import { useChatInput } from '../../hooks/useChatInput';
 import { useChatSocket } from '../../hooks/useChatSocket';
 import { useUserId } from '../../hooks/useUserId';
-import { ClanPresenter } from '../..';
-import type { ClanDocument } from '../../../Domain/Entities/ClanTypes';
 import type { Message } from '../../../Domain/Entities/MessageTypes';
+import { useClanIds } from '../../hooks/useClanIds';
 import { useLocalStorageSync } from '../../hooks/useLocalStorageSync';
 import { MessageTypeEnum } from '../../../Domain/Entities/enums/messageEnum';
 import { useClanChat } from '../../hooks/useClanChat';
@@ -92,10 +91,8 @@ const MainChatInputContainer = () => {
   const { data: selectedRecipientId = null, mutate: mutateSelectedRecipient } = useSWR<string | null>('selectedRecipientId', null, { fallbackData: null });
   const { clanChatId, clanName, mutateClanChatId, mutateClanName } = useClanChat();
   const currentUserId = useUserId();
-  const ownerId = localStorage.getItem('userId') || currentUserId;
-  const { data: clans } = ClanPresenter.useGetClansByUserId(ownerId);
   const {mutateMessages} = useMessageChat();
-  const clanIds = clans?.map((c: ClanDocument) => c.id || c._id).filter(Boolean) as string[] || [];
+  const clanIds = useClanIds();
   
   const onNewMessage = useCallback((message: Message) => {
     mutateMessages(prev => {

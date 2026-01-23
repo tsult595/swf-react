@@ -7,8 +7,8 @@ import { useDisappearWelcomeButton } from '../../hooks/useDisapearWelcomeButton'
 import { useClanAddRemove } from '../../hooks/useClanAddRemove';
 import { useChatSocket } from '../../hooks/useChatSocket';
 import { useUserId } from '../../hooks/useUserId';
-// import useSWR from 'swr';
-// import type { Message } from '../../../Domain/Entities/MessageTypes';
+import { useClanChat } from '../../hooks/useClanChat';
+import useSWR from 'swr';
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -116,16 +116,17 @@ const SectionTitle = styled.h3`
 
 interface ChatModifyComponentModulProps {
   onClose: () => void;
-  onOpenChat: (data: { clanId: string, clanName: string }) => void;
 }
 
 
-const ChatModifyComponentModul = ({ onClose, onOpenChat }: ChatModifyComponentModulProps) => {
+const ChatModifyComponentModul = ({ onClose }: ChatModifyComponentModulProps) => {
   const userId = useUserId();
   const ownerId = localStorage.getItem('userId') || userId;
   const [selectedClan, setSelectedClan] = useState<ClanDocument | null>(null);
   const { data: clans, mutate: mutateClans } = ClanPresenter.useGetClansByUserId(userId);
   const { data: allUsers, mutate } = UserPresenter.useFetchUsers();
+  const { mutateClanChatId, mutateClanName } = useClanChat();
+  const { mutate: mutateSelectedRecipient } = useSWR<string | null>('selectedRecipientId', null);
   const { isVisible, hideButton } = useDisappearWelcomeButton();
   const [welcomeText, setWelcomeText] = useState('Добро пожаловать');
   const clanIds = clans?.map((c: ClanDocument) => c.id || c._id).filter(Boolean) as string[] || [];
@@ -205,7 +206,12 @@ const ChatModifyComponentModul = ({ onClose, onOpenChat }: ChatModifyComponentMo
               >
                 <span style={{ cursor: 'pointer' }} onClick={() => {
                   const clanId = clan.id || clan._id;
-                  if (clanId) onOpenChat({ clanId: clanId as string, clanName: clan.name });
+                  if (clanId) {
+                    mutateClanChatId(clanId as string, false);
+                    mutateClanName(clan.name, false);
+                    mutateSelectedRecipient(null, false);
+                    onClose();
+                  }
                 }}>{clan.name}</span>
                 <div>
                   {isOwner && <Button style={{ marginLeft: 8 }} onClick={() => setSelectedClan(clan)}>Управление</Button>}

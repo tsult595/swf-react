@@ -1,11 +1,9 @@
 import styled from 'styled-components';
 import AsideBackGround from '../../../assets/auction_menu_background.png';
-import type { Message } from '../../../Domain/Entities/MessageTypes';
 import { MessageTypeEnum } from '../../../Domain/Entities/enums/messageEnum';
 import { useMessageActions } from '../../message/useMessageActions';
-import type { ClanDocument } from '../../../Domain/Entities/ClanTypes';
-import { ClanPresenter } from '../..';
 import { useUserId } from '../../hooks/useUserId';
+import { useClanIds } from '../../hooks/useClanIds';
 import { useRef } from 'react';
 import { useScrollToBottom } from '../../hooks/useScrollToBottom';
 import { useLoadAllMessages } from '../../hooks/useLoadAllMessages';
@@ -211,8 +209,7 @@ const MainChatMessagesContainer = () => {
   useClanMessages(clanChatId, mutateMessages);
   usePrivateMessages(selectedRecipientId, ownerId, mutateMessages);
   const { deleteMessage } = useMessageActions(mutateMessages);
-  const { data: clans } = ClanPresenter.useGetClansByUserId(ownerId);
-  const clanIds = clans ? clans.map((c: ClanDocument) => c.id || c._id).filter(Boolean) as string[] : [];
+  const clanIds = useClanIds();
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   
   useScrollToBottom(messagesContainerRef, messages);

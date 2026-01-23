@@ -1,6 +1,5 @@
 import styled, { css } from 'styled-components';
 import { useState} from 'react';
-import useSWR from 'swr';
 import ChatModalComponent from '../../Modals/ChatModalComponent/ChatModalComponent';
 import ChatModifyComponentModul from '../../Modals/ChatModalComponent/ChatModifyComponentModul';
 import MainChatMessagesContainer from './MainChatMessagesContainer';
@@ -30,15 +29,14 @@ const ChatContainer = styled.div`
 `;
 
 const MainComponentChat = () => {
-  const currentUserId = useUserId();
-  const { mutate: mutateClans } = ClanPresenter.useGetClansByUserId(currentUserId);
-  const { mutate: mutateSelectedRecipient } = useSWR<string | null>('selectedRecipientId', null);
+  const userId = useUserId();
+  const { mutate: mutateClans } = ClanPresenter.useGetClansByUserId(userId);
   const { mutateClanChatId, mutateClanName } = useClanChat();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModifyModalOpen, setIsModifyModalOpen] = useState(false);
 
   useClanNotifications(
-    currentUserId,
+    userId,
     mutateClans,
     mutateClanChatId,
     mutateClanName
@@ -59,25 +57,11 @@ const MainComponentChat = () => {
       {isModalOpen && (
         <ChatModalComponent
           onClose={() => setIsModalOpen(false)}
-          onCreateClan={async (clanId: string, clanName: string) => {
-            mutateClanChatId(clanId, false);
-            mutateClanName(clanName, false);
-            mutateSelectedRecipient(null, false);
-            setIsModalOpen(false);
-            mutateClans(); 
-          }}
         />
       )}
       {isModifyModalOpen && (
         <ChatModifyComponentModul
           onClose={() => setIsModifyModalOpen(false)}
-          onOpenChat={async ({ clanId, clanName }) => {
-            mutateClanChatId(clanId, false);
-            mutateClanName(clanName, false);
-            mutateSelectedRecipient(null, false);
-            setIsModifyModalOpen(false);
-            mutateClans();
-          }}
         />
       )}
     </>

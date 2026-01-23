@@ -5,6 +5,8 @@ import { UserPresenter } from '../..';
 import { useDisappearWelcomeButton } from '../../hooks/useDisapearWelcomeButton';
 import { useUserId } from '../../hooks/useUserId';
 import { useChatSocket } from '../../hooks/useChatSocket';
+import { useClanChat } from '../../hooks/useClanChat';
+import useSWR from 'swr';
 
 
 const ModalOverlay = styled.div`
@@ -118,18 +120,20 @@ const StyledButton = styled.button`
 
 interface ChatModalComponentProps {
   onClose: () => void;
-  onCreateClan: (clanId: string, clanName: string) => void;
 }
 
-const ChatModalComponent = ({ onClose, onCreateClan }: ChatModalComponentProps) => {
-  const ownerId = useUserId();
+const ChatModalComponent = ({ onClose }: ChatModalComponentProps) => {
+  const userId = useUserId();
   const onNewMessage = useCallback(() => {}, []);
-  const { sendMessage } = useChatSocket(ownerId, 'User', [], onNewMessage);
+  const { sendMessage } = useChatSocket(userId, 'User', [], onNewMessage);
   const [clanName, setClanName] = useState('');
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [welcomeText, setWelcomeText] = useState('Добро пожаловать');
   const { isVisible, hideButton } = useDisappearWelcomeButton();
   const { data: users, isLoading, error, mutate } = UserPresenter.useFetchUsers();
+  const { mutateClanChatId, mutateClanName } = useClanChat();
+  const { mutate: mutateSelectedRecipient } = useSWR<string | null>('selectedRecipientId', null);
+  const { mutate: mutateClans } = ClanPresenter.useGetClansByUserId(userId);
  
 
   const toggleUser = (id: string) => {
@@ -143,11 +147,11 @@ const ChatModalComponent = ({ onClose, onCreateClan }: ChatModalComponentProps) 
   const handleCreate = async () => {
     if (clanName.trim() && selectedUsers.length > 0) {
       try {
-        const members = [ownerId, ...selectedUsers]; 
-        const clan = await ClanPresenter.createClan(clanName.trim(), members, ownerId);
+        const members = [userId, ...selectedUsers]; 
+        const clan = await ClanPresenter.createClan(clanName.trim(), members, userId);
     
         selectedUsers.forEach((memberId) => {
-          if (memberId !== ownerId) {
+          if (memberId !== userId) {
             sendMessage({
               text: `Вы были добавлены в клан ${clanName.trim()}!`,
               recipientId: memberId,
@@ -155,8 +159,11 @@ const ChatModalComponent = ({ onClose, onCreateClan }: ChatModalComponentProps) 
             });
           }
         });
-        onCreateClan(clan.id || clan._id, clan.name);
-        mutate(); 
+        mutateClanChatId(clan.id || clan._id, false);
+        mutateClanName(clan.name, false);
+        mutateSelectedRecipient(null, false);
+        mutate();
+        mutateClans();
         onClose();
       } catch {
         alert('Ошибка при создании клана');
