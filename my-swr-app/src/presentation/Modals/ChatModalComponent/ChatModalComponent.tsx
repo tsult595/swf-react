@@ -6,7 +6,7 @@ import { useDisappearWelcomeButton } from '../../hooks/useDisapearWelcomeButton'
 import { useUserId } from '../../hooks/useUserId';
 import { useChatSocket } from '../../hooks/useChatSocket';
 import { useClanChat } from '../../hooks/useClanChat';
-import useSWR from 'swr';
+import { useSelectedOnes } from '../../hooks/useSelectedOnes';
 
 
 const ModalOverlay = styled.div`
@@ -132,7 +132,7 @@ const ChatModalComponent = ({ onClose }: ChatModalComponentProps) => {
   const { isVisible, hideButton } = useDisappearWelcomeButton();
   const { data: users, isLoading, error, mutate } = UserPresenter.useFetchUsers();
   const { mutateClanChatId, mutateClanName } = useClanChat();
-  const { mutate: mutateSelectedRecipient } = useSWR<string | null>('selectedRecipientId', null);
+  const { setSelectedRecipientId } = useSelectedOnes();
   const { mutate: mutateClans } = ClanPresenter.useGetClansByUserId(userId);
  
 
@@ -161,7 +161,7 @@ const ChatModalComponent = ({ onClose }: ChatModalComponentProps) => {
         });
         mutateClanChatId(clan.id || clan._id, false);
         mutateClanName(clan.name, false);
-        mutateSelectedRecipient(null, false);
+        setSelectedRecipientId(null);
         mutate();
         mutateClans();
         onClose();
@@ -183,7 +183,7 @@ const ChatModalComponent = ({ onClose }: ChatModalComponentProps) => {
         {isVisible && <button onClick={() => {
         setWelcomeText('Новое приветствие');
         hideButton(); }}>{welcomeText}</button>}
-        
+       
         <Input
           placeholder="Название клана"
           value={clanName}

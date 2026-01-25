@@ -11,7 +11,7 @@ import { FavoritePresenter } from '../..';
 import MainItemsComponent from '../Items/MainItemsComponent';
 import ItemsDetailModal from '../../Modals/ItemsModal/ItemsDetailModal';
 import BoxDetailModal from '../../Modals/BoxModal/BoxDetailModal';
-import MainHeroesSection from '../Heroes/MainHeroesSection';
+import MaincharactersSection from '../Heroes/MaincharactersSection';
 import Something from '../Heroes/Something';
 import { HomePageTabEnum } from '../../../Domain/Entities/enums/homePageEnum';
 import { useUserId } from '../../hooks/useUserId';
@@ -123,12 +123,12 @@ const ModalOverlay = styled.div<{ $isOpen: boolean }>`
 
 
 function MainContent() {
+  // todo rubilnik v samom componente doljen bit
   const { selectedHero, setSelectedHero, selectedItem, setSelectedItem, selectedBox, setSelectedBox } = useSelectedOnes();
   const [showFavorites, setShowFavorites] = useState(false);
-  const [activeTab, setActiveTab] = useState<typeof HomePageTabEnum[keyof typeof HomePageTabEnum]>(HomePageTabEnum.CHARACTERS);
+  const [activeTab, setActiveTab] = useState(HomePageTabEnum.CHARACTERS);
    const userId = useUserId(); 
   const { data: favorites } = FavoritePresenter.useGetFavorites(userId);
-
 
 
 
@@ -146,7 +146,7 @@ function MainContent() {
             $active={activeTab === HomePageTabEnum.ITEMS} 
             onClick={() => setActiveTab(HomePageTabEnum.ITEMS)}
           >
-            <ButtonText>Items</ButtonText>
+            <ButtonText>{HomePageTabEnum.ITEMS}</ButtonText>
           </MainContentButtons>
           <MainContentButtons onClick={() => setShowFavorites(true)}>
             <ButtonText>
@@ -170,7 +170,8 @@ function MainContent() {
 
       
         {activeTab === HomePageTabEnum.CHARACTERS && (
-          <MainHeroesSection />
+          // heroes na characters imya 
+          <MaincharactersSection />
         )}
 
      

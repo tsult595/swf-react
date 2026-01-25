@@ -9,9 +9,9 @@ import { useScrollToBottom } from '../../hooks/useScrollToBottom';
 import { useLoadAllMessages } from '../../hooks/useLoadAllMessages';
 import { usePrivateMessages } from '../../hooks/usePrivateMessages';
 import { useClanMessages } from '../../hooks/useClanMessages';
-import useSWR from 'swr';
 import { useClanChat } from '../../hooks/useClanChat';
 import { useMessageChat } from '../../hooks/useMessageChat';
+import { useSelectedOnes } from '../../hooks/useSelectedOnes';
 const MessagesContainer = styled.div`
   flex: 1;
   overflow-y: auto;
@@ -200,12 +200,13 @@ const Timestamp = styled.span`
 
 
 const MainChatMessagesContainer = () => {
-  // todo: clanChatId = null? Это дефолтное значение на случай, если data из useSWR будет undefined
-   const {messages , mutateMessages} = useMessageChat();
-   const { data: selectedRecipientId = null, mutate: mutateSelectedRecipient } = useSWR<string | null>('selectedRecipientId', null, { fallbackData: null });
-   const { clanChatId, clanName} = useClanChat();
+  const { selectedRecipientId, setSelectedRecipientId  } = useSelectedOnes();
+  // Показываем в интерфейсе: "Чат клана: {clanName}"
+  const { clanChatId, clanName} = useClanChat();
+  const {messages, mutateMessages} = useMessageChat();
   const { loading, error } = useLoadAllMessages(mutateMessages);
   const ownerId = useUserId();
+  // ↓ внутри делает fetch к серверу Fetch:
   useClanMessages(clanChatId, mutateMessages);
   usePrivateMessages(selectedRecipientId, ownerId, mutateMessages);
   const { deleteMessage } = useMessageActions(mutateMessages);
@@ -245,11 +246,10 @@ const MainChatMessagesContainer = () => {
         const isOwn = message.userId === ownerId;
         const isPrivate = message.type === MessageTypeEnum.PRIVATE;
         const isClan = message.type === MessageTypeEnum.CLAN_CHAT;
-  
+        
         if (isPrivate && isOwn && message.text.includes('добавлены в клан')) {
           return null;
         }
-        // console.log('MainChatMessagesContainer rendering messages:', messages.length, messages.map(m => m.text));
         return (
           <MessageWrapper key={message.uniqueKey || message.id} $isOwn={isOwn}>
             <MessageBubble $isOwn={isOwn}>
@@ -265,7 +265,7 @@ const MainChatMessagesContainer = () => {
                   onClick={() => {
                     if (message.userId !== ownerId) {
                       const newValue = selectedRecipientId === message.userId ? null : message.userId;
-                      mutateSelectedRecipient(newValue, false);
+                      setSelectedRecipientId(newValue);
                       localStorage.setItem('selectedRecipientId', newValue || '');
                     }
                   }}
@@ -279,7 +279,9 @@ const MainChatMessagesContainer = () => {
                   {isClan && (
                     <span style={{ marginLeft: 4, color: '#00e676', fontSize: 12 }}>
                       (clan)
+                
                     </span>
+                
                   )}
                 </Username>
                 <Timestamp>

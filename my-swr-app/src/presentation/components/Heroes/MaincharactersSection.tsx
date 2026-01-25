@@ -213,7 +213,7 @@ const ErrorWrapper = styled.div`
   }
 `;
 
-const MainHeroesSection = () => {
+const MaincharactersSection = () => {
   const userId = useUserId();
   const { setSelectedHero } = useSelectedOnes();
   const { data: heroes, error, isLoading: isHeroesLoading, mutate } = useHeroes();
@@ -293,4 +293,4 @@ const MainHeroesSection = () => {
   );
 };
 
-export default MainHeroesSection;
+export default MaincharactersSection;

@@ -1,7 +1,6 @@
 import styled from 'styled-components';
 import { Send } from 'lucide-react';
 import { useCallback } from 'react';
-import useSWR from 'swr';
 import HeaderBackGround from '../../../assets/page_header_background.png';
 import { useChatInput } from '../../hooks/useChatInput';
 import { useChatSocket } from '../../hooks/useChatSocket';
@@ -12,6 +11,7 @@ import { useLocalStorageSync } from '../../hooks/useLocalStorageSync';
 import { MessageTypeEnum } from '../../../Domain/Entities/enums/messageEnum';
 import { useClanChat } from '../../hooks/useClanChat';
 import { useMessageChat } from '../../hooks/useMessageChat';
+import { useSelectedOnes } from '../../hooks/useSelectedOnes';
 
 const InputContainer = styled.div`
   flex-shrink: 0;
@@ -88,7 +88,7 @@ const SelectedSpan = styled.span`
 
 
 const MainChatInputContainer = () => {
-  const { data: selectedRecipientId = null, mutate: mutateSelectedRecipient } = useSWR<string | null>('selectedRecipientId', null, { fallbackData: null });
+  const { selectedRecipientId, setSelectedRecipientId} = useSelectedOnes(); 
   const { clanChatId, clanName, mutateClanChatId, mutateClanName } = useClanChat();
   const currentUserId = useUserId();
   const {mutateMessages} = useMessageChat();
@@ -111,7 +111,7 @@ const MainChatInputContainer = () => {
         <SelectedSpan>
           Приватный чат с: {selectedRecipientId}
           <PrivateButton onClick={() => {
-            mutateSelectedRecipient(null, false);
+            setSelectedRecipientId(null);
             localStorage.setItem('selectedRecipientId', '');
           }}>X</PrivateButton>
         </SelectedSpan>

@@ -8,7 +8,7 @@ import { useClanAddRemove } from '../../hooks/useClanAddRemove';
 import { useChatSocket } from '../../hooks/useChatSocket';
 import { useUserId } from '../../hooks/useUserId';
 import { useClanChat } from '../../hooks/useClanChat';
-import useSWR from 'swr';
+import { useSelectedOnes } from '../../hooks/useSelectedOnes';
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -126,7 +126,7 @@ const ChatModifyComponentModul = ({ onClose }: ChatModifyComponentModulProps) =>
   const { data: clans, mutate: mutateClans } = ClanPresenter.useGetClansByUserId(userId);
   const { data: allUsers, mutate } = UserPresenter.useFetchUsers();
   const { mutateClanChatId, mutateClanName } = useClanChat();
-  const { mutate: mutateSelectedRecipient } = useSWR<string | null>('selectedRecipientId', null);
+  const { setSelectedRecipientId } = useSelectedOnes();
   const { isVisible, hideButton } = useDisappearWelcomeButton();
   const [welcomeText, setWelcomeText] = useState('Добро пожаловать');
   const clanIds = clans?.map((c: ClanDocument) => c.id || c._id).filter(Boolean) as string[] || [];
@@ -209,7 +209,7 @@ const ChatModifyComponentModul = ({ onClose }: ChatModifyComponentModulProps) =>
                   if (clanId) {
                     mutateClanChatId(clanId as string, false);
                     mutateClanName(clan.name, false);
-                    mutateSelectedRecipient(null, false);
+                    setSelectedRecipientId(null);
                     onClose();
                   }
                 }}>{clan.name}</span>
