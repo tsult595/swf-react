@@ -166,7 +166,7 @@ const getFrameByRarity = (rarity: string) => {
 };
 
 
-const MainHeroComponent = () => {
+const MainCharacterComponent = () => {
   const { selectedHero: hero } = useSelectedOnes();
   const { data: fullHero } = useHeroById(hero?.id ?? null, hero ?? undefined);
   const [openSections, setOpenSections] = useState({
@@ -339,4 +339,4 @@ const MainHeroComponent = () => {
   )
 }
 
-export default MainHeroComponent
+export default MainCharacterComponent

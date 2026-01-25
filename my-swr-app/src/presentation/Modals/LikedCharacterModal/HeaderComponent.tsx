@@ -105,20 +105,22 @@ const AsideInfoWebSiteLink = styled.a`
   }
 `;
 
+
+
 const HeaderComponent = ({ onClose } : ClosingProps) => {
   return (
-     <LikedHeroesHeader>
-        <HeaderSectionLeft />
-        <HeaderSectionCenter>
-          <LikedHeroesHeaderTitle>Auction Item</LikedHeroesHeaderTitle>
-          <AsideInfoWebSiteLink onClick={onClose}>
-            <CloseIconImage>
-              ✖
-            </CloseIconImage>
-          </AsideInfoWebSiteLink>
-        </HeaderSectionCenter>
-        <HeaderSectionRight />
-      </LikedHeroesHeader>
+    <LikedHeroesHeader>
+      <HeaderSectionLeft />
+      <HeaderSectionCenter>
+        <LikedHeroesHeaderTitle>Auction Item</LikedHeroesHeaderTitle>
+        <AsideInfoWebSiteLink onClick={onClose}>
+          <CloseIconImage>
+            ✖
+          </CloseIconImage>
+        </AsideInfoWebSiteLink>
+      </HeaderSectionCenter>
+      <HeaderSectionRight />
+    </LikedHeroesHeader>
   )
 }
 

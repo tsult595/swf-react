@@ -9,7 +9,8 @@ import { Heart } from 'lucide-react';
 import { FavoritePresenter } from '../..';
 import type { Hero } from '../../../Domain/Entities/HeroTypes';
 import { useUserId } from '../../hooks/useUserId';
-// import { useCallback } from 'react';
+
+
 
 
 const FrameBorderModalMain = css`
@@ -192,10 +193,10 @@ const HeartButton = styled.button`
 
 `;
 
-const FavoriteHeroes = ({ onClose }: FavoriteHeroesProps) => {
+
+const FavoriteCharacters = ({ onClose }: FavoriteHeroesProps) => {
   const userId = useUserId();
   const { data: favorites, mutate: mutateFavorites } = FavoritePresenter.useGetFavorites(userId);
-
   const toggleFavorite = async (hero: Hero) => {
     const isCurrentlyFavorite = favorites?.some((f: Hero) => f.id === hero.id) || false;
 
@@ -245,6 +246,8 @@ const FavoriteHeroes = ({ onClose }: FavoriteHeroesProps) => {
   }
 
   return (
+    <>
+   
     <Container>
       <Header>
         <Title>Favorite Heroes ({favoritesList.length})</Title>
@@ -275,9 +278,11 @@ const FavoriteHeroes = ({ onClose }: FavoriteHeroesProps) => {
         ))}
       </HeroCardWrapper>
     </Container>
+   
+   </>
   );
 };
 
 
-export default FavoriteHeroes;
+export default FavoriteCharacters ;
 

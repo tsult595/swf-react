@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { useSelectedOnes } from '../../hooks/useSelectedOnes';
 
+
 const ModalContainer = styled.div`
   background: #232323;
   border-radius: 16px;
@@ -76,11 +77,13 @@ const CloseButton = styled.button`
   }
 `;
 
+
+
 interface BoxDetailModalProps {
   onClosee: () => void;
 }
 
-const BoxDetailModal = ({ onClosee }: BoxDetailModalProps) => {
+const BoxDetailModal = ({onClosee}: BoxDetailModalProps) => {
   const {selectedBox} = useSelectedOnes();
 
   if (!selectedBox) {
@@ -117,6 +120,7 @@ const BoxDetailModal = ({ onClosee }: BoxDetailModalProps) => {
 
       <CloseButton onClick={onClosee}>Close</CloseButton>
     </ModalContainer>
+    
   );
 };
 

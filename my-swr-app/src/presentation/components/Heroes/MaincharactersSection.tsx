@@ -6,6 +6,7 @@ import { FavoritePresenter } from '../..';
 import { useCallback } from 'react';
 import { useUserId } from '../../hooks/useUserId';
 import { useSelectedOnes } from '../../hooks/useSelectedOnes';
+import LikedCharacterModal  from '../../../components/LikedHeroes';
  
 
 const MainHeroesWrapper = styled.div`
@@ -213,9 +214,22 @@ const ErrorWrapper = styled.div`
   }
 `;
 
+const ModalOverlay = styled.div<{ $isOpen: boolean }>` 
+  display: ${props => props.$isOpen ? 'flex' : 'none'};
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+
 const MaincharactersSection = () => {
   const userId = useUserId();
-  const { setSelectedHero } = useSelectedOnes();
+  const { selectedHero, setSelectedHero } = useSelectedOnes();
   const { data: heroes, error, isLoading: isHeroesLoading, mutate } = useHeroes();
   const { data: favorites,  mutate: mutateFavorites } = FavoritePresenter.useGetFavorites(userId);
   
@@ -289,6 +303,13 @@ const MaincharactersSection = () => {
           ))}
         </MainHeroesWrapper>
       )}
+      <ModalOverlay $isOpen={selectedHero !== null} onClick={() => setSelectedHero(null)}> 
+        <div onClick={(e) => e.stopPropagation()}>
+          <LikedCharacterModal 
+            onClose={() => setSelectedHero(null)}
+          />
+        </div>
+      </ModalOverlay> 
     </>
   );
 };

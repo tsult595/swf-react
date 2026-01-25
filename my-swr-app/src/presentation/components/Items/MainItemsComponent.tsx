@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { ItemsPresenter } from '../..';
 import { useSelectedOnes } from '../../hooks/useSelectedOnes';
+import ItemsDetailModal from '../../Modals/ItemsModal/ItemsDetailModal';
 
 const MainItemsWrapper = styled.div`
   display: flex;
@@ -128,13 +129,26 @@ const ErrorWrapper = styled.div`
   }
 `;
 
+const ModalOverlay = styled.div<{ $isOpen: boolean }>` 
+  display: ${props => props.$isOpen ? 'flex' : 'none'};
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+
 interface MainItemsComponentProps {
   text ?: string;
 }
 
 const MainItemsComponent = ({ text }: MainItemsComponentProps) => {
   const { data: items, error, isLoading, mutate } = ItemsPresenter.useGetAllItems();
-  const { setSelectedItem } = useSelectedOnes();
+  const { selectedItem, setSelectedItem } = useSelectedOnes();
 
   return (
     <>
@@ -169,6 +183,12 @@ const MainItemsComponent = ({ text }: MainItemsComponentProps) => {
           ))}
         </MainItemsWrapper>
       )}
+
+        <ModalOverlay $isOpen={selectedItem !== null} onClick={() => setSelectedItem(null)}>
+        <div onClick={(e) => e.stopPropagation()}>
+          <ItemsDetailModal onClose={() => setSelectedItem(null)} />
+        </div>
+      </ModalOverlay>
     </>
   );
 };

@@ -1,16 +1,12 @@
 import styled from 'styled-components';
 import { useState } from 'react';
-import { useSelectedOnes } from '../../hooks/useSelectedOnes';
 import ButtonMainImgDefault from '../../../assets/toggle_button_default.png'
 import ButtonMainImgHover from '../../../assets/toggle_button_hover.png'; 
 import ButtonMainImgTogled from '../../../assets/toggle_button_toggled.png'; 
-import LikedHeroes from '../../Modals/LikedHeroModal/LikedHeroes';
-import FavoriteHeroes from '../../Modals/FavoritesListModal/FavoriteHeroes';
+import FavoriteHeroes from '../../Modals/FavoritesListModal/FavoriteCharacters';
 import MainComponentChat from '../Chat/MainComponentChat'; 
 import { FavoritePresenter } from '../..';
 import MainItemsComponent from '../Items/MainItemsComponent';
-import ItemsDetailModal from '../../Modals/ItemsModal/ItemsDetailModal';
-import BoxDetailModal from '../../Modals/BoxModal/BoxDetailModal';
 import MaincharactersSection from '../Heroes/MaincharactersSection';
 import Something from '../Heroes/Something';
 import { HomePageTabEnum } from '../../../Domain/Entities/enums/homePageEnum';
@@ -123,8 +119,6 @@ const ModalOverlay = styled.div<{ $isOpen: boolean }>`
 
 
 function MainContent() {
-  // todo rubilnik v samom componente doljen bit
-  const { selectedHero, setSelectedHero, selectedItem, setSelectedItem, selectedBox, setSelectedBox } = useSelectedOnes();
   const [showFavorites, setShowFavorites] = useState(false);
   const [activeTab, setActiveTab] = useState(HomePageTabEnum.CHARACTERS);
    const userId = useUserId(); 
@@ -170,7 +164,7 @@ function MainContent() {
 
       
         {activeTab === HomePageTabEnum.CHARACTERS && (
-          // heroes na characters imya 
+        
           <MaincharactersSection />
         )}
 
@@ -200,26 +194,6 @@ function MainContent() {
           <FavoriteHeroes 
             onClose={() => setShowFavorites(false)}
           />
-        </div>
-      </ModalOverlay>
-
-      <ModalOverlay $isOpen={selectedHero !== null} onClick={() => setSelectedHero(null)}> 
-        <div onClick={(e) => e.stopPropagation()}>
-          <LikedHeroes 
-            onClose={() => setSelectedHero(null)}
-          />
-        </div>
-      </ModalOverlay>
-
-      <ModalOverlay $isOpen={selectedItem !== null} onClick={() => setSelectedItem(null)}>
-        <div onClick={(e) => e.stopPropagation()}>
-          <ItemsDetailModal onClose={() => setSelectedItem(null)} />
-        </div>
-      </ModalOverlay>
-      
-      <ModalOverlay $isOpen={selectedBox !== null} onClick={() => setSelectedBox(null)}>
-        <div onClick={(e) => e.stopPropagation()}>
-          <BoxDetailModal onClosee={() => setSelectedBox(null)} />
         </div>
       </ModalOverlay>
     </>

@@ -2,7 +2,7 @@ import styled, { css } from 'styled-components';
 import type {LikedHeroesProps} from '../../../Domain/Entities/HeroTypes';
 import HeaderComponent from './HeaderComponent';
 import TableComponent from './TableComponent';
-import MainHeroComponent from './MainHeroComponent';
+import MainHeroComponent from './MainCharacterComponent';
 import UpperNamingComponent from './UpperNamingComponent';
 import { useSelectedOnes } from '../../hooks/useSelectedOnes';
 
@@ -28,6 +28,7 @@ const Container = styled.div`
 
   ${FrameBorderModalMain}
 `;
+
 
 
 const ScrollWrapper = styled.div`
@@ -61,11 +62,11 @@ const ScrollWrapper = styled.div`
 `;
 
 
-
-const LikedHeroes = ({ onClose }: LikedHeroesProps) => {
-  const { selectedHero } = useSelectedOnes();
+const LikedCharacterModal  = ({ onClose }: LikedHeroesProps) => {
+   const { selectedHero } = useSelectedOnes();
  
   return (
+    <>
     <Container>
       <HeaderComponent  onClose={onClose} />
       <ScrollWrapper>
@@ -78,7 +79,9 @@ const LikedHeroes = ({ onClose }: LikedHeroesProps) => {
         )}
       </ScrollWrapper>
     </Container>
+      
+     </>
   );
 };
 
-export default LikedHeroes;
+export default LikedCharacterModal;

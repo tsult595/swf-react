@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { MysteryBoxPresenter } from '../..';
 import { useSelectedOnes } from '../../hooks/useSelectedOnes';
 import { useState } from 'react';
+import BoxDetailModal from '../../Modals/BoxModal/BoxDetailModal';
 
 
 
@@ -64,30 +65,7 @@ const Button = styled.button<{$isColorBlue?: boolean}>`
   color: white;
   `;
 
-// const ErrorWrapper = styled.div`
-//   display: flex;
-//   flex-direction: column;
-//   align-items: center;
-//   padding: 20px;
-//   background: rgba(239, 68, 68, 0.1);
-//   border: 1px solid #ef4444;
-//   border-radius: 10px;
-//   color: #ef4444;
-  
-//   button {
-//     margin-top: 10px;
-//     padding: 8px 16px;
-//     background: #ef4444;
-//     color: white;
-//     border: none;
-//     border-radius: 5px;
-//     cursor: pointer;
-    
-//     &:hover {
-//       background: #dc2626;
-//     }
-//   }
-// `;
+
 
 const LoadingWrapper = styled.div`
   display: flex;
@@ -98,9 +76,23 @@ const LoadingWrapper = styled.div`
   font-size: 1.2rem;
 `;
 
+const ModalOverlay = styled.div<{ $isOpen: boolean }>` 
+  display: ${props => props.$isOpen ? 'flex' : 'none'};
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+
 
 
 const Something = () => {
+  const {selectedBox} = useSelectedOnes();
    const {data : boxes , error: boxesError, isValidating, isLoading: boxesLoading, mutate: mutateBoxes} = MysteryBoxPresenter.useGetAllMystoryBoxes();
    const { setSelectedBox } = useSelectedOnes();
    console.log("Boxes data in Something component:", boxes);
@@ -172,6 +164,12 @@ const Something = () => {
         {addNewText.map((text,index)=>(<><button onClick={()=>handleDelete(index)}>delete</button><li key={index}>{text}</li></>))}
        </ul>
     </Container>
+    
+    <ModalOverlay $isOpen={selectedBox !== null} onClick={() => setSelectedBox(null)}>
+        <div onClick={(e) => e.stopPropagation()}>
+          <BoxDetailModal onClosee={() => setSelectedBox(null)} />
+        </div>
+      </ModalOverlay>
     </>
   )
 }
