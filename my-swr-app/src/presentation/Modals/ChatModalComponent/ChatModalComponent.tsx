@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { ClanPresenter } from '../..';
 import { UserPresenter } from '../..';
 import { useDisappearWelcomeButton } from '../../hooks/useDisapearWelcomeButton';
@@ -124,8 +124,7 @@ interface ChatModalComponentProps {
 
 const ChatModalComponent = ({ onClose }: ChatModalComponentProps) => {
   const userId = useUserId();
-  const onNewMessage = useCallback(() => {}, []);
-  const { sendMessage } = useChatSocket(userId, 'User', [], onNewMessage);
+  const { sendMessage } = useChatSocket(userId, 'User', []);
   const [clanName, setClanName] = useState('');
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [welcomeText, setWelcomeText] = useState('Добро пожаловать');

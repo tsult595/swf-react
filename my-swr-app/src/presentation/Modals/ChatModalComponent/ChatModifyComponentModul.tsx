@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { ClanPresenter } from '../..';
 import type { ClanDocument } from '../../../Domain/Entities/ClanTypes';
 import { UserPresenter } from '../..';
@@ -130,10 +130,8 @@ const ChatModifyComponentModul = ({ onClose }: ChatModifyComponentModulProps) =>
   const { isVisible, hideButton } = useDisappearWelcomeButton();
   const [welcomeText, setWelcomeText] = useState('Добро пожаловать');
   const clanIds = clans?.map((c: ClanDocument) => c.id || c._id).filter(Boolean) as string[] || [];
-  const onNewMessage = useCallback(() => {}, []);
-  const { sendMessage } = useChatSocket(ownerId, 'User', clanIds, onNewMessage);
+  const { sendMessage } = useChatSocket(ownerId, 'User', clanIds);
   const { handleAddUser, handleRemoveUser } = useClanAddRemove(ownerId, sendMessage, mutateClans);
-
   const localHandleAddUser = async (_clanId: string, userId: string) => {
     const clanId = selectedClan?.id || selectedClan?._id;
     if (!clanId || !selectedClan) return;

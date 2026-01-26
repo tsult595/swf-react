@@ -164,7 +164,6 @@ function MainContent() {
 
       
         {activeTab === HomePageTabEnum.CHARACTERS && (
-        
           <MaincharactersSection />
         )}
 

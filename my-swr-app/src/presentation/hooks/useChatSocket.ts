@@ -19,7 +19,7 @@ export function useChatSocket(
   currentUserId: string,
   currentUsername: string,
   clanIds: string[],
-  onNewMessage: (message: Message) => void  // ← колбэк в родитель
+  onNewMessage?: (message: Message) => void  // ← колбэк в родитель
 ): UseChatSocketReturn {
   const socketRef = useRef<Socket | null>(null);
 
@@ -38,7 +38,7 @@ export function useChatSocket(
 
     socket.on('chat message', (msg: Message) => {
       console.log('📨 Новое сообщение от сервера:', msg.text);
-      onNewMessage(msg);
+      onNewMessage?.(msg);
     });
 
     return () => {
@@ -71,7 +71,7 @@ export function useChatSocket(
         clanName,
         timestamp: new Date().toISOString(),
       };
-      onNewMessage(localMessage);
+      onNewMessage?.(localMessage);
     }
 
     // Отправляем через сокет
