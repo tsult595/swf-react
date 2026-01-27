@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import type { Hero } from '../../../Domain/Entities/HeroTypes';
 import { Heart } from 'lucide-react';
-import { useGetAllHeroes } from '../../heroes';
+import { HeroesPresenter } from '../..';
 import { FavoritePresenter } from '../..';
 import { useCallback } from 'react';
 import { useUserId } from '../../hooks/useUserId';
@@ -230,7 +230,7 @@ const ModalOverlay = styled.div<{ $isOpen: boolean }>`
 const MaincharactersSection = () => {
   const userId = useUserId();
   const { selectedHero, setSelectedHero } = useSelectedOnes();
-  const { data: heroes, error, isLoading: isHeroesLoading, mutate } = useGetAllHeroes();
+  const { data: heroes, error, isLoading: isHeroesLoading, mutate } = HeroesPresenter.useGetAllHeroes();
   const { data: favorites,  mutate: mutateFavorites } = FavoritePresenter.useGetFavorites(userId);
   
 

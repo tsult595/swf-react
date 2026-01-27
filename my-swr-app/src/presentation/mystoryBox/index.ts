@@ -1,3 +1,3 @@
 
-export * from './getallMystoryBoxesById';
+export * from './getAllMystoryBoxesById';
 export * from './getAllMystoryBoxes';   

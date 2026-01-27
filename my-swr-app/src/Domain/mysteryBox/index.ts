@@ -1,3 +1,3 @@
 
 export * from './getAllMystoryBoxesByIdUseCase';
-export * from './getallMystoryBoxesUseCase';
+export * from './getAllMystoryBoxesUseCase';

@@ -4,7 +4,7 @@ import heroFrameMiddle from '../../../assets/character_border_blue.png';
 import heroFrame from '../../../assets/character_border_common.png';
 import { useState } from 'react';
 import { useSelectedOnes } from '../../hooks/useSelectedOnes';
-import { useHeroById } from '../../hooks/useHeroById';
+import { HeroesPresenter } from '../..';
 
 const MainHeroSection = styled.div`
   width: 100%;
@@ -168,7 +168,7 @@ const getFrameByRarity = (rarity: string) => {
 
 const MainCharacterComponent = () => {
   const { selectedHero: hero } = useSelectedOnes();
-  const { data: fullHero } = useHeroById(hero?.id ?? null, hero ?? undefined);
+  const { data: fullHero } = HeroesPresenter.useGetHeroById(hero ? hero.id : null);
   const [openSections, setOpenSections] = useState({
     auction: true,
     nft: true,
