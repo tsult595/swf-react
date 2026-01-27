@@ -1,12 +1,12 @@
 import styled from 'styled-components';
 import type { Hero } from '../../../Domain/Entities/HeroTypes';
 import { Heart } from 'lucide-react';
-import { useHeroes } from '../../hooks/useHeroes';
+import { useGetAllHeroes } from '../../heroes';
 import { FavoritePresenter } from '../..';
 import { useCallback } from 'react';
 import { useUserId } from '../../hooks/useUserId';
 import { useSelectedOnes } from '../../hooks/useSelectedOnes';
-import LikedCharacterModal  from '../../../components/LikedHeroes';
+import LikedCharacterModal  from '../../Modals/LikedCharacterModal/LikedCharacterModal';
  
 
 const MainHeroesWrapper = styled.div`
@@ -230,7 +230,7 @@ const ModalOverlay = styled.div<{ $isOpen: boolean }>`
 const MaincharactersSection = () => {
   const userId = useUserId();
   const { selectedHero, setSelectedHero } = useSelectedOnes();
-  const { data: heroes, error, isLoading: isHeroesLoading, mutate } = useHeroes();
+  const { data: heroes, error, isLoading: isHeroesLoading, mutate } = useGetAllHeroes();
   const { data: favorites,  mutate: mutateFavorites } = FavoritePresenter.useGetFavorites(userId);
   
 

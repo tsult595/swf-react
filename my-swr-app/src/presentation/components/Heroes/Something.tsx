@@ -4,6 +4,7 @@ import { MysteryBoxPresenter } from '../..';
 import { useSelectedOnes } from '../../hooks/useSelectedOnes';
 import { useState } from 'react';
 import BoxDetailModal from '../../Modals/BoxModal/BoxDetailModal';
+import { useClanChat } from '../../hooks/useClanChat';
 
 
 
@@ -101,6 +102,7 @@ const Something = () => {
    const [darkMode, setDarkMode] = useState <Record<number, boolean>>({});
    const [selectedBoxId, setSelectedBoxId] = useState<number | null>(null);
    const [shapeMode, setShapeMode] = useState<Record<number, boolean>>({});
+   const {clanName} = useClanChat();
 
    const handleAddNew = () => {
     if(inputValue.trim() !== ''){
@@ -142,6 +144,7 @@ const Something = () => {
             }} $isColorBlue={shapeMode[box.id]}>shape</Button>
             <p>{box.name}</p>
             <p>Rarity: {box.rarity}</p>
+            <p>Clan: {clanName}</p>
           </HeroCard>
         ))
       }
@@ -164,7 +167,7 @@ const Something = () => {
         {addNewText.map((text,index)=>(<><button onClick={()=>handleDelete(index)}>delete</button><li key={index}>{text}</li></>))}
        </ul>
     </Container>
-    
+
     <ModalOverlay $isOpen={selectedBox !== null} onClick={() => setSelectedBox(null)}>
         <div onClick={(e) => e.stopPropagation()}>
           <BoxDetailModal onClosee={() => setSelectedBox(null)} />

@@ -200,14 +200,16 @@ const Timestamp = styled.span`
 
 
 const MainChatMessagesContainer = () => {
+  // setSelectedRecipientId == newValue
   const { selectedRecipientId, setSelectedRecipientId  } = useSelectedOnes();
-  // Показываем в интерфейсе: "Чат клана: {clanName}"
+  //прочитали из "блокнота id iz chatModalComponent smotri tam 134 stroku"
   const { clanChatId, clanName} = useClanChat();
   const {messages, mutateMessages} = useMessageChat();
   const { loading, error } = useLoadAllMessages(mutateMessages);
   const ownerId = useUserId();
-  // ↓ внутри делает fetch к серверу Fetch:
+  // Загрузить сообщения этого клана с сервера smotri tut 205 stroku
   useClanMessages(clanChatId, mutateMessages);
+  // selectedRecipientId == newValue smotri 271 stroku
   usePrivateMessages(selectedRecipientId, ownerId, mutateMessages);
   const { deleteMessage } = useMessageActions(mutateMessages);
   const clanIds = useClanIds();
@@ -265,6 +267,7 @@ const MainChatMessagesContainer = () => {
                   onClick={() => {
                     if (message.userId !== ownerId) {
                       const newValue = selectedRecipientId === message.userId ? null : message.userId;
+                      // setSelectedRecipientId == newValue
                       setSelectedRecipientId(newValue);
                       localStorage.setItem('selectedRecipientId', newValue || '');
                     }

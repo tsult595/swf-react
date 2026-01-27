@@ -1,9 +1,9 @@
 import styled, { css } from 'styled-components';
-import type {LikedHeroesProps} from '../Domain/Entities/HeroTypes';
-import HeaderComponent from '../presentation/Modals/LikedCharacterModal/HeaderComponent';
-import TableComponent from '../presentation/Modals/LikedCharacterModal/TableComponent';
-import MainHeroComponent from '../presentation/Modals/LikedCharacterModal/MainCharacterComponent';
-import UpperNamingComponent from '../presentation/Modals/LikedCharacterModal/UpperNamingComponent';
+import type {LikedHeroesProps} from '../../../Domain/Entities/HeroTypes';
+import HeaderComponent from './HeaderComponent';
+import TableComponent from './TableComponent';
+import MainHeroComponent from './MainCharacterComponent';
+import UpperNamingComponent from './UpperNamingComponent';
 
 const FrameBorderModalMain = css`
   border-style: solid;
@@ -61,18 +61,19 @@ const ScrollWrapper = styled.div`
 
 
 
-const LikedHeroes = ({ hero, onClose }: LikedHeroesProps) => {
+
+const LikedCharacterModal = ({ onClose }: LikedHeroesProps) => {
  
   return (
     <Container>
       <HeaderComponent  onClose={onClose} />
       <ScrollWrapper>
-        <UpperNamingComponent hero={hero} onClose={onClose} />
-        <MainHeroComponent hero={hero} onClose={onClose} />
-       <TableComponent hero={hero} onClose={onClose} /> 
+        <UpperNamingComponent/>
+        <MainHeroComponent/>
+       <TableComponent/> 
       </ScrollWrapper>
     </Container>
   );
 };
 
-export default LikedHeroes;
+export default LikedCharacterModal;

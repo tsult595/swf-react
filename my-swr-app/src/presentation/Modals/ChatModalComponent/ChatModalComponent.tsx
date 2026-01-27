@@ -130,7 +130,9 @@ const ChatModalComponent = ({ onClose }: ChatModalComponentProps) => {
   const [welcomeText, setWelcomeText] = useState('Добро пожаловать');
   const { isVisible, hideButton } = useDisappearWelcomeButton();
   const { data: users, isLoading, error, mutate } = UserPresenter.useFetchUsers();
+  // zapisali id vibrannogo clana dlya MainChatMessagesContainer
   const { mutateClanChatId, mutateClanName } = useClanChat();
+
   const { setSelectedRecipientId } = useSelectedOnes();
   const { mutate: mutateClans } = ClanPresenter.useGetClansByUserId(userId);
  
@@ -160,6 +162,7 @@ const ChatModalComponent = ({ onClose }: ChatModalComponentProps) => {
         });
         mutateClanChatId(clan.id || clan._id, false);
         mutateClanName(clan.name, false);
+        // setSelectedRecipientId == newValue obnulyaem vybranniy chat
         setSelectedRecipientId(null);
         mutate();
         mutateClans();
