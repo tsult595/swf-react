@@ -132,7 +132,6 @@ const ChatModalComponent = ({ onClose }: ChatModalComponentProps) => {
   const { data: users, isLoading, error, mutate } = UserPresenter.useFetchUsers();
   // zapisali id vibrannogo clana dlya MainChatMessagesContainer
   const { mutateClanChatId, mutateClanName } = useClanChat();
-
   const { setSelectedRecipientId } = useSelectedOnes();
   const { mutate: mutateClans } = ClanPresenter.useGetClansByUserId(userId);
  

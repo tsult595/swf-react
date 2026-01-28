@@ -1,10 +1,11 @@
 
 import styled from 'styled-components';
 import { MysteryBoxPresenter } from '../..';
-import { useSelectedOnes } from '../../hooks/useSelectedOnes';
 import { useState } from 'react';
 import BoxDetailModal from '../../Modals/BoxModal/BoxDetailModal';
-import { useClanChat } from '../../hooks/useClanChat';
+
+import type { MysteryBox } from '../../../Domain/Entities/MystoryBoxTypes';
+import SomethingCard from './SomethingCard';
 
 
 
@@ -49,22 +50,7 @@ const LoadingOverlay = styled.div<{ $isError?: boolean }>`
   cursor: ${props => props.$isError ? 'pointer' : 'default'};
 `;
 
-const HeroCard = styled.div<{ $rarity: string; $isDark?: boolean; $isOpen?: boolean }>`
-  width: 250px;
-  height: 350px;
-  border: 5px solid ${props => props.$isOpen ? 'blue' : 'transparent'};
-  border-image-repeat: stretch;
-  border-radius: 10px;
-  background: ${props => props.$isDark ? 'white' : 'yellow'};
-  color: black;
-`;
 
-
-const Button = styled.button<{$isColorBlue?: boolean}>`
-  padding: 8px 16px;
-  background: ${props => props.$isColorBlue ? 'blue' : 'gray'};
-  color: white;
-  `;
 
 
 
@@ -93,16 +79,11 @@ const ModalOverlay = styled.div<{ $isOpen: boolean }>`
 
 
 const Something = () => {
-  const {selectedBox} = useSelectedOnes();
-   const {data : boxes , error: boxesError, isValidating, isLoading: boxesLoading, mutate: mutateBoxes} = MysteryBoxPresenter.useGetAllMystoryBoxes();
-   const { setSelectedBox } = useSelectedOnes();
-   console.log("Boxes data in Something component:", boxes);
+  const {data : boxes , error: boxesError, isValidating, isLoading: boxesLoading, mutate: mutateBoxes} = MysteryBoxPresenter.useGetAllMystoryBoxes();
+  const [selectedBox, setSelectedBox] = useState<MysteryBox | null>(null);
    const [inputValue, setInputValue] = useState<string>("");
    const [addNewText, setAddNewText] = useState<string[]>([]);
-   const [darkMode, setDarkMode] = useState <Record<number, boolean>>({});
-   const [selectedBoxId, setSelectedBoxId] = useState<number | null>(null);
-   const [shapeMode, setShapeMode] = useState<Record<number, boolean>>({});
-   const {clanName} = useClanChat();
+  
 
    const handleAddNew = () => {
     if(inputValue.trim() !== ''){
@@ -110,8 +91,6 @@ const Something = () => {
       setInputValue('');
     }
    }
-
-  
 
    const handleDelete = (index: number) => {
     const newText = addNewText.filter((_, i) => i !== index);
@@ -126,26 +105,7 @@ const Something = () => {
       <HeroSection>
       {
         boxes?.map((box)=>(
-          <HeroCard 
-            key={box.id} 
-            $rarity={box.rarity} 
-            $isDark={darkMode[box.id]} 
-            $isOpen={selectedBoxId === box.id}
-            onClick={() => {
-              setSelectedBoxId(box.id);
-              setSelectedBox(box);
-            }}
-          >
-            <button onClick={(e) => { e.stopPropagation(); setDarkMode(prev => ({ ...prev, [box.id]: !prev[box.id] })); }}>
-              dark
-            </button>
-            <Button onClick={(e)=>{e.stopPropagation(); 
-            setShapeMode(prev => ({ ...prev, [box.id]: !prev[box.id] }));
-            }} $isColorBlue={shapeMode[box.id]}>shape</Button>
-            <p>{box.name}</p>
-            <p>Rarity: {box.rarity}</p>
-            <p>Clan: {clanName}</p>
-          </HeroCard>
+          <SomethingCard key={box.id} box={box} setSelectedBox={setSelectedBox} />
         ))
       }
       {isValidating && !boxesLoading && (
@@ -170,7 +130,9 @@ const Something = () => {
 
     <ModalOverlay $isOpen={selectedBox !== null} onClick={() => setSelectedBox(null)}>
         <div onClick={(e) => e.stopPropagation()}>
-          <BoxDetailModal onClosee={() => setSelectedBox(null)} />
+          <BoxDetailModal onClosee={() => setSelectedBox(null)}
+          selectedBox={selectedBox}
+           />
         </div>
       </ModalOverlay>
     </>

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useSelectedOnes } from '../../hooks/useSelectedOnes';
+import type { MysteryBox } from '../../../Domain/Entities/MystoryBoxTypes';
 
 
 const ModalContainer = styled.div`
@@ -81,10 +81,11 @@ const CloseButton = styled.button`
 
 interface BoxDetailModalProps {
   onClosee: () => void;
+  selectedBox: MysteryBox | null;
 }
 
-const BoxDetailModal = ({onClosee}: BoxDetailModalProps) => {
-  const {selectedBox} = useSelectedOnes();
+const BoxDetailModal = ({onClosee, selectedBox}: BoxDetailModalProps) => {
+
 
   if (!selectedBox) {
     return (

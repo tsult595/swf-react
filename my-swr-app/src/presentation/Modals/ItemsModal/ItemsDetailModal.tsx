@@ -1,5 +1,7 @@
 import styled from 'styled-components';
-import { useSelectedOnes } from '../../hooks/useSelectedOnes';
+
+import type { Item } from '../../../Domain/Entities/enums/ItemsTypes';
+
 
 const ModalContainer = styled.div`
   background: #232323;
@@ -81,10 +83,11 @@ const ErrorText = styled.div`
 
 interface ItemsDetailModalProps {
   onClose: () => void;
+  selectedItem?: Item | null;
 }
 
-const ItemsDetailModal = ({ onClose }: ItemsDetailModalProps) => {
-  const { selectedItem } = useSelectedOnes();
+const ItemsDetailModal = ({ onClose, selectedItem }: ItemsDetailModalProps) => {
+ 
 
   if (!selectedItem) {
     return (

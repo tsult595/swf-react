@@ -134,7 +134,7 @@ function MainContent() {
             $active={activeTab === HomePageTabEnum.CHARACTERS} 
             onClick={() => setActiveTab(HomePageTabEnum.CHARACTERS)}
           >
-            <ButtonText>Characters</ButtonText>
+            <ButtonText>{HomePageTabEnum.CHARACTERS}</ButtonText>
           </MainContentButtons>
           <MainContentButtons 
             $active={activeTab === HomePageTabEnum.ITEMS} 
@@ -144,21 +144,21 @@ function MainContent() {
           </MainContentButtons>
           <MainContentButtons onClick={() => setShowFavorites(true)}>
             <ButtonText>
-              Favorites ({favorites?.length || 0})
+              {HomePageTabEnum.FAVORITES} ({favorites?.length || 0})
             </ButtonText>
           </MainContentButtons>
           <MainContentButtons 
             $active={activeTab === HomePageTabEnum.CHAT} 
             onClick={() => setActiveTab(HomePageTabEnum.CHAT)}
           >
-            <ButtonText>Chat</ButtonText>
+            <ButtonText>{HomePageTabEnum.CHAT}</ButtonText>
           </MainContentButtons>
 
           <MainContentButtons 
             $active={activeTab === HomePageTabEnum.SOMETHING} 
             onClick={() => setActiveTab(HomePageTabEnum.SOMETHING)}
           >
-            <ButtonText>Something</ButtonText>
+            <ButtonText>{HomePageTabEnum.SOMETHING}</ButtonText>
           </MainContentButtons>
         </MainContentButtonsWrapper>
 
