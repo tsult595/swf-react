@@ -2,9 +2,9 @@ import styled from 'styled-components';
 import heroFrameHigh from '../../../assets/character_border_violet.png';
 import heroFrameMiddle from '../../../assets/character_border_blue.png';
 import heroFrame from '../../../assets/character_border_common.png';
-import { useState } from 'react';
-import { useSelectedOnes } from '../../hooks/useSelectedOnes';
+import { useState} from 'react';
 import { HeroesPresenter } from '../..';
+import { useSelectedOnes } from '../../hooks/useSelectedOnes';
 
 const MainHeroSection = styled.div`
   width: 100%;
@@ -190,7 +190,6 @@ const MainCharacterComponent = () => {
       }
      
  const displayHero = fullHero || hero;
-
   return (
     <MainHeroSection>
           <HeroSideCardContainer>
@@ -222,7 +221,7 @@ const MainCharacterComponent = () => {
                 <InfoRow>
                   <span>Auction Status</span>
                   <HeroFeatureStatusDiv>
-                    <span>{hero.status}</span>
+                    <span>{displayHero.status}</span>
                   </HeroFeatureStatusDiv>
                 </InfoRow>
                 <InfoRow>
@@ -234,7 +233,7 @@ const MainCharacterComponent = () => {
                 <InfoRow>
                   <span>Highest bid</span>
                   <HeroFeatureStatusDiv>
-                  <span>{hero.bid} VVVT</span>
+                  <span>{displayHero.bid} VVVT</span>
                   </HeroFeatureStatusDiv>
                 </InfoRow>
                 <InfoRow>
@@ -257,25 +256,25 @@ const MainCharacterComponent = () => {
                 <InfoRow>
                   <span>ID</span>
                   <HeroFeatureStatusDiv>
-                  <span>#{hero.id}</span>
+                  <span>#{displayHero.id}</span>
                   </HeroFeatureStatusDiv>
                 </InfoRow>
                 <InfoRow>
                   <span>Rarity</span>
                   <HeroFeatureStatusDiv>
-                  <span>{hero.rarity}</span>
+                  <span>{displayHero.rarity}</span>
                   </HeroFeatureStatusDiv>
                 </InfoRow>
                 <InfoRow>
                   <span>Level</span>
                   <HeroFeatureStatusDiv>
-                  <span>{hero.level}</span>
+                  <span>{displayHero.level}</span>
                   </HeroFeatureStatusDiv>
                 </InfoRow>
                 <InfoRow>
                   <span>Price</span>
                   <HeroFeatureStatusDiv>
-                  <span>{hero.price} SWR</span>
+                  <span>{displayHero.price} SWR</span>
                   </HeroFeatureStatusDiv>
                 </InfoRow>
               </InfoFeature>

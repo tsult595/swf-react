@@ -62,14 +62,14 @@ const ScrollWrapper = styled.div`
 
 
 
-const LikedCharacterModal = ({ onClose }: LikedHeroesProps) => {
+const LikedCharacterModal = ({ onClose}: LikedHeroesProps) => {
  
   return (
     <Container>
       <HeaderComponent  onClose={onClose} />
       <ScrollWrapper>
         <UpperNamingComponent/>
-        <MainHeroComponent/>
+        <MainHeroComponent />
        <TableComponent/> 
       </ScrollWrapper>
     </Container>
