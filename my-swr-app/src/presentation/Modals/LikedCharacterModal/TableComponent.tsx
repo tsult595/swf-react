@@ -128,19 +128,20 @@ const EmptyText = styled.div`
   font-size: 14px;
 `;
 
-const TableComponent = () => {
-  const { data: hero } = useSWR<Hero>('selectedHero');
+const TableComponent = ({ hero }: { hero: Hero }) => {
   const [isOpen, setIsOpen] = useState(true);
 
-
+// todo  () => fetcher(`/heroes/${hero.id}/history`), 
   const { data: history, error, isLoading } = useSWR<LotHistory[]>(
     hero ? `/heroes/${hero.id}/history` : null,
-    fetcher,
+   () => fetcher(`/heroes/${hero.id}/history`), 
     {
       revalidateOnFocus: false,
       dedupingInterval: 60000,
     }
   );
+
+  console.log('Fetching history for hero:', history) 
 
   const toggleSection = () => {
     setIsOpen(prev => !prev);

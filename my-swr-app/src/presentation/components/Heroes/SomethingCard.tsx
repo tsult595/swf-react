@@ -15,6 +15,7 @@ const HeroCard = styled.div`
   border-image-repeat: stretch;
   border-radius: 10px;
   background: yellow;
+  
   &[data-dark='true'] {
   background: white;
   }

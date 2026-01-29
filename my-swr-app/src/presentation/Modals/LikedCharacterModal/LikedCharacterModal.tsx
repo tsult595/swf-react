@@ -1,9 +1,9 @@
 import styled, { css } from 'styled-components';
-import type {LikedHeroesProps} from '../../../Domain/Entities/HeroTypes';
 import HeaderComponent from './HeaderComponent';
 import TableComponent from './TableComponent';
-import MainHeroComponent from './MainCharacterComponent';
 import UpperNamingComponent from './UpperNamingComponent';
+import type { Hero } from '../../../Domain/Entities/HeroTypes';
+import MainCharacterComponent from './MainCharacterComponent';
 
 const FrameBorderModalMain = css`
   border-style: solid;
@@ -59,18 +59,21 @@ const ScrollWrapper = styled.div`
   scroll-behavior: smooth;
 `;
 
+export interface LikedHeroesProps {
+  onClose: () => void;
+  hero: Hero ;
+}
 
 
-
-const LikedCharacterModal = ({ onClose}: LikedHeroesProps) => {
+const LikedCharacterModal = ({ onClose, hero }: LikedHeroesProps) => {
  
   return (
     <Container>
       <HeaderComponent  onClose={onClose} />
       <ScrollWrapper>
         <UpperNamingComponent/>
-        <MainHeroComponent />
-       <TableComponent/> 
+        <MainCharacterComponent hero={hero}/>
+       <TableComponent hero={hero} /> 
       </ScrollWrapper>
     </Container>
   );

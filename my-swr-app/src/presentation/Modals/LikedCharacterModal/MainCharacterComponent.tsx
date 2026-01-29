@@ -3,8 +3,7 @@ import heroFrameHigh from '../../../assets/character_border_violet.png';
 import heroFrameMiddle from '../../../assets/character_border_blue.png';
 import heroFrame from '../../../assets/character_border_common.png';
 import { useState} from 'react';
-import { HeroesPresenter } from '../..';
-import { useSelectedOnes } from '../../hooks/useSelectedOnes';
+import type { Hero } from '../../../Domain/Entities/HeroTypes';
 
 const MainHeroSection = styled.div`
   width: 100%;
@@ -166,9 +165,10 @@ const getFrameByRarity = (rarity: string) => {
 };
 
 
-const MainCharacterComponent = () => {
-  const { selectedHero: hero } = useSelectedOnes();
-  const { data: fullHero } = HeroesPresenter.useGetHeroById(hero ? hero.id : null);
+const MainCharacterComponent = ({ hero }: { hero: Hero }) => {
+ 
+  // todo Record doljen bit z 4 obyektov
+
   const [openSections, setOpenSections] = useState({
     auction: true,
     nft: true,
@@ -177,7 +177,7 @@ const MainCharacterComponent = () => {
     table : true
   });
 
- 
+//  uprostit togglesection
       
   const toggleSection = (section: keyof typeof openSections) => {
     setOpenSections(prev => ({
@@ -189,11 +189,11 @@ const MainCharacterComponent = () => {
         return null;
       }
      
- const displayHero = fullHero || hero;
+
   return (
     <MainHeroSection>
           <HeroSideCardContainer>
-            <HeroSideCardFrame $rarity={displayHero.rarity}>
+            <HeroSideCardFrame $rarity={hero.rarity}>
             <HeroSideCardImage 
             src={`/src/assets/characterAvatars/${hero.fileName}`} 
             alt={hero.name}
@@ -221,7 +221,7 @@ const MainCharacterComponent = () => {
                 <InfoRow>
                   <span>Auction Status</span>
                   <HeroFeatureStatusDiv>
-                    <span>{displayHero.status}</span>
+                    <span>{hero.status}</span>
                   </HeroFeatureStatusDiv>
                 </InfoRow>
                 <InfoRow>
@@ -233,7 +233,7 @@ const MainCharacterComponent = () => {
                 <InfoRow>
                   <span>Highest bid</span>
                   <HeroFeatureStatusDiv>
-                  <span>{displayHero.bid} VVVT</span>
+                  <span>{hero.bid} VVVT</span>
                   </HeroFeatureStatusDiv>
                 </InfoRow>
                 <InfoRow>
@@ -256,25 +256,25 @@ const MainCharacterComponent = () => {
                 <InfoRow>
                   <span>ID</span>
                   <HeroFeatureStatusDiv>
-                  <span>#{displayHero.id}</span>
+                  <span>#{hero.id}</span>
                   </HeroFeatureStatusDiv>
                 </InfoRow>
                 <InfoRow>
                   <span>Rarity</span>
                   <HeroFeatureStatusDiv>
-                  <span>{displayHero.rarity}</span>
+                  <span>{hero.rarity}</span>
                   </HeroFeatureStatusDiv>
                 </InfoRow>
                 <InfoRow>
                   <span>Level</span>
                   <HeroFeatureStatusDiv>
-                  <span>{displayHero.level}</span>
+                  <span>{hero.level}</span>
                   </HeroFeatureStatusDiv>
                 </InfoRow>
                 <InfoRow>
                   <span>Price</span>
                   <HeroFeatureStatusDiv>
-                  <span>{displayHero.price} SWR</span>
+                  <span>{hero.price} SWR</span>
                   </HeroFeatureStatusDiv>
                 </InfoRow>
               </InfoFeature>
@@ -291,13 +291,13 @@ const MainCharacterComponent = () => {
                 <InfoRow>
                   <span>Wins</span>
                   <HeroFeatureStatusDiv>
-                  <span>{displayHero.wins || 0}</span>
+                  <span>{hero.wins || 0}</span>
                   </HeroFeatureStatusDiv>
                 </InfoRow>
                 <InfoRow>
                   <span>Loses</span>
                   <HeroFeatureStatusDiv>
-                  <span>{displayHero.loses || 0}</span>
+                  <span>{hero.loses || 0}</span>
                   </HeroFeatureStatusDiv>
                 </InfoRow>
               </InfoFeature>
@@ -314,15 +314,15 @@ const MainCharacterComponent = () => {
                 <InfoRow>
                   <span>Creators</span>
                   <HeroFeatureStatusDiv>
-                 <span>{displayHero.creator || '0x709...79C8'}</span>
+                 <span>{hero.creator || '0x709...79C8'}</span>
                   </HeroFeatureStatusDiv>
                 </InfoRow>
                 <InfoRow>
                   <span>Create date</span>
                   <HeroFeatureStatusDiv>
                    <span>
-                  {displayHero.createDate
-                    ? new Date(displayHero.createDate).toLocaleDateString('en-US', {
+                  {hero.createDate
+                    ? new Date(hero.createDate).toLocaleDateString('en-US', {
                         month: 'short',
                         day: 'numeric',
                         year: 'numeric'

@@ -4,8 +4,7 @@ import { HeroesPresenter } from '../..';
 import { FavoritePresenter } from '../..';
 import { useCallback } from 'react';
 import { useUserId } from '../../hooks/useUserId';
-import { useSelectedOnes } from '../../hooks/useSelectedOnes';
-import LikedCharacterModal  from '../../Modals/LikedCharacterModal/LikedCharacterModal';
+// import LikedCharacterModal  from '../../Modals/LikedCharacterModal/LikedCharacterModal';
 import MainCharacterCard from './MainCharacterCard';
  
 
@@ -82,22 +81,16 @@ const ErrorWrapper = styled.div`
   }
 `;
 
-const ModalOverlay = styled.div<{ $isOpen: boolean }>` 
-  display: ${props => props.$isOpen ? 'flex' : 'none'};
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.8);
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-`;
+
+// todo naping s characters
+// todo v model bazi dannix personaja (hero) dobavit pole isLiked
+// cto bi vitawit spisok favorites zapros v DB filtraciya po isliked
+// fo fronte sama kartocka personaja doljna otpravlat zapros laik ili unlike remove from favorites i unlike
+// cto bi pokazivat zapolnenoe serdecko ili net berem hero.isliked 
+// ustanovit i nastroit prettier i eslint
 
 const MaincharactersSection = () => {
   const userId = useUserId();
-  const { selectedHero, setSelectedHero } = useSelectedOnes();
   const { data: heroes, error, isLoading: isHeroesLoading, mutate } = HeroesPresenter.useGetAllHeroes();
   const { data: favorites,  mutate: mutateFavorites } = FavoritePresenter.useGetFavorites(userId);
   
@@ -135,18 +128,11 @@ const MaincharactersSection = () => {
             <MainCharacterCard key={hero.id}
              hero={hero} 
              toggleFavorite={toggleFavorite} 
-             isFavorite={isFavorite} 
-             setSelectedHero={setSelectedHero} />
+             isFavorite={isFavorite}/>
           ))}
         </MainHeroesWrapper>
       )}
-      <ModalOverlay $isOpen={selectedHero !== null} onClick={() => setSelectedHero(null)}> 
-        <div onClick={(e) => e.stopPropagation()}>
-          <LikedCharacterModal 
-            onClose={() => setSelectedHero(null)}
-          />
-        </div>
-      </ModalOverlay> 
+   
     </>
   );
 };

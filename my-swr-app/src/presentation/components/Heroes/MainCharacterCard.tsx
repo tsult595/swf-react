@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 import { Heart } from 'lucide-react';
 import type { Hero } from '../../../Domain/Entities/HeroTypes';
+import LikedCharacterModal  from '../../Modals/LikedCharacterModal/LikedCharacterModal';
+import { useState } from 'react';
 
 const MainHeroCard = styled.div`
   width: 260px;
@@ -136,20 +138,36 @@ const getFrameByRarity = (rarity: string) => {
   }
 };
 
+const ModalOverlay = styled.div<{ $isOpen: boolean }>` 
+  display: ${props => props.$isOpen ? 'flex' : 'none'};
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+
 const MainCharacterCard = ({ 
   hero, 
   toggleFavorite, 
   isFavorite, 
-  setSelectedHero 
+
 }: { 
   hero: Hero; 
   toggleFavorite: (hero: Hero, e?: React.MouseEvent) => Promise<void>; 
   isFavorite: (heroId: string | number) => boolean; 
-  setSelectedHero: (hero: Hero | null) => void; 
+
 }) => {
+   const [isModalOpen, setIsModalOpen] = useState(false);   
   
   return (
-    <MainHeroCard key={hero.id} onClick={() => setSelectedHero(hero)}>
+    <>
+  
+    <MainHeroCard key={hero.id} onClick={() => setIsModalOpen(true)}>
               <MainHeroCardInner>
                 <MainHeroCardUpper>
                   <h2>{hero.name}</h2>
@@ -185,6 +203,16 @@ const MainCharacterCard = ({
                 </MainHeroInfo>
               </MainHeroCardInner>
             </MainHeroCard>
+
+              <ModalOverlay $isOpen={isModalOpen} onClick={() => setIsModalOpen(false)}> 
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <LikedCharacterModal 
+                        onClose={() => setIsModalOpen(false)}
+                        hero={hero}
+                      />
+                    </div>
+                  </ModalOverlay> 
+              </>
   )
 }
 
