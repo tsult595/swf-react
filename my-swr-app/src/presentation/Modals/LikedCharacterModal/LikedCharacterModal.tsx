@@ -1,7 +1,6 @@
 import styled, { css } from 'styled-components';
 import HeaderComponent from './HeaderComponent';
 import TableComponent from './TableComponent';
-import UpperNamingComponent from './UpperNamingComponent';
 import type { Hero } from '../../../Domain/Entities/HeroTypes';
 import MainCharacterComponent from './MainCharacterComponent';
 
@@ -71,7 +70,6 @@ const LikedCharacterModal = ({ onClose, hero }: LikedHeroesProps) => {
     <Container>
       <HeaderComponent  onClose={onClose} />
       <ScrollWrapper>
-        <UpperNamingComponent/>
         <MainCharacterComponent hero={hero}/>
        <TableComponent hero={hero} /> 
       </ScrollWrapper>

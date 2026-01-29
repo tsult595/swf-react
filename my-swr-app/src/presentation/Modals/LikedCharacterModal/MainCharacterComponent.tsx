@@ -3,7 +3,8 @@ import heroFrameHigh from '../../../assets/character_border_violet.png';
 import heroFrameMiddle from '../../../assets/character_border_blue.png';
 import heroFrame from '../../../assets/character_border_common.png';
 import { useState} from 'react';
-import type { Hero } from '../../../Domain/Entities/HeroTypes';
+import type { Hero} from '../../../Domain/Entities/HeroTypes';
+
 
 const MainHeroSection = styled.div`
   width: 100%;
@@ -167,6 +168,7 @@ const getFrameByRarity = (rarity: string) => {
 
 const MainCharacterComponent = ({ hero }: { hero: Hero }) => {
  
+
   // todo Record doljen bit z 4 obyektov
 
   const [openSections, setOpenSections] = useState({
