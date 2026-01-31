@@ -1,5 +1,9 @@
 import styled from 'styled-components';
 import type { Item } from '../../../Domain/Entities/enums/ItemsTypes';
+// import type { MysteryBox } from '../../../Domain/Entities/MystoryBoxTypes';
+import { useState } from 'react';
+// import ItemsDetailModal from '../../Modals/ItemsModal/ItemsDetailModal';
+import ItemsDetailModal from '../../Modals/ItemsModal/ItemsDetailModal';
 
 const MainItemCard = styled.div`
   width: 260px;
@@ -81,13 +85,31 @@ const MainItemInfo = styled.div`
   }
 `;
 
+const ModalOverlay = styled.div<{ $isOpen: boolean }>` 
+  display: ${props => props.$isOpen ? 'flex' : 'none'};
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
 
 
-const MainItemsCard = ({text, item, setSelectedItem} : {text: string, item: Item, setSelectedItem: React.Dispatch<React.SetStateAction<Item | null>>} ) => {
+
+const MainItemsCard = ({ item, } : {item: Item} ) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);  
+  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+
+//   console.log('Items data:', selectedItem);
+
   return (
-     <MainItemCard key={item.id} onClick={() => setSelectedItem(item)}>
+    <>
+     <MainItemCard key={item.id} onClick={() => { setSelectedItem(item); setIsModalOpen(true);}}>
               <MainItemCardUpper>
-                <p>{text}</p>
                 <h2>{item.name}</h2>
               </MainItemCardUpper>
               <MainItemInfo>
@@ -97,6 +119,15 @@ const MainItemsCard = ({text, item, setSelectedItem} : {text: string, item: Item
                 <RarityBadge $rarity={item.rarity}>{item.rarity}</RarityBadge>
               </MainItemCardLower>
             </MainItemCard>
+
+       
+        <ModalOverlay $isOpen={isModalOpen} onClick={() => { setIsModalOpen(false); setSelectedItem(null); }}>
+        <div onClick={(e) => e.stopPropagation()}>
+          <ItemsDetailModal onClose={() => { setIsModalOpen(false); setSelectedItem(null); }}
+          selectedItem={selectedItem} />
+        </div>
+      </ModalOverlay>
+     </>
   )
 }
 

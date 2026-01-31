@@ -1,8 +1,5 @@
 import styled from 'styled-components';
 import { ItemsPresenter } from '../..';
-import ItemsDetailModal from '../../Modals/ItemsModal/ItemsDetailModal';
-import { useState } from 'react';
-import type { Item } from '../../../Domain/Entities/enums/ItemsTypes';
 import MainItemsCard from './MainItemsCard';
 
 const MainItemsWrapper = styled.div`
@@ -55,29 +52,14 @@ const ErrorWrapper = styled.div`
   }
 `;
 
-const ModalOverlay = styled.div<{ $isOpen: boolean }>` 
-  display: ${props => props.$isOpen ? 'flex' : 'none'};
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.8);
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-`;
 
-interface MainItemsComponentProps {
-  text ?: string;
 
-}
 
-const MainItemsComponent = ({ text  }: MainItemsComponentProps) => {
+
+const MainItemsComponent = () => {
   const { data: items, error, isLoading, mutate } = ItemsPresenter.useGetAllItems();
-  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
-  console.log('Items data:', selectedItem);
-
+  
+  
   return (
     <>
       {isLoading && (
@@ -96,17 +78,14 @@ const MainItemsComponent = ({ text  }: MainItemsComponentProps) => {
       {!isLoading && !error && items && (
         <MainItemsWrapper>
           {items.map((item) => (
-            <MainItemsCard text={text ?? ''} item={item} setSelectedItem={setSelectedItem} />
+            <MainItemsCard
+             item={item} key={item.id}
+             />
+
           ))}
         </MainItemsWrapper>
       )}
-
-        <ModalOverlay $isOpen={selectedItem !== null} onClick={() => setSelectedItem(null)}>
-        <div onClick={(e) => e.stopPropagation()}>
-          <ItemsDetailModal onClose={() => setSelectedItem(null)}
-          selectedItem={selectedItem} />
-        </div>
-      </ModalOverlay>
+   
     </>
   );
 };

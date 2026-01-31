@@ -60,7 +60,7 @@ const ScrollWrapper = styled.div`
 
 export interface LikedHeroesProps {
   onClose: () => void;
-  hero: Hero ;
+  hero: Hero;
 }
 
 

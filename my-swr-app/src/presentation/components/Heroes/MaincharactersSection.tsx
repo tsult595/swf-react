@@ -4,7 +4,6 @@ import { HeroesPresenter } from '../..';
 import { FavoritePresenter } from '../..';
 import { useCallback } from 'react';
 import { useUserId } from '../../hooks/useUserId';
-// import LikedCharacterModal  from '../../Modals/LikedCharacterModal/LikedCharacterModal';
 import MainCharacterCard from './MainCharacterCard';
  
 

@@ -1,10 +1,8 @@
 import styled from 'styled-components';
 import { useState } from 'react';
-import useSWR from 'swr';
-// import type { LikedHeroesProps } from '../../../Domain/Entities/HeroTypes';
-import type { LotHistory } from '../../../Domain/Entities/HeroTypes';
-import { fetcher } from '../../../utils/ApiFetcher';
 import type { Hero } from '../../../Domain/Entities/HeroTypes';
+import { useGetHeroHistory } from '../../heroes';
+
 
 
 const HistoryTableWrapper = styled.div<{ $isOpen: boolean }>`
@@ -131,15 +129,7 @@ const EmptyText = styled.div`
 const TableComponent = ({ hero }: { hero: Hero }) => {
   const [isOpen, setIsOpen] = useState(true);
 
-// todo  () => fetcher(`/heroes/${hero.id}/history`), 
-  const { data: history, error, isLoading } = useSWR<LotHistory[]>(
-    hero ? `/heroes/${hero.id}/history` : null,
-   () => fetcher(`/heroes/${hero.id}/history`), 
-    {
-      revalidateOnFocus: false,
-      dedupingInterval: 60000,
-    }
-  );
+  const { data: history, error, isLoading } = useGetHeroHistory(hero?.id);
 
   console.log('Fetching history for hero:', history) 
 

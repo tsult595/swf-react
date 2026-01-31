@@ -14,7 +14,7 @@ export interface Hero {
   loses?: number;
   creator?: string;
   createDate?: string;
-  history?: LotHistory[]; // История транзакций героя
+  isLiked?: boolean;
 }
 
 export interface LotHistory {

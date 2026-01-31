@@ -2,6 +2,7 @@
 import styled from 'styled-components';
 import { useState } from 'react';
 import type { MysteryBox } from '../../../Domain/Entities/MystoryBoxTypes';
+import BoxDetailModal from '../../Modals/BoxModal/BoxDetailModal';
 
 const HeroCard = styled.div`
   width: 250px;
@@ -15,7 +16,7 @@ const HeroCard = styled.div`
   border-image-repeat: stretch;
   border-radius: 10px;
   background: yellow;
-  
+
   &[data-dark='true'] {
   background: white;
   }
@@ -35,13 +36,30 @@ const Button = styled.button`
   color: white;
   `;
 
+ const ModalOverlay = styled.div<{ $isOpen: boolean }>` 
+  display: ${props => props.$isOpen ? 'flex' : 'none'};
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`; 
+
 // todo data-dark data-open styled bez propsov
 
-const SomethingCard = ({box, setSelectedBox}: {box: MysteryBox, setSelectedBox: React.Dispatch<React.SetStateAction<MysteryBox | null>>} ) => {
+const SomethingCard = ({box}: {box: MysteryBox} ) => {
     const [darkMode, setDarkMode] = useState<boolean>(false);
     const [selectedBoxId, setSelectedBoxId] = useState<number | null>(null);
     const [shapeMode, setShapeMode] = useState<boolean>(false);
+    const [selectedBox, setSelectedBox] = useState<MysteryBox | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);  
   return (
+    <>
+   
       <HeroCard 
             key={box.id} 
             data-dark={darkMode} 
@@ -49,6 +67,7 @@ const SomethingCard = ({box, setSelectedBox}: {box: MysteryBox, setSelectedBox: 
             onClick={() => {
               setSelectedBoxId(box.id);
               setSelectedBox(box);
+              setIsModalOpen(true);
             }}
           >
             <button onClick={(e) => { e.stopPropagation();
@@ -63,6 +82,15 @@ const SomethingCard = ({box, setSelectedBox}: {box: MysteryBox, setSelectedBox: 
             <p>Rarity: {box.rarity}</p>
             
           </HeroCard>
+
+        <ModalOverlay $isOpen={isModalOpen} onClick={() => { setIsModalOpen(false); setSelectedBox(null); }}>
+        <div onClick={(e) => e.stopPropagation()}>
+          <BoxDetailModal onClosee={() => { setIsModalOpen(false); setSelectedBox(null); }}
+          selectedBox={selectedBox}
+           />
+        </div>
+      </ModalOverlay>
+           </>
   )
 }
 

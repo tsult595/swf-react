@@ -162,12 +162,13 @@ const MainCharacterCard = ({
   isFavorite: (heroId: string | number) => boolean; 
 
 }) => {
-   const [isModalOpen, setIsModalOpen] = useState(false);   
+   const [isModalOpen, setIsModalOpen] = useState(false); 
+   const [selectedHero, setSelectedHero] = useState<Hero | null>(null);
   
   return (
     <>
-  
-    <MainHeroCard key={hero.id} onClick={() => setIsModalOpen(true)}>
+    <MainHeroCard key={hero.id} onClick={() => { setSelectedHero(hero);
+         setIsModalOpen(true); }}>
               <MainHeroCardInner>
                 <MainHeroCardUpper>
                   <h2>{hero.name}</h2>
@@ -205,12 +206,12 @@ const MainCharacterCard = ({
             </MainHeroCard>
 
               <ModalOverlay $isOpen={isModalOpen} onClick={() => setIsModalOpen(false)}> 
-                    <div onClick={(e) => e.stopPropagation()}>
+                    {selectedHero && <div onClick={(e) => e.stopPropagation()}>
                       <LikedCharacterModal 
                         onClose={() => setIsModalOpen(false)}
-                        hero={hero}
+                        hero={selectedHero}
                       />
-                    </div>
+                    </div>}
                   </ModalOverlay> 
               </>
   )

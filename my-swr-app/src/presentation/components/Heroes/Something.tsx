@@ -2,9 +2,6 @@
 import styled from 'styled-components';
 import { MysteryBoxPresenter } from '../..';
 import { useState } from 'react';
-import BoxDetailModal from '../../Modals/BoxModal/BoxDetailModal';
-
-import type { MysteryBox } from '../../../Domain/Entities/MystoryBoxTypes';
 import SomethingCard from './SomethingCard';
 
 
@@ -63,24 +60,11 @@ const LoadingWrapper = styled.div`
   font-size: 1.2rem;
 `;
 
-const ModalOverlay = styled.div<{ $isOpen: boolean }>` 
-  display: ${props => props.$isOpen ? 'flex' : 'none'};
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.8);
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-`;
 
 
 
 const Something = () => {
   const {data : boxes , error: boxesError, isValidating, isLoading: boxesLoading, mutate: mutateBoxes} = MysteryBoxPresenter.useGetAllMystoryBoxes();
-  const [selectedBox, setSelectedBox] = useState<MysteryBox | null>(null);
    const [inputValue, setInputValue] = useState<string>("");
    const [addNewText, setAddNewText] = useState<string[]>([]);
   
@@ -105,7 +89,7 @@ const Something = () => {
       <HeroSection>
       {
         boxes?.map((box)=>(
-          <SomethingCard key={box.id} box={box} setSelectedBox={setSelectedBox} />
+          <SomethingCard key={box.id} box={box} />
         ))
       }
       {isValidating && !boxesLoading && (
@@ -128,13 +112,6 @@ const Something = () => {
        </ul>
     </Container>
 
-    <ModalOverlay $isOpen={selectedBox !== null} onClick={() => setSelectedBox(null)}>
-        <div onClick={(e) => e.stopPropagation()}>
-          <BoxDetailModal onClosee={() => setSelectedBox(null)}
-          selectedBox={selectedBox}
-           />
-        </div>
-      </ModalOverlay>
     </>
   )
 }
