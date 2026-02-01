@@ -6,7 +6,7 @@ import heroFrame from '../../../assets/character_border_common.png';
 import heroFrameHigh from '../../../assets/character_border_violet.png';
 import heroFrameMiddle from '../../../assets/character_border_blue.png';
 import { Heart } from 'lucide-react';
-import { FavoritePresenter } from '../..';
+import { FavoritePresenter, HeroesPresenter } from '../..';
 import type { Hero } from '../../../Domain/Entities/HeroTypes';
 import { useUserId } from '../../hooks/useUserId';
 
@@ -196,30 +196,34 @@ const HeartButton = styled.button`
 
 const FavoriteCharacters = ({ onClose }: FavoriteHeroesProps) => {
   const userId = useUserId();
-  const { data: favorites, mutate: mutateFavorites } = FavoritePresenter.useGetFavorites(userId);
-  const toggleFavorite = async (hero: Hero) => {
-    const isCurrentlyFavorite = favorites?.some((f: Hero) => f.id === hero.id) || false;
+  const { data: heroes, isLoading, mutate } = HeroesPresenter.useGetAllHeroes(userId);
 
-    
-    mutateFavorites(
-      isCurrentlyFavorite
-        ? favorites?.filter((f: Hero) => f.id !== hero.id) 
-        : [...(favorites || []), hero], 
-      false 
+  // Фильтруем только лайкнутые heroes
+  const favoriteHeroes = heroes?.filter(hero => hero.isLiked) || [];
+
+  const toggleFavorite = async (hero: Hero) => {
+    const newIsLiked = !hero.isLiked;
+
+    // Оптимистичное обновление
+    mutate(
+      (currentHeroes) =>
+        currentHeroes?.map((h) =>
+          h.id === hero.id ? { ...h, isLiked: newIsLiked } : h
+        ),
+      false
     );
 
     try {
-      await FavoritePresenter.toggleFavorites(userId, hero.id, isCurrentlyFavorite);
-     
+      await FavoritePresenter.toggleFavorites(userId, hero.id, hero.isLiked || false);
     } catch (error) {
-      // Rollback on error
-      mutateFavorites();
+      // Откат при ошибке
+      mutate();
       console.error('Failed to toggle favorite:', error);
     }
   };
 
-  const isLoading = !favorites;
-  const favoritesList = favorites || [];
+
+  const favoritesList = favoriteHeroes;
 
   if (isLoading) {
     return (
@@ -266,7 +270,11 @@ const FavoriteCharacters = ({ onClose }: FavoriteHeroesProps) => {
 
             <HeroInfo>
               <HeartButton onClick={() => toggleFavorite(hero)}>
-                <Heart size={20} color="red" fill="red" />
+                <Heart
+                  size={20}
+                  color={hero.isLiked ? "red" : "#fff"}
+                  fill={hero.isLiked ? "red" : "none"}
+                />
               </HeartButton>
 
               <h3>{hero.name}</h3>

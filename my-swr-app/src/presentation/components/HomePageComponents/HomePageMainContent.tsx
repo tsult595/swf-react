@@ -5,7 +5,7 @@ import ButtonMainImgHover from '../../../assets/toggle_button_hover.png';
 import ButtonMainImgTogled from '../../../assets/toggle_button_toggled.png'; 
 import FavoriteHeroes from '../../Modals/FavoritesListModal/FavoriteCharacters';
 import MainComponentChat from '../Chat/MainComponentChat'; 
-import { FavoritePresenter } from '../..';
+import {HeroesPresenter} from '../..';
 import MainItemsComponent from '../Items/MainItemsComponent';
 import MaincharactersSection from '../Heroes/MaincharactersSection';
 import Something from '../Heroes/Something';
@@ -122,8 +122,9 @@ function MainContent() {
   const [showFavorites, setShowFavorites] = useState(false);
   const [activeTab, setActiveTab] = useState(HomePageTabEnum.CHARACTERS);
    const userId = useUserId(); 
-  const { data: favorites } = FavoritePresenter.useGetFavorites(userId);
-
+   const { data: heroes } = HeroesPresenter.useGetAllHeroes(userId);
+   const likedHeroes = heroes?.filter(hero => hero.isLiked) || [];
+  
 
 
   return (
@@ -144,7 +145,7 @@ function MainContent() {
           </MainContentButtons>
           <MainContentButtons onClick={() => setShowFavorites(true)}>
             <ButtonText>
-              {HomePageTabEnum.FAVORITES} ({favorites?.length || 0})
+              {HomePageTabEnum.FAVORITES} ({likedHeroes.length})
             </ButtonText>
           </MainContentButtons>
           <MainContentButtons 
@@ -177,7 +178,7 @@ function MainContent() {
        
         {activeTab === HomePageTabEnum.ITEMS && (
           <ItemsWrapper>
-            <MainItemsComponent text='meow' />
+            <MainItemsComponent />
           </ItemsWrapper>
         )}
 

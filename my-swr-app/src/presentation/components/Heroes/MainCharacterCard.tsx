@@ -154,13 +154,11 @@ const ModalOverlay = styled.div<{ $isOpen: boolean }>`
 const MainCharacterCard = ({ 
   hero, 
   toggleFavorite, 
-  isFavorite, 
+  
 
-}: { 
-  hero: Hero; 
-  toggleFavorite: (hero: Hero, e?: React.MouseEvent) => Promise<void>; 
-  isFavorite: (heroId: string | number) => boolean; 
-
+}: {
+  hero: Hero;
+  toggleFavorite: (hero: Hero, e?: React.MouseEvent) => Promise<void>;
 }) => {
    const [isModalOpen, setIsModalOpen] = useState(false); 
    const [selectedHero, setSelectedHero] = useState<Hero | null>(null);
@@ -175,11 +173,11 @@ const MainCharacterCard = ({
                 </MainHeroCardUpper>
                 <MainHeroCardLower>
                   <p>ID: {hero.id}</p>
-                  <HeartButton onClick={(e) => toggleFavorite(hero, e)}> 
-                    <Heart 
-                      size={20} 
-                      color={isFavorite(hero.id) ? "red" : "#fff"} 
-                      fill={isFavorite(hero.id) ? "red" : "none"} 
+                  <HeartButton onClick={(e) => toggleFavorite(hero, e)}>
+                    <Heart
+                      size={20}
+                      color={hero.isLiked ? "red" : "#fff"}
+                      fill={hero.isLiked ? "red" : "none"}
                     />
                   </HeartButton>
                   <StatusBadge $status={hero.status}>{hero.status}</StatusBadge>

@@ -90,21 +90,34 @@ const ErrorWrapper = styled.div`
 
 const MaincharactersSection = () => {
   const userId = useUserId();
-  const { data: heroes, error, isLoading: isHeroesLoading, mutate } = HeroesPresenter.useGetAllHeroes();
-  const { data: favorites,  mutate: mutateFavorites } = FavoritePresenter.useGetFavorites(userId);
+  const { data: heroes, error, isLoading: isHeroesLoading, mutate } = HeroesPresenter.useGetAllHeroes(userId);
+
   
 
   const toggleFavorite = useCallback(async (hero: Hero, e?: React.MouseEvent) => {
       e?.stopPropagation();
-  
-      const isCurrentlyFavorite = favorites?.some((f: Hero) => f.id === hero.id) || false;
-  
-      await FavoritePresenter.toggleFavorites(userId, hero.id, isCurrentlyFavorite);
-      mutateFavorites();
-    }, [userId, favorites, mutateFavorites]);
-    
 
-     const isFavorite = (heroId: string | number) => favorites?.some((f: Hero) => f.id === heroId) || false;
+      const newIsLiked = !hero.isLiked;
+
+      
+      mutate(
+        (currentHeroes) =>
+          currentHeroes?.map((h) =>
+            h.id === hero.id ? { ...h, isLiked: newIsLiked } : h
+          ),
+        false
+      );
+
+      try {
+        await FavoritePresenter.toggleFavorites(userId, hero.id, hero.isLiked || false);
+      } catch (error) {
+        console.error('Failed to toggle favorite:', error);
+        
+        mutate();
+      }
+    }, [userId, mutate]);
+
+  
   return (
     <>
       {isHeroesLoading && (
@@ -125,9 +138,8 @@ const MaincharactersSection = () => {
         <MainHeroesWrapper>
           {heroes.map((hero) => (
             <MainCharacterCard key={hero.id}
-             hero={hero} 
-             toggleFavorite={toggleFavorite} 
-             isFavorite={isFavorite}/>
+             hero={hero}
+             toggleFavorite={toggleFavorite} />
           ))}
         </MainHeroesWrapper>
       )}
