@@ -41,7 +41,7 @@ const MainComponentChat = () => {
     mutateClanChatId,
     mutateClanName
   );
-  // TODO: usehandleModalPopUp
+  
   return (
     <>
       <ChatContainer>

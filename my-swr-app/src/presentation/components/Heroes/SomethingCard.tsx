@@ -55,7 +55,6 @@ const SomethingCard = ({box}: {box: MysteryBox} ) => {
     const [darkMode, setDarkMode] = useState<boolean>(false);
     const [selectedBoxId, setSelectedBoxId] = useState<number | null>(null);
     const [shapeMode, setShapeMode] = useState<boolean>(false);
-    const [selectedBox, setSelectedBox] = useState<MysteryBox | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);  
   return (
     <>
@@ -66,7 +65,6 @@ const SomethingCard = ({box}: {box: MysteryBox} ) => {
             data-border-blue={selectedBoxId === box.id}
             onClick={() => {
               setSelectedBoxId(box.id);
-              setSelectedBox(box);
               setIsModalOpen(true);
             }}
           >
@@ -83,10 +81,10 @@ const SomethingCard = ({box}: {box: MysteryBox} ) => {
             
           </HeroCard>
 
-        <ModalOverlay $isOpen={isModalOpen} onClick={() => { setIsModalOpen(false); setSelectedBox(null); }}>
+        <ModalOverlay $isOpen={isModalOpen} onClick={() => { setIsModalOpen(false); }}>
         <div onClick={(e) => e.stopPropagation()}>
-          <BoxDetailModal onClosee={() => { setIsModalOpen(false); setSelectedBox(null); }}
-          selectedBox={selectedBox}
+          <BoxDetailModal onClosee={() => { setIsModalOpen(false); }}
+          selectedBox={box}
            />
         </div>
       </ModalOverlay>

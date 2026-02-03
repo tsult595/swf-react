@@ -7,7 +7,7 @@ export enum HomePageTabEnum  {
   ITEMS = 'items',
   SOMETHING = 'something',
   FAVORITES = 'favorites',
-  
+  USERSFAVORITES = 'users favorites'
 }
 
 

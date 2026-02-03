@@ -102,13 +102,11 @@ const ModalOverlay = styled.div<{ $isOpen: boolean }>`
 
 const MainItemsCard = ({ item, } : {item: Item} ) => {
   const [isModalOpen, setIsModalOpen] = useState(false);  
-  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
 
-//   console.log('Items data:', selectedItem);
 
   return (
     <>
-     <MainItemCard key={item.id} onClick={() => { setSelectedItem(item); setIsModalOpen(true);}}>
+     <MainItemCard key={item.id} onClick={() => {setIsModalOpen(true);}}>
               <MainItemCardUpper>
                 <h2>{item.name}</h2>
               </MainItemCardUpper>
@@ -121,10 +119,10 @@ const MainItemsCard = ({ item, } : {item: Item} ) => {
             </MainItemCard>
 
        
-        <ModalOverlay $isOpen={isModalOpen} onClick={() => { setIsModalOpen(false); setSelectedItem(null); }}>
+        <ModalOverlay $isOpen={isModalOpen} onClick={() => { setIsModalOpen(false); }}>
         <div onClick={(e) => e.stopPropagation()}>
-          <ItemsDetailModal onClose={() => { setIsModalOpen(false); setSelectedItem(null); }}
-          selectedItem={selectedItem} />
+          <ItemsDetailModal onClose={() => { setIsModalOpen(false);}}
+          selectedItem={item} />
         </div>
       </ModalOverlay>
      </>

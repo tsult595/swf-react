@@ -119,7 +119,7 @@ const BoxDetailModal = ({onClosee, selectedBox}: BoxDetailModalProps) => {
         </DetailRow>
       </BoxDetails>
 
-      <CloseButton onClick={onClosee}>Close</CloseButton>
+      <CloseButton onClick={onClosee}>Closesss</CloseButton>
     </ModalContainer>
     
   );

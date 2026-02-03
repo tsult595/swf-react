@@ -11,6 +11,7 @@ import MaincharactersSection from '../Heroes/MaincharactersSection';
 import Something from '../Heroes/Something';
 import { HomePageTabEnum } from '../../../Domain/Entities/enums/homePageEnum';
 import { useUserId } from '../../hooks/useUserId';
+import UserFavoritesComponent from '../UserFavorites/UserFavoritesComponent';
 
 const MainContentWrapper = styled.main` 
   flex: 1;
@@ -161,6 +162,12 @@ function MainContent() {
           >
             <ButtonText>{HomePageTabEnum.SOMETHING}</ButtonText>
           </MainContentButtons>
+          <MainContentButtons 
+            $active={activeTab === HomePageTabEnum.USERSFAVORITES} 
+            onClick={() => setActiveTab(HomePageTabEnum.USERSFAVORITES)}
+          >
+            <ButtonText>{HomePageTabEnum.USERSFAVORITES}</ButtonText>
+          </MainContentButtons>
         </MainContentButtonsWrapper>
 
       
@@ -185,6 +192,11 @@ function MainContent() {
         {activeTab === HomePageTabEnum.SOMETHING && (
           <ItemsWrapper>
             <Something />
+          </ItemsWrapper>
+        )}
+        {activeTab === HomePageTabEnum.USERSFAVORITES && (
+          <ItemsWrapper>
+            <UserFavoritesComponent />
           </ItemsWrapper>
         )}
       </MainContentWrapper>

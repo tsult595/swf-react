@@ -112,7 +112,7 @@ const MaincharactersSection = () => {
         await FavoritePresenter.toggleFavorites(userId, hero.id, hero.isLiked || false);
       } catch (error) {
         console.error('Failed to toggle favorite:', error);
-        
+        // noviy zapros na server i podtanet aktualnie dannie servera
         mutate();
       }
     }, [userId, mutate]);

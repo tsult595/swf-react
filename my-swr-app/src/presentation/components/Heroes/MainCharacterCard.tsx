@@ -161,12 +161,11 @@ const MainCharacterCard = ({
   toggleFavorite: (hero: Hero, e?: React.MouseEvent) => Promise<void>;
 }) => {
    const [isModalOpen, setIsModalOpen] = useState(false); 
-   const [selectedHero, setSelectedHero] = useState<Hero | null>(null);
+  
   
   return (
     <>
-    <MainHeroCard key={hero.id} onClick={() => { setSelectedHero(hero);
-         setIsModalOpen(true); }}>
+    <MainHeroCard key={hero.id} onClick={() => {setIsModalOpen(true); }}>
               <MainHeroCardInner>
                 <MainHeroCardUpper>
                   <h2>{hero.name}</h2>
@@ -204,12 +203,12 @@ const MainCharacterCard = ({
             </MainHeroCard>
 
               <ModalOverlay $isOpen={isModalOpen} onClick={() => setIsModalOpen(false)}> 
-                    {selectedHero && <div onClick={(e) => e.stopPropagation()}>
+                    <div onClick={(e) => e.stopPropagation()}>
                       <LikedCharacterModal 
                         onClose={() => setIsModalOpen(false)}
-                        hero={selectedHero}
+                        hero={hero}
                       />
-                    </div>}
+                    </div>
                   </ModalOverlay> 
               </>
   )
