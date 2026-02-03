@@ -7,7 +7,7 @@ import SocialFrameActive from '../../../assets/small_button_pressed.png';
 import CloseIcon from '../../../../public/assets/close_icon.svg';
 import styled from 'styled-components';
 
-const LikedHeroesHeader = styled.div`
+const LikedCharacterHeader = styled.div`
   width: 100%;
   height: 60px;
 
@@ -46,7 +46,7 @@ const HeaderSectionRight = styled.div`
 
 `;
 
-const LikedHeroesHeaderTitle = styled.h2`
+const LikedCharacterHeaderTitle = styled.h2`
   color: #ffffff;
   font-size: 24px;
   text-transform: uppercase;
@@ -109,10 +109,10 @@ const AsideInfoWebSiteLink = styled.a`
 
 const HeaderComponent = ({ onClose } : ClosingProps) => {
   return (
-    <LikedHeroesHeader>
+    <LikedCharacterHeader>
       <HeaderSectionLeft />
       <HeaderSectionCenter>
-        <LikedHeroesHeaderTitle>Auction Item</LikedHeroesHeaderTitle>
+        <LikedCharacterHeaderTitle>Auction Item</LikedCharacterHeaderTitle>
         <AsideInfoWebSiteLink onClick={onClose}>
           <CloseIconImage>
             ✖
@@ -120,7 +120,7 @@ const HeaderComponent = ({ onClose } : ClosingProps) => {
         </AsideInfoWebSiteLink>
       </HeaderSectionCenter>
       <HeaderSectionRight />
-    </LikedHeroesHeader>
+    </LikedCharacterHeader>
   )
 }
 

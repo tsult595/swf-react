@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { useState } from 'react';
-import type { Hero } from '../../../Domain/Entities/HeroTypes';
+import type { Character } from '../../../Domain/Entities/HeroTypes';
 import { useGetHeroHistory } from '../../heroes';
 
 
@@ -126,18 +126,18 @@ const EmptyText = styled.div`
   font-size: 14px;
 `;
 
-const TableComponent = ({ hero }: { hero: Hero }) => {
+const TableComponent = ({ character }: { character: Character }) => {
   const [isOpen, setIsOpen] = useState(true);
 
-  const { data: history, error, isLoading } = useGetHeroHistory(hero?.id);
+  const { data: history, error, isLoading } = useGetHeroHistory(character?.id);
 
-  console.log('Fetching history for hero:', history) 
+  console.log('Fetching history for character:', history) 
 
   const toggleSection = () => {
     setIsOpen(prev => !prev);
   };
 
-  if (!hero) return null;
+  if (!character) return null;
 
   return (
     <LotHistorySection>

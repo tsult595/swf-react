@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import type { Hero } from '../../../Domain/Entities/HeroTypes';
+import type {Character } from '../../../Domain/Entities/HeroTypes';
 import { useState } from 'react';
 import UserFavoritesModal from '../../Modals/UserFavoritesModal/UserFavoritesModal';
 
@@ -33,26 +33,25 @@ const Card = styled.div`
 `; 
     
 
-const UserFavoritesCard = ({ hero, addCharacterIsViewed , isViewed}: { hero: Hero, addCharacterIsViewed: () => void, isViewed: boolean }) => {
+const UserFavoritesCard = ({ character, addCharacterIsViewed , isViewed}: { character: Character, addCharacterIsViewed: () => void, isViewed: boolean }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <>
-    
-    <Card key={hero.id}  data-border-blue={isViewed} onClick={() => {
+    <Card key={character.id}  data-border-blue={isViewed} onClick={() => {
                 addCharacterIsViewed();
                 setIsModalOpen(true);
                   }}>
-                  <h3>{hero.name}</h3>
-                  <p>Rarity: {hero.rarity}</p>
-                  <p>Level: {hero.level}</p>
+                  <h3>{character.name}</h3>
+                  <p>Rarity: {character.rarity}</p>
+                  <p>Level: {character.level}</p>
                 </Card>
                 
                  <ModalOverlay $isOpen={isModalOpen} onClick={() => { setIsModalOpen(false);}}>
                         <div onClick={(e) => e.stopPropagation()}>
                         <UserFavoritesModal 
-                        selectedHero={hero}
-                        onclose={() => 
+                        selectedCharacters={character}
+                        onClose={() => 
                         { setIsModalOpen(false); }}
                         
                          />

@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import type { Hero } from '../../Domain/Entities/HeroTypes';
+import type { Character } from '../../Domain/Entities/HeroTypes';
 import type { Item } from '../../Domain/Entities/enums/ItemsTypes';
 import type { MysteryBox } from '../../Domain/Entities/MystoryBoxTypes';
 import { useState } from 'react';
@@ -14,7 +14,7 @@ export enum MenuTab {
 
 export const useSelectedOnes = () => {
   const [menuTab, setMenuTab] = useState(MenuTab.Characters);  
-  const { data: selectedHero = null, mutate: setSelectedHero } = useSWR<Hero | null>(
+  const { data: selectedHero = null, mutate: setSelectedHero } = useSWR<Character | null>(
     'selectedHero',
     null,
     { fallbackData: null }

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import type { Hero } from '../../../Domain/Entities/HeroTypes';
+import type { Character } from '../../../Domain/Entities/HeroTypes';
 import { HeroesPresenter } from '../..';
 import { FavoritePresenter } from '../..';
 import { useCallback } from 'react';
@@ -7,7 +7,7 @@ import { useUserId } from '../../hooks/useUserId';
 import MainCharacterCard from './MainCharacterCard';
  
 
-const MainHeroesWrapper = styled.div`
+const MainCharacterWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
   width: 100%;
@@ -90,26 +90,26 @@ const ErrorWrapper = styled.div`
 
 const MaincharactersSection = () => {
   const userId = useUserId();
-  const { data: heroes, error, isLoading: isHeroesLoading, mutate } = HeroesPresenter.useGetAllHeroes(userId);
+  const { data: characters, error, isLoading: isCharactersLoading, mutate } = HeroesPresenter.useGetAllHeroes(userId);
 
   
 
-  const toggleFavorite = useCallback(async (hero: Hero, e?: React.MouseEvent) => {
+  const toggleFavorite = useCallback(async (character: Character, e?: React.MouseEvent) => {
       e?.stopPropagation();
 
-      const newIsLiked = !hero.isLiked;
+      const newIsLiked = !character.isLiked;
 
       
       mutate(
-        (currentHeroes) =>
-          currentHeroes?.map((h) =>
-            h.id === hero.id ? { ...h, isLiked: newIsLiked } : h
+        (currentCharacters) =>
+          currentCharacters?.map((c) =>
+            c.id === character.id ? { ...c, isLiked: newIsLiked } : c
           ),
         false
       );
 
       try {
-        await FavoritePresenter.toggleFavorites(userId, hero.id, hero.isLiked || false);
+        await FavoritePresenter.toggleFavorites(userId, character.id, character.isLiked || false);
       } catch (error) {
         console.error('Failed to toggle favorite:', error);
         // noviy zapros na server i podtanet aktualnie dannie servera
@@ -120,28 +120,28 @@ const MaincharactersSection = () => {
   
   return (
     <>
-      {isHeroesLoading && (
+      {isCharactersLoading && (
         <LoadingWrapper>
-          <div>Loading heroes...</div>
+          <div>Loading characters...</div>
         </LoadingWrapper>
       )}
 
       {error && (
         <ErrorWrapper>
-          <div>❌ Failed to load heroes</div>
+          <div>❌ Failed to load characters</div>
           <div>Please check if server is running on port 3001</div>
           <button onClick={() => mutate()}>Retry</button>
         </ErrorWrapper>
       )}
 
-      {!isHeroesLoading && !error && heroes && (
-        <MainHeroesWrapper>
-          {heroes.map((hero) => (
-            <MainCharacterCard key={hero.id}
-             hero={hero}
+      {!isCharactersLoading && !error && characters && (
+        <MainCharacterWrapper>
+          {characters.map((character) => (
+            <MainCharacterCard key={character.id}
+             character={character}
              toggleFavorite={toggleFavorite} />
           ))}
-        </MainHeroesWrapper>
+        </MainCharacterWrapper>
       )}
    
     </>

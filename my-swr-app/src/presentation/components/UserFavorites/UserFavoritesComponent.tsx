@@ -81,11 +81,11 @@ const UserFavoritesComponent = () => {
             favoritesLoading ? (
               <div>Loading favorites...</div>
             ) : favorites && favorites.length > 0 ? (
-              favorites.map((hero) => (
-                <UserFavoritesCard key={hero.id}
-                   hero={hero}
-                   isViewed= {selectedCardIds.includes(hero.id)}
-                   addCharacterIsViewed={()=> setSelectedCardIds((prev) => prev.includes(hero.id) ? prev.filter(id => id !== hero.id) : [...prev, hero.id])}
+              favorites.map((character) => (
+                <UserFavoritesCard key={character.id}
+                   character={character}
+                   isViewed= {selectedCardIds.includes(character.id)}
+                   addCharacterIsViewed={()=> setSelectedCardIds((prev) => prev.includes(character.id) ? prev.filter(id => id !== character.id) : [...prev, character.id])}
                     />
               ))
             ) : (
@@ -97,16 +97,6 @@ const UserFavoritesComponent = () => {
         </CardsWrapper>
       </MainAllUsersWrapper>
     </MainContainer>
-
-    {/* <ModalOverlay $isOpen={isModalOpen} onClick={() => { setIsModalOpen(false); setSelectedHero(null); }}>
-        <div onClick={(e) => e.stopPropagation()}>
-        <UserFavoritesModal selectedHero={selectedHero}
-        onclose={() => 
-        { setIsModalOpen(false); 
-        setSelectedHero(null); }}
-         />
-        </div>
-    </ModalOverlay> */}
      </>
   )
 }

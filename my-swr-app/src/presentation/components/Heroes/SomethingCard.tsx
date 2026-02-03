@@ -4,7 +4,7 @@ import { useState } from 'react';
 import type { MysteryBox } from '../../../Domain/Entities/MystoryBoxTypes';
 import BoxDetailModal from '../../Modals/BoxModal/BoxDetailModal';
 
-const HeroCard = styled.div`
+const CharacterCard = styled.div`
   width: 250px;
   height: 350px;
   border: none;
@@ -59,7 +59,7 @@ const SomethingCard = ({box}: {box: MysteryBox} ) => {
   return (
     <>
    
-      <HeroCard 
+      <CharacterCard 
             key={box.id} 
             data-dark={darkMode} 
             data-border-blue={selectedBoxId === box.id}
@@ -79,7 +79,7 @@ const SomethingCard = ({box}: {box: MysteryBox} ) => {
             <p>{box.name}</p>
             <p>Rarity: {box.rarity}</p>
             
-          </HeroCard>
+          </CharacterCard>
 
         <ModalOverlay $isOpen={isModalOpen} onClick={() => { setIsModalOpen(false); }}>
         <div onClick={(e) => e.stopPropagation()}>

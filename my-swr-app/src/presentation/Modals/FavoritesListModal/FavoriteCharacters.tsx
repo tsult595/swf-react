@@ -1,5 +1,4 @@
 import styled, { css } from 'styled-components';
-import type { FavoriteHeroesProps} from '../../../Domain/Entities/HeroTypes';
 import SocialsFrameHover from '../../../assets/small_button_hover.png';
 import SocialFrameActive from '../../../assets/small_button_pressed.png';
 import heroFrame from '../../../assets/character_border_common.png';
@@ -49,7 +48,7 @@ const Title = styled.h2`
   text-align: center;
 `;
 
-const HeroCardWrapper = styled.div`
+const CharacterCardWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -76,7 +75,7 @@ const HeroCardWrapper = styled.div`
   }
 `;
 
-const HeroCard = styled.div`
+const CharacterCard = styled.div`
   background: #2a2a2a;
   padding: 15px;
   border-radius: 8px;
@@ -105,7 +104,7 @@ const getFrameByRarity = (rarity: string) => {
   }
 };
 
-const HeroFrame = styled.div<{ $rarity: string }>`
+const CharacterFrame = styled.div<{ $rarity: string }>`
   width: 230px;
   height: 308px;
   margin-left: 11px;
@@ -116,14 +115,14 @@ const HeroFrame = styled.div<{ $rarity: string }>`
   overflow: hidden; 
 `;
 
-const HeroImage = styled.img`
+const CharacterImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block; 
 `;
 
-const HeroInfo = styled.div`
+const CharacterInfo = styled.div`
   flex: 1;
   text-align: left;
   display: flex;
@@ -193,28 +192,32 @@ const HeartButton = styled.button`
 
 `;
 
+export interface FavoriteCharactersProps {
+  onClose: () => void;
+}
 
-const FavoriteCharacters = ({ onClose }: FavoriteHeroesProps) => {
+
+const FavoriteCharacters = ({ onClose }: FavoriteCharactersProps) => {
   const userId = useUserId();
-  const { data: heroes, isLoading, mutate } = HeroesPresenter.useGetAllHeroes(userId);
+  const { data: characters, isLoading, mutate } = HeroesPresenter.useGetAllHeroes(userId);
 
-  // Фильтруем только лайкнутые heroes
-  const favoriteHeroes = heroes?.filter(hero => hero.isLiked) || [];
+  // Фильтруем только лайкнутые characters
+  const favoriteCharacters = characters?.filter(character => character.isLiked) || [];
 
-  const toggleFavorite = async (hero: Hero) => {
-    const newIsLiked = !hero.isLiked;
+  const toggleFavorite = async (character: Hero) => {
+    const newIsLiked = !character.isLiked;
 
     // Оптимистичное обновление
     mutate(
-      (currentHeroes) =>
-        currentHeroes?.map((h) =>
-          h.id === hero.id ? { ...h, isLiked: newIsLiked } : h
+      (currentCharacters) =>
+        currentCharacters?.map((c) =>
+          c.id === character.id ? { ...c, isLiked: newIsLiked } : c
         ),
       false
     );
 
     try {
-      await FavoritePresenter.toggleFavorites(userId, hero.id, hero.isLiked || false);
+      await FavoritePresenter.toggleFavorites(userId, character.id, character.isLiked || false);
     } catch (error) {
       // Откат при ошибке
       mutate();
@@ -223,13 +226,13 @@ const FavoriteCharacters = ({ onClose }: FavoriteHeroesProps) => {
   };
 
 
-  const favoritesList = favoriteHeroes;
+  const favoritesList = favoriteCharacters;
 
   if (isLoading) {
     return (
       <Container>
         <Header>
-          <Title>Favorite Heroes</Title>
+          <Title>Favorite Characters</Title>
           <CloseButton onClick={onClose}>✖</CloseButton>
         </Header>
         <EmptyMessage>Loading favorites...</EmptyMessage>
@@ -241,10 +244,10 @@ const FavoriteCharacters = ({ onClose }: FavoriteHeroesProps) => {
     return (
       <Container>
         <Header>
-          <Title>Favorite Heroes</Title>
+          <Title>Favorite Characters</Title>
           <CloseButton onClick={onClose}>✖</CloseButton>
         </Header>
-        <EmptyMessage>No favorite heroes yet. Click ❤️ to add</EmptyMessage>
+        <EmptyMessage>No favorite characters yet. Click ❤️ to add</EmptyMessage>
       </Container>
     );
   }
@@ -254,37 +257,37 @@ const FavoriteCharacters = ({ onClose }: FavoriteHeroesProps) => {
    
     <Container>
       <Header>
-        <Title>Favorite Heroes ({favoritesList.length})</Title>
+        <Title>Favorite Characters ({favoritesList.length})</Title>
         <CloseButton onClick={onClose}>✖</CloseButton>
       </Header>
 
-      <HeroCardWrapper>
-        {favoritesList.map((hero: Hero) => (
-          <HeroCard key={hero.id}>
-            <HeroFrame $rarity={hero.rarity}>
-              <HeroImage
-                src={`/src/assets/characterAvatars/${hero.fileName}`}
-                alt={hero.name}
+      <CharacterCardWrapper>
+        {favoritesList.map((character: Hero) => (
+          <CharacterCard key={character.id}>
+            <CharacterFrame $rarity={character.rarity}>
+              <CharacterImage
+                src={`/src/assets/characterAvatars/${character.fileName}`}
+                alt={character.name}
               />
-            </HeroFrame>
+            </CharacterFrame>
 
-            <HeroInfo>
-              <HeartButton onClick={() => toggleFavorite(hero)}>
+            <CharacterInfo>
+              <HeartButton onClick={() => toggleFavorite(character)}>
                 <Heart
                   size={20}
-                  color={hero.isLiked ? "red" : "#fff"}
-                  fill={hero.isLiked ? "red" : "none"}
+                  color={character.isLiked ? "red" : "#fff"}
+                  fill={character.isLiked ? "red" : "none"}
                 />
               </HeartButton>
 
-              <h3>{hero.name}</h3>
-              <p>Level: {hero.level}</p>
-              <p>Rarity: {hero.rarity}</p>
-              <p>Price: {hero.price}</p>
-            </HeroInfo>
-          </HeroCard>
+              <h3>{character.name}</h3>
+              <p>Level: {character.level}</p>
+              <p>Rarity: {character.rarity}</p>
+              <p>Price: {character.price}</p>
+            </CharacterInfo>
+          </CharacterCard>
         ))}
-      </HeroCardWrapper>
+      </CharacterCardWrapper>
     </Container>
    
    </>

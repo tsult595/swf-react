@@ -15,7 +15,7 @@ const Container = styled.div`
   display: flex;
 `;
 
-const HeroSection = styled.div`
+const CharacterSection = styled.div`
   width: 90%;
   height: auto;
   
@@ -85,8 +85,8 @@ const Something = () => {
     <>
     <Container>
       {boxesLoading && <LoadingWrapper>Loading items...</LoadingWrapper>}
-         {boxesLoading && <LoadingWrapper>Loading heroes...</LoadingWrapper>}
-      <HeroSection>
+         {boxesLoading && <LoadingWrapper>Loading characters...</LoadingWrapper>}
+      <CharacterSection>
       {
         boxes?.map((box)=>(
           <SomethingCard key={box.id} box={box} />
@@ -100,7 +100,7 @@ const Something = () => {
           Ошибка загрузки. Нажмите для повторной попытки.
         </LoadingOverlay>
       )}
-      </HeroSection>
+      </CharacterSection>
        <input type="text" 
         placeholder="Search..."
         value={inputValue}

@@ -1,5 +1,5 @@
 
-export interface Hero {
+export interface Character {
   id: number;
   name: string;
   fileName: string;
@@ -32,10 +32,7 @@ export interface LikedHeroesProps {
   onClose: () => void;
 }
 
-export interface FavoriteHeroesProps {
 
-  onClose: () => void;
-}
 
 export interface ClosingProps {
   onClose: () => void;

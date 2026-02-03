@@ -3,10 +3,10 @@ import heroFrameHigh from '../../../assets/character_border_violet.png';
 import heroFrameMiddle from '../../../assets/character_border_blue.png';
 import heroFrame from '../../../assets/character_border_common.png';
 import { useState} from 'react';
-import type { Hero} from '../../../Domain/Entities/HeroTypes';
+import type { Character } from '../../../Domain/Entities/HeroTypes';
 
 
-const MainHeroSection = styled.div`
+const MainCharacterSection = styled.div`
   width: 100%;
   height: fit-content;
   gap: 30px;
@@ -17,7 +17,7 @@ const MainHeroSection = styled.div`
   background: black;
 `;
 
-const HeroSideCardContainer = styled.div`
+const CharacterSideCardContainer = styled.div`
   width: 26%;
   min-height: 450px;
 
@@ -28,7 +28,7 @@ const HeroSideCardContainer = styled.div`
   align-items: center;
 `;
 
-const HeroSideCardFrame = styled.div<{ $rarity: string }>`
+const CharacterSideCardFrame = styled.div<{ $rarity: string }>`
   width: 100%;
   height: 450px;
 
@@ -38,14 +38,14 @@ const HeroSideCardFrame = styled.div<{ $rarity: string }>`
   transition: all 0.3s ease;
 `;
 
-const HeroSideCardImage = styled.img`
+const CharacterSideCardImage = styled.img`
   width: 100%;
   height: 100%;
 
   object-fit: cover;
 `;
 
-const ModalHeroInfoUl = styled.ul`
+const ModalCharacterInfoUl = styled.ul`
   width: 100%;
   padding: 13px;
   
@@ -56,7 +56,7 @@ const ModalHeroInfoUl = styled.ul`
   font-size: 13px;
 `;
 
-const ModalHeroInfoItemLi = styled.li`
+const ModalCharacterInfoItemLi = styled.li`
   color: #ebe1e1;
   padding: 4px 0;
   
@@ -69,9 +69,9 @@ const ModalHeroInfoItemLi = styled.li`
   }
 `;
 
-// hero grid items
+// character grid items
 
-const HeroFeaturesContainer = styled.div`
+const CharacterFeaturesContainer = styled.div`
   width: 68%;
   height: fit-content;
   background: #000000ff;
@@ -147,7 +147,7 @@ const InfoRow = styled.div`
   }
 `;
 
-const HeroFeatureStatusDiv = styled.div`
+const CharacterFeatureStatusDiv = styled.div`
    width: 100px;
    height: fit-content;
 
@@ -166,9 +166,7 @@ const getFrameByRarity = (rarity: string) => {
 };
 
 
-const MainCharacterComponent = ({ hero }: { hero: Hero }) => {
- 
-
+const MainCharacterComponent = ({ character }: { character: Character }) => {
   // todo Record doljen bit z 4 obyektov
 
   const [openSections, setOpenSections] = useState({
@@ -187,31 +185,31 @@ const MainCharacterComponent = ({ hero }: { hero: Hero }) => {
           [section]: !prev[section]
         }));
       };
-         if (!hero) {
+         if (!character) {
         return null;
       }
      
 
   return (
-    <MainHeroSection>
-          <HeroSideCardContainer>
-            <HeroSideCardFrame $rarity={hero.rarity}>
-            <HeroSideCardImage 
-            src={`/src/assets/characterAvatars/${hero.fileName}`} 
-            alt={hero.name}
+    <MainCharacterSection>
+          <CharacterSideCardContainer>
+            <CharacterSideCardFrame $rarity={character.rarity}>
+            <CharacterSideCardImage 
+            src={`/src/assets/characterAvatars/${character.fileName}`} 
+            alt={character.name}
             onError={(e) => {
-              console.error('Image load error:', hero.fileName);
+              console.error('Image load error:', character.fileName);
               e.currentTarget.style.display = 'none';
             }}
           />
-            </HeroSideCardFrame>
-            <ModalHeroInfoUl>
-              <ModalHeroInfoItemLi>The item will be sold by best price at the time ending</ModalHeroInfoItemLi>
-              <ModalHeroInfoItemLi>If no one will make a bid, the item will change status to withdraw</ModalHeroInfoItemLi>
-            </ModalHeroInfoUl>
-          </HeroSideCardContainer>
+            </CharacterSideCardFrame>
+            <ModalCharacterInfoUl>
+              <ModalCharacterInfoItemLi>The item will be sold by best price at the time ending</ModalCharacterInfoItemLi>
+              <ModalCharacterInfoItemLi>If no one will make a bid, the item will change status to withdraw</ModalCharacterInfoItemLi>
+            </ModalCharacterInfoUl>
+          </CharacterSideCardContainer>
             
-          <HeroFeaturesContainer>
+          <CharacterFeaturesContainer>
             <FeatureSection $isOpen={openSections.auction}>
               <SectionHeader 
                 $isOpen={openSections.auction}
@@ -222,27 +220,27 @@ const MainCharacterComponent = ({ hero }: { hero: Hero }) => {
               <InfoFeature $isOpen={openSections.auction}>
                 <InfoRow>
                   <span>Auction Status</span>
-                  <HeroFeatureStatusDiv>
-                    <span>{hero.status}</span>
-                  </HeroFeatureStatusDiv>
+                  <CharacterFeatureStatusDiv>
+                    <span>{character.status}</span>
+                  </CharacterFeatureStatusDiv>
                 </InfoRow>
                 <InfoRow>
                   <span>Highest bidder</span>
-                  <HeroFeatureStatusDiv>
+                  <CharacterFeatureStatusDiv>
                   <span>0x000...0000</span>
-                  </HeroFeatureStatusDiv>
+                  </CharacterFeatureStatusDiv>
                 </InfoRow>
                 <InfoRow>
                   <span>Highest bid</span>
-                  <HeroFeatureStatusDiv>
-                  <span>{hero.bid} VVVT</span>
-                  </HeroFeatureStatusDiv>
+                  <CharacterFeatureStatusDiv>
+                  <span>{character.bid} VVVT</span>
+                  </CharacterFeatureStatusDiv>
                 </InfoRow>
                 <InfoRow>
                   <span>Your bid</span>
-                  <HeroFeatureStatusDiv>
+                  <CharacterFeatureStatusDiv>
                   <span>0.00 VVVT</span>
-                  </HeroFeatureStatusDiv>
+                  </CharacterFeatureStatusDiv>
                 </InfoRow>
               </InfoFeature>
             </FeatureSection>
@@ -257,27 +255,27 @@ const MainCharacterComponent = ({ hero }: { hero: Hero }) => {
               <InfoFeature $isOpen={openSections.nft}>
                 <InfoRow>
                   <span>ID</span>
-                  <HeroFeatureStatusDiv>
-                  <span>#{hero.id}</span>
-                  </HeroFeatureStatusDiv>
+                  <CharacterFeatureStatusDiv>
+                  <span>#{character.id}</span>
+                  </CharacterFeatureStatusDiv>
                 </InfoRow>
                 <InfoRow>
                   <span>Rarity</span>
-                  <HeroFeatureStatusDiv>
-                  <span>{hero.rarity}</span>
-                  </HeroFeatureStatusDiv>
+                  <CharacterFeatureStatusDiv>
+                  <span>{character.rarity}</span>
+                  </CharacterFeatureStatusDiv>
                 </InfoRow>
                 <InfoRow>
                   <span>Level</span>
-                  <HeroFeatureStatusDiv>
-                  <span>{hero.level}</span>
-                  </HeroFeatureStatusDiv>
+                  <CharacterFeatureStatusDiv>
+                  <span>{character.level}</span>
+                  </CharacterFeatureStatusDiv>
                 </InfoRow>
                 <InfoRow>
                   <span>Price</span>
-                  <HeroFeatureStatusDiv>
-                  <span>{hero.price} SWR</span>
-                  </HeroFeatureStatusDiv>
+                  <CharacterFeatureStatusDiv>
+                  <span>{character.price} SWR</span>
+                  </CharacterFeatureStatusDiv>
                 </InfoRow>
               </InfoFeature>
             </FeatureSection>
@@ -292,15 +290,15 @@ const MainCharacterComponent = ({ hero }: { hero: Hero }) => {
               <InfoFeature $isOpen={openSections.experience}>
                 <InfoRow>
                   <span>Wins</span>
-                  <HeroFeatureStatusDiv>
-                  <span>{hero.wins || 0}</span>
-                  </HeroFeatureStatusDiv>
+                  <CharacterFeatureStatusDiv>
+                  <span>{character.wins || 0}</span>
+                  </CharacterFeatureStatusDiv>
                 </InfoRow>
                 <InfoRow>
                   <span>Loses</span>
-                  <HeroFeatureStatusDiv>
-                  <span>{hero.loses || 0}</span>
-                  </HeroFeatureStatusDiv>
+                  <CharacterFeatureStatusDiv>
+                  <span>{character.loses || 0}</span>
+                  </CharacterFeatureStatusDiv>
                 </InfoRow>
               </InfoFeature>
             </FeatureSection>
@@ -315,28 +313,28 @@ const MainCharacterComponent = ({ hero }: { hero: Hero }) => {
               <InfoFeature $isOpen={openSections.create}>
                 <InfoRow>
                   <span>Creators</span>
-                  <HeroFeatureStatusDiv>
-                 <span>{hero.creator || '0x709...79C8'}</span>
-                  </HeroFeatureStatusDiv>
+                  <CharacterFeatureStatusDiv>
+                 <span>{character.creator || '0x709...79C8'}</span>
+                  </CharacterFeatureStatusDiv>
                 </InfoRow>
                 <InfoRow>
                   <span>Create date</span>
-                  <HeroFeatureStatusDiv>
+                  <CharacterFeatureStatusDiv>
                    <span>
-                  {hero.createDate
-                    ? new Date(hero.createDate).toLocaleDateString('en-US', {
+                  {character.createDate
+                    ? new Date(character.createDate).toLocaleDateString('en-US', {
                         month: 'short',
                         day: 'numeric',
                         year: 'numeric'
                       })
                     : 'Dec 11, 2025'}
                 </span>
-                  </HeroFeatureStatusDiv>
+                  </CharacterFeatureStatusDiv>
                 </InfoRow>
               </InfoFeature>
             </FeatureSection>
-          </HeroFeaturesContainer>
-        </MainHeroSection>
+          </CharacterFeaturesContainer>
+        </MainCharacterSection>
   )
 }
 

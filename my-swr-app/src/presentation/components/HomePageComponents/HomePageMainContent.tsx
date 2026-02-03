@@ -3,7 +3,6 @@ import { useState } from 'react';
 import ButtonMainImgDefault from '../../../assets/toggle_button_default.png'
 import ButtonMainImgHover from '../../../assets/toggle_button_hover.png'; 
 import ButtonMainImgTogled from '../../../assets/toggle_button_toggled.png'; 
-import FavoriteHeroes from '../../Modals/FavoritesListModal/FavoriteCharacters';
 import MainComponentChat from '../Chat/MainComponentChat'; 
 import {HeroesPresenter} from '../..';
 import MainItemsComponent from '../Items/MainItemsComponent';
@@ -12,6 +11,7 @@ import Something from '../Heroes/Something';
 import { HomePageTabEnum } from '../../../Domain/Entities/enums/homePageEnum';
 import { useUserId } from '../../hooks/useUserId';
 import UserFavoritesComponent from '../UserFavorites/UserFavoritesComponent';
+import FavoriteCharacters from '../../Modals/FavoritesListModal/FavoriteCharacters';
 
 const MainContentWrapper = styled.main` 
   flex: 1;
@@ -123,8 +123,8 @@ function MainContent() {
   const [showFavorites, setShowFavorites] = useState(false);
   const [activeTab, setActiveTab] = useState(HomePageTabEnum.CHARACTERS);
    const userId = useUserId(); 
-   const { data: heroes } = HeroesPresenter.useGetAllHeroes(userId);
-   const likedHeroes = heroes?.filter(hero => hero.isLiked) || [];
+   const { data: characters } = HeroesPresenter.useGetAllHeroes(userId);
+   const likedCharacters = characters?.filter(character => character.isLiked) || [];
   
 
 
@@ -146,7 +146,7 @@ function MainContent() {
           </MainContentButtons>
           <MainContentButtons onClick={() => setShowFavorites(true)}>
             <ButtonText>
-              {HomePageTabEnum.FAVORITES} ({likedHeroes.length})
+              {HomePageTabEnum.FAVORITES} ({likedCharacters.length})
             </ButtonText>
           </MainContentButtons>
           <MainContentButtons 
@@ -203,7 +203,7 @@ function MainContent() {
 
       <ModalOverlay $isOpen={showFavorites} onClick={() => setShowFavorites(false)}>
         <div onClick={(e) => e.stopPropagation()}>
-          <FavoriteHeroes 
+          <FavoriteCharacters
             onClose={() => setShowFavorites(false)}
           />
         </div>

@@ -1,10 +1,10 @@
 import styled from 'styled-components';
 import { Heart } from 'lucide-react';
-import type { Hero } from '../../../Domain/Entities/HeroTypes';
+import type { Character } from '../../../Domain/Entities/HeroTypes';
 import LikedCharacterModal  from '../../Modals/LikedCharacterModal/LikedCharacterModal';
 import { useState } from 'react';
 
-const MainHeroCard = styled.div`
+const MainCharacterCards = styled.div`
   width: 260px;
   height: 479px;
   display: flex;
@@ -19,7 +19,7 @@ const MainHeroCard = styled.div`
   }
 `;
 
-const MainHeroCardInner = styled.div`
+const MainCharacterCardInner = styled.div`
   display: flex;
   flex-direction: column;
   width: fit-content;
@@ -28,7 +28,7 @@ const MainHeroCardInner = styled.div`
   padding: 16px;
 `;
 
-const MainHeroCardUpper = styled.div`
+const MainCharacterCardUpper = styled.div`
   display: flex;
   flex-direction: column;
   height: fit-content;
@@ -41,7 +41,7 @@ const MainHeroCardUpper = styled.div`
   }
 `;
 
-const MainHeroCardLower = styled.div`
+const MainCharacterCardLower = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -55,7 +55,7 @@ const MainHeroCardLower = styled.div`
   }
 `;
 
-const MainHeroInfo = styled.div`
+const MainCharacterInfo = styled.div`
   font-family: 'Inter', sans-serif;
   font-weight: 200;
   font-size: 16px;
@@ -106,7 +106,7 @@ const StatusBadge = styled.span<{ $status: string }>`
   }
 `;
 
-const HeroFrame = styled.div<{ $rarity: string }>`
+const CharacterFrame = styled.div<{ $rarity: string }>`
   width: 230px;
   height: 350px;
   border: 25px solid transparent;
@@ -115,12 +115,12 @@ const HeroFrame = styled.div<{ $rarity: string }>`
   transition: all 0.3s ease;
   overflow: hidden;
   
-  ${MainHeroCard}:hover & {
+  ${MainCharacterCards}:hover & {
     filter: brightness(1.2);
   }
 `;
 
-const HeroImage = styled.img`
+const CharacterImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -152,61 +152,59 @@ const ModalOverlay = styled.div<{ $isOpen: boolean }>`
 `;
 
 const MainCharacterCard = ({ 
-  hero, 
+  character, 
   toggleFavorite, 
-  
-
 }: {
-  hero: Hero;
-  toggleFavorite: (hero: Hero, e?: React.MouseEvent) => Promise<void>;
+  character: Character;
+  toggleFavorite: (character: Character, e?: React.MouseEvent) => Promise<void>;
 }) => {
    const [isModalOpen, setIsModalOpen] = useState(false); 
   
   
   return (
     <>
-    <MainHeroCard key={hero.id} onClick={() => {setIsModalOpen(true); }}>
-              <MainHeroCardInner>
-                <MainHeroCardUpper>
-                  <h2>{hero.name}</h2>
-                </MainHeroCardUpper>
-                <MainHeroCardLower>
-                  <p>ID: {hero.id}</p>
-                  <HeartButton onClick={(e) => toggleFavorite(hero, e)}>
+    <MainCharacterCards key={character.id} onClick={() => {setIsModalOpen(true); }}>
+              <MainCharacterCardInner>
+                <MainCharacterCardUpper>
+                  <h2>{character.name}</h2>
+                </MainCharacterCardUpper>
+                <MainCharacterCardLower>
+                  <p>ID: {character.id}</p>
+                  <HeartButton onClick={(e) => toggleFavorite(character, e)}>
                     <Heart
                       size={20}
-                      color={hero.isLiked ? "red" : "#fff"}
-                      fill={hero.isLiked ? "red" : "none"}
+                      color={character.isLiked ? "red" : "#fff"}
+                      fill={character.isLiked ? "red" : "none"}
                     />
                   </HeartButton>
-                  <StatusBadge $status={hero.status}>{hero.status}</StatusBadge>
-                </MainHeroCardLower>
-                <HeroFrame $rarity={hero.rarity}>
-                  {hero.fileName ? (
-                    <HeroImage 
-                      src={`/src/assets/characterAvatars/${hero.fileName}`} 
-                      alt={hero.name}
+                  <StatusBadge $status={character.status}>{character.status}</StatusBadge>
+                </MainCharacterCardLower>
+                <CharacterFrame $rarity={character.rarity}>
+                  {character.fileName ? (
+                    <CharacterImage 
+                      src={`/src/assets/characterAvatars/${character.fileName}`} 
+                      alt={character.name}
                       onError={(e) => {
-                        console.error('Image load error:', hero.fileName);
+                        console.error('Image load error:', character.fileName);
                         e.currentTarget.style.display = 'none';
                       }}
                     />
                   ) : (
                     <span style={{ color: 'white' }}>No Image</span>
                   )}
-                </HeroFrame>
-                <MainHeroInfo>
-                  <p>Level: {hero.level}</p>
-                  <p>Price: {hero.price} SWR</p>
-                </MainHeroInfo>
-              </MainHeroCardInner>
-            </MainHeroCard>
+                </CharacterFrame>
+                <MainCharacterInfo>
+                  <p>Level: {character.level}</p>
+                  <p>Price: {character.price} SWR</p>
+                </MainCharacterInfo>
+              </MainCharacterCardInner>
+            </MainCharacterCards>
 
               <ModalOverlay $isOpen={isModalOpen} onClick={() => setIsModalOpen(false)}> 
                     <div onClick={(e) => e.stopPropagation()}>
                       <LikedCharacterModal 
                         onClose={() => setIsModalOpen(false)}
-                        hero={hero}
+                        character={character}
                       />
                     </div>
                   </ModalOverlay> 

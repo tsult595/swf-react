@@ -1,10 +1,10 @@
 
 import useSWR from "swr"
 import { FavoritesUseCases } from "../../Domain"
-import type { Hero } from "../../Domain/Entities/HeroTypes"
+import type { Character } from "../../Domain/Entities/HeroTypes"
 
 export const useGetFavorites = (userId: string) => {
-  return useSWR<Hero[]>(
+  return useSWR<Character[]>(
     userId ? `/favorites/${userId}` : null,  // Синхронизируем ключ с useFavorites
     () => FavoritesUseCases.getUserFavoritesUseCase(userId),
      {

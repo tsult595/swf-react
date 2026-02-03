@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import type { Hero } from '../../../Domain/Entities/HeroTypes';
+import type { Character } from '../../../Domain/Entities/HeroTypes';
 
 
 const ModalContainer = styled.div`
@@ -62,32 +62,32 @@ const CloseButton = styled.button`
 `;
 
 
-const UserFavoritesModal = ({ selectedHero , onclose }:
-{ selectedHero: Hero | null, onclose: () => void }) => {
-  if (!selectedHero) return null;
+const UserFavoritesModal = ({ selectedCharacters , onClose }:
+{ selectedCharacters: Character | null, onClose: () => void }) => {
+  if (!selectedCharacters) return null;
 
   return (
     <ModalContainer>
-        <Title>Hero Details</Title>
+        <Title>Characters Details</Title>
         <ItemDetails>
             <DetailRow>
                 <Label>Name:</Label>
-                <Value>{selectedHero.name}</Value>
+                <Value>{selectedCharacters.name}</Value>
             </DetailRow>
             <DetailRow>
                 <Label>Rarity:</Label>
-                <Value>{selectedHero.rarity}</Value>
+                <Value>{selectedCharacters.rarity}</Value>
             </DetailRow>
             <DetailRow>
                 <Label>Level:</Label>
-                <Value>{selectedHero.level}</Value>
+                <Value>{selectedCharacters.level}</Value>
             </DetailRow>
             <DetailRow>
                 <Label>Price:</Label>
-                <Value>{selectedHero.price}</Value>
+                <Value>{selectedCharacters.price}</Value>
             </DetailRow>
         </ItemDetails>
-        <CloseButton onClick={onclose}>Close</CloseButton>
+        <CloseButton onClick={onClose}>Close</CloseButton>
     </ModalContainer>
   )
 }

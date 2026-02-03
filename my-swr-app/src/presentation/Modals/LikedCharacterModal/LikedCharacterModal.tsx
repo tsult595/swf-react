@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components';
 import HeaderComponent from './HeaderComponent';
 import TableComponent from './TableComponent';
-import type { Hero } from '../../../Domain/Entities/HeroTypes';
+import type { Character } from '../../../Domain/Entities/HeroTypes';
 import MainCharacterComponent from './MainCharacterComponent';
 
 const FrameBorderModalMain = css`
@@ -60,18 +60,18 @@ const ScrollWrapper = styled.div`
 
 export interface LikedHeroesProps {
   onClose: () => void;
-  hero: Hero;
+  character: Character;
 }
 
 
-const LikedCharacterModal = ({ onClose, hero }: LikedHeroesProps) => {
+const LikedCharacterModal = ({ onClose, character }: LikedHeroesProps) => {
  
   return (
     <Container>
       <HeaderComponent  onClose={onClose} />
       <ScrollWrapper>
-        <MainCharacterComponent hero={hero}/>
-       <TableComponent hero={hero} /> 
+        <MainCharacterComponent character={character}/>
+       <TableComponent character={character} /> 
       </ScrollWrapper>
     </Container>
   );
