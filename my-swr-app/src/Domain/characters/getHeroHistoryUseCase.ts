@@ -1,6 +1,6 @@
 import type { LotHistory } from "../Entities/HeroTypes";
-import * as HeroRepository from "../../data/heroes";
+import * as CharacterRepository from "../../data/characters";
 
 export async function getHeroHistoryUseCase(heroId: number): Promise<LotHistory[]> {
-    return HeroRepository.getHeroHistory(heroId);
+    return CharacterRepository.getHeroHistory(heroId);
 }

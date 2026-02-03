@@ -4,7 +4,7 @@ import ButtonMainImgDefault from '../../../assets/toggle_button_default.png'
 import ButtonMainImgHover from '../../../assets/toggle_button_hover.png'; 
 import ButtonMainImgTogled from '../../../assets/toggle_button_toggled.png'; 
 import MainComponentChat from '../Chat/MainComponentChat'; 
-import {HeroesPresenter} from '../..';
+import {CharactersPresenter} from '../..';
 import MainItemsComponent from '../Items/MainItemsComponent';
 import MaincharactersSection from '../Heroes/MaincharactersSection';
 import Something from '../Heroes/Something';
@@ -123,7 +123,7 @@ function MainContent() {
   const [showFavorites, setShowFavorites] = useState(false);
   const [activeTab, setActiveTab] = useState(HomePageTabEnum.CHARACTERS);
    const userId = useUserId(); 
-   const { data: characters } = HeroesPresenter.useGetAllHeroes(userId);
+   const { data: characters } = CharactersPresenter.useGetAllHeroes(userId);
    const likedCharacters = characters?.filter(character => character.isLiked) || [];
   
 

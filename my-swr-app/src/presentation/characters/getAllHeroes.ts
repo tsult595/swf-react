@@ -1,10 +1,10 @@
 import useSWR from "swr";
-import { HeroesUseCases } from "../../Domain";
+import { CharactersUseCases } from "../../Domain";
 
 export function useGetAllHeroes(userId?: string) {
     return useSWR(
         userId ? `all-heroes-${userId}` : 'all-heroes',
-        () => HeroesUseCases.getAllHeroesUseCase(userId),
+        () => CharactersUseCases.getAllHeroesUseCase(userId),
         {
             revalidateOnFocus: false,
             dedupingInterval: 60000,

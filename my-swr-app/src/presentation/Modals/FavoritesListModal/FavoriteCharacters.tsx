@@ -5,8 +5,8 @@ import heroFrame from '../../../assets/character_border_common.png';
 import heroFrameHigh from '../../../assets/character_border_violet.png';
 import heroFrameMiddle from '../../../assets/character_border_blue.png';
 import { Heart } from 'lucide-react';
-import { FavoritePresenter, HeroesPresenter } from '../..';
-import type { Hero } from '../../../Domain/Entities/HeroTypes';
+import { FavoritePresenter, CharactersPresenter } from '../..';
+import type { Character } from '../../../Domain/Entities/HeroTypes';
 import { useUserId } from '../../hooks/useUserId';
 
 
@@ -199,12 +199,12 @@ export interface FavoriteCharactersProps {
 
 const FavoriteCharacters = ({ onClose }: FavoriteCharactersProps) => {
   const userId = useUserId();
-  const { data: characters, isLoading, mutate } = HeroesPresenter.useGetAllHeroes(userId);
+  const { data: characters, isLoading, mutate } = CharactersPresenter.useGetAllHeroes(userId);
 
   // Фильтруем только лайкнутые characters
   const favoriteCharacters = characters?.filter(character => character.isLiked) || [];
 
-  const toggleFavorite = async (character: Hero) => {
+  const toggleFavorite = async (character: Character) => {
     const newIsLiked = !character.isLiked;
 
     // Оптимистичное обновление
@@ -262,7 +262,7 @@ const FavoriteCharacters = ({ onClose }: FavoriteCharactersProps) => {
       </Header>
 
       <CharacterCardWrapper>
-        {favoritesList.map((character: Hero) => (
+        {favoritesList.map((character: Character) => (
           <CharacterCard key={character.id}>
             <CharacterFrame $rarity={character.rarity}>
               <CharacterImage

@@ -1,6 +1,6 @@
 import type { Character } from "../Entities/HeroTypes";
-import * as HeroRepository from "../../data/heroes";
+import * as CharacterRepository from "../../data/characters";
 
 export async function getAllHeroesUseCase(userId?: string): Promise<Character[]> {
-    return HeroRepository.getAllHeroes(userId);
+    return CharacterRepository.getAllHeroes(userId);
 }

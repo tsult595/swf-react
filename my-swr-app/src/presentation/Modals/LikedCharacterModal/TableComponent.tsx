@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { useState } from 'react';
 import type { Character } from '../../../Domain/Entities/HeroTypes';
-import { useGetHeroHistory } from '../../heroes';
+import { useGetHeroHistory } from '../../characters';
 
 
 

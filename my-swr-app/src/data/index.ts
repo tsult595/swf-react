@@ -4,9 +4,9 @@ import * as ClanRepository from './clans';
 import * as MessageRepository from './message';
 import * as ItemRepository from './items';
 import * as MysteryBoxRepository from './mysteryBox';
-import * as HeroRepository from './heroes';
+import * as CharacterRepository from './characters';
 
-export { HeroRepository };
+export { CharacterRepository };
 export { MysteryBoxRepository };
 export { ItemRepository };
 export { MessageRepository };
