@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import type {Character } from '../../../Domain/Entities/HeroTypes';
+import type {Character } from '../../../Domain/Entities/CharacterTypes';
 import { useState } from 'react';
 import UserFavoritesModal from '../../Modals/UserFavoritesModal/UserFavoritesModal';
 

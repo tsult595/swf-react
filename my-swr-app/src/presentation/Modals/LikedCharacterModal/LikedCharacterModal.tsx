@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components';
 import HeaderComponent from './HeaderComponent';
 import TableComponent from './TableComponent';
-import type { Character } from '../../../Domain/Entities/HeroTypes';
+import type { Character } from '../../../Domain/Entities/CharacterTypes';
 import MainCharacterComponent from './MainCharacterComponent';
 
 const FrameBorderModalMain = css`
@@ -58,13 +58,13 @@ const ScrollWrapper = styled.div`
   scroll-behavior: smooth;
 `;
 
-export interface LikedHeroesProps {
+export interface LikedCharacterProps {
   onClose: () => void;
   character: Character;
 }
 
 
-const LikedCharacterModal = ({ onClose, character }: LikedHeroesProps) => {
+const LikedCharacterModal = ({ onClose, character }: LikedCharacterProps) => {
  
   return (
     <Container>

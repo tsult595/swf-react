@@ -6,8 +6,8 @@ import ButtonMainImgTogled from '../../../assets/toggle_button_toggled.png';
 import MainComponentChat from '../Chat/MainComponentChat'; 
 import {CharactersPresenter} from '../..';
 import MainItemsComponent from '../Items/MainItemsComponent';
-import MaincharactersSection from '../Heroes/MaincharactersSection';
-import Something from '../Heroes/Something';
+import MaincharactersSection from '../Characters/MaincharactersSection';
+import Something from '../Characters/Something';
 import { HomePageTabEnum } from '../../../Domain/Entities/enums/homePageEnum';
 import { useUserId } from '../../hooks/useUserId';
 import UserFavoritesComponent from '../UserFavorites/UserFavoritesComponent';
@@ -123,7 +123,7 @@ function MainContent() {
   const [showFavorites, setShowFavorites] = useState(false);
   const [activeTab, setActiveTab] = useState(HomePageTabEnum.CHARACTERS);
    const userId = useUserId(); 
-   const { data: characters } = CharactersPresenter.useGetAllHeroes(userId);
+   const { data: characters } = CharactersPresenter.useGetAllCharacters(userId);
    const likedCharacters = characters?.filter(character => character.isLiked) || [];
   
 

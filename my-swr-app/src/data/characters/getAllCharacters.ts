@@ -1,6 +1,6 @@
-import type { Character } from "../../Domain/Entities/HeroTypes";
+import type { Character } from "../../Domain/Entities/CharacterTypes";
 
-export async function getAllHeroes(userId?: string): Promise<Character[]> {
+export async function getAllCharacters(userId?: string): Promise<Character[]> {
     const url = userId ? `/api/heroes?userId=${userId}` : '/api/heroes';
     const response = await fetch(url);
 

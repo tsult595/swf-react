@@ -1,3 +1,3 @@
-export * from './getAllHeroesUseCase';
-export * from './getHeroByIdUseCase';
-export * from './getHeroHistoryUseCase';
+export * from './getAllCharactersUseCase';
+export * from './getCharacterByIdUseCase';
+export * from './getCharacterHistoryUseCase';

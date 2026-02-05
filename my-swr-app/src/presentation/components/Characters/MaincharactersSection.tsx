@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import type { Character } from '../../../Domain/Entities/HeroTypes';
+import type { Character } from '../../../Domain/Entities/CharacterTypes';
 import { CharactersPresenter } from '../..';
 import { FavoritePresenter } from '../..';
 import { useCallback } from 'react';
@@ -87,7 +87,7 @@ const ErrorWrapper = styled.div`
 
 const MaincharactersSection = () => {
   const userId = useUserId();
-  const { data: characters, error, isLoading: isCharactersLoading, mutate } = CharactersPresenter.useGetAllHeroes(userId);
+  const { data: characters, error, isLoading: isCharactersLoading, mutate } = CharactersPresenter.useGetAllCharacters(userId);
 
   
 

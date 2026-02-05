@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { Heart } from 'lucide-react';
-import type { Character } from '../../../Domain/Entities/HeroTypes';
+import type { Character } from '../../../Domain/Entities/CharacterTypes';
 import LikedCharacterModal  from '../../Modals/LikedCharacterModal/LikedCharacterModal';
 import { useState } from 'react';
 

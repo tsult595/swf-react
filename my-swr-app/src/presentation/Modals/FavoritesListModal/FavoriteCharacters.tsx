@@ -1,12 +1,12 @@
 import styled, { css } from 'styled-components';
 import SocialsFrameHover from '../../../assets/small_button_hover.png';
 import SocialFrameActive from '../../../assets/small_button_pressed.png';
-import heroFrame from '../../../assets/character_border_common.png';
-import heroFrameHigh from '../../../assets/character_border_violet.png';
-import heroFrameMiddle from '../../../assets/character_border_blue.png';
+import characterFrame from '../../../assets/character_border_common.png';
+import characterFrameHigh from '../../../assets/character_border_violet.png';
+import characterFrameMiddle from '../../../assets/character_border_blue.png';
 import { Heart } from 'lucide-react';
 import { FavoritePresenter, CharactersPresenter } from '../..';
-import type { Character } from '../../../Domain/Entities/HeroTypes';
+import type { Character } from '../../../Domain/Entities/CharacterTypes';
 import { useUserId } from '../../hooks/useUserId';
 
 
@@ -96,11 +96,11 @@ const CharacterCard = styled.div`
 const getFrameByRarity = (rarity: string) => { 
   switch (rarity) {
     case 'High':
-      return heroFrameHigh;
+      return characterFrameHigh;
     case 'Middle':
-      return heroFrameMiddle;
+      return characterFrameMiddle;
     default:
-      return heroFrame;
+      return characterFrame;
   }
 };
 
@@ -199,7 +199,7 @@ export interface FavoriteCharactersProps {
 
 const FavoriteCharacters = ({ onClose }: FavoriteCharactersProps) => {
   const userId = useUserId();
-  const { data: characters, isLoading, mutate } = CharactersPresenter.useGetAllHeroes(userId);
+  const { data: characters, isLoading, mutate } = CharactersPresenter.useGetAllCharacters(userId);
 
   // Фильтруем только лайкнутые characters
   const favoriteCharacters = characters?.filter(character => character.isLiked) || [];

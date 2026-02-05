@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { useState } from 'react';
-import type { Character } from '../../../Domain/Entities/HeroTypes';
-import { useGetHeroHistory } from '../../characters';
+import type { Character } from '../../../Domain/Entities/CharacterTypes';
+import { useGetCharacterHistory} from '../../characters';
 
 
 
@@ -129,7 +129,7 @@ const EmptyText = styled.div`
 const TableComponent = ({ character }: { character: Character }) => {
   const [isOpen, setIsOpen] = useState(true);
 
-  const { data: history, error, isLoading } = useGetHeroHistory(character?.id);
+  const { data: history, error, isLoading } = useGetCharacterHistory(character?.id);
 
   console.log('Fetching history for character:', history) 
 
@@ -157,7 +157,7 @@ const TableComponent = ({ character }: { character: Character }) => {
         
         
         {!isLoading && !error && history && history.length === 0 && (
-          <EmptyText>No history available for this hero</EmptyText>
+          <EmptyText>No history available for this character</EmptyText>
         )}
         
       

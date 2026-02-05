@@ -1,3 +1,3 @@
-export * from './getAllHeroes';
-export * from './getHeroesById';
-export * from './getHeroHistory';
+export * from './getAllCharacters';
+export * from './getCharacterById';
+export * from './getCharacterHistory';

@@ -1,9 +1,9 @@
 import styled from 'styled-components';
-import heroFrameHigh from '../../../assets/character_border_violet.png';
-import heroFrameMiddle from '../../../assets/character_border_blue.png';
-import heroFrame from '../../../assets/character_border_common.png';
+import characterFrameHigh from '../../../assets/character_border_violet.png';
+import characterFrameMiddle from '../../../assets/character_border_blue.png';
+import characterFrame from '../../../assets/character_border_common.png';
 import { useState} from 'react';
-import type { Character } from '../../../Domain/Entities/HeroTypes';
+import type { Character } from '../../../Domain/Entities/CharacterTypes';
 
 
 const MainCharacterSection = styled.div`
@@ -157,11 +157,11 @@ const CharacterFeatureStatusDiv = styled.div`
 const getFrameByRarity = (rarity: string) => {
   switch (rarity) {
     case 'High':
-      return heroFrameHigh;
+      return characterFrameHigh;
     case 'Middle':
-      return heroFrameMiddle;
+      return characterFrameMiddle;
     default:
-      return heroFrame;
+      return characterFrame;
   }
 };
 

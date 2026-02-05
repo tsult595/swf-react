@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import type { Character } from '../../../Domain/Entities/HeroTypes';
+import type { Character } from '../../../Domain/Entities/CharacterTypes';
 
 
 const ModalContainer = styled.div`

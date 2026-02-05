@@ -1,7 +1,7 @@
 
 import useSWR from "swr"
 import { FavoritesUseCases } from "../../Domain"
-import type { Character } from "../../Domain/Entities/HeroTypes"
+import type { Character } from "../../Domain/Entities/CharacterTypes"
 
 export const useGetFavorites = (userId: string) => {
   return useSWR<Character[]>(
