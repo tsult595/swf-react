@@ -62,17 +62,18 @@ const SomethingCard = ({box}: {box: MysteryBox} ) => {
       <CharacterCard 
             key={box.id} 
             data-dark={darkMode} 
+            data-blue={shapeMode}
             data-border-blue={selectedBoxId === box.id}
             onClick={() => {
               setSelectedBoxId(box.id);
               setIsModalOpen(true);
             }}
           >
-            <button onClick={(e) => { e.stopPropagation();
+            <Button onClick={(e) => { e.stopPropagation();
             setDarkMode(!darkMode);}
-            } data-dark={darkMode}> 
+            }> 
               dark
-            </button>
+            </Button>
             <Button onClick={(e)=>{e.stopPropagation(); 
             setShapeMode(!shapeMode);
             }} data-blue={shapeMode}>shape</Button>

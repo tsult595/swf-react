@@ -82,10 +82,7 @@ const ErrorWrapper = styled.div`
 
 
 // todo naping s characters
-// todo v model bazi dannix personaja (hero) dobavit pole isLiked
-// cto bi vitawit spisok favorites zapros v DB filtraciya po isliked
-// fo fronte sama kartocka personaja doljna otpravlat zapros laik ili unlike remove from favorites i unlike
-// cto bi pokazivat zapolnenoe serdecko ili net berem hero.isliked 
+
 // ustanovit i nastroit prettier i eslint
 
 const MaincharactersSection = () => {

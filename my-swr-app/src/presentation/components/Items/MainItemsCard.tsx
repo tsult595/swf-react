@@ -1,20 +1,19 @@
 import styled from 'styled-components';
 import type { Item } from '../../../Domain/Entities/enums/ItemsTypes';
-// import type { MysteryBox } from '../../../Domain/Entities/MystoryBoxTypes';
 import { useState } from 'react';
-// import ItemsDetailModal from '../../Modals/ItemsModal/ItemsDetailModal';
 import ItemsDetailModal from '../../Modals/ItemsModal/ItemsDetailModal';
 
-const MainItemCard = styled.div`
+const MainItemCard = styled.div<{$border : boolean}>`
   width: 260px;
   height: 200px;
   display: flex;
   flex-direction: column;
   transition: all 0.3s;
+  border: none;
   border-radius: 10px;
   cursor: pointer;
   background-color: rgba(39, 43, 54, 0.8);
-  border: 2px solid #ffd700;
+  border: ${props => props.$border ? '2px solid #ffd700' : 'none'};
   padding: 16px;
   
   &:hover {
@@ -102,11 +101,14 @@ const ModalOverlay = styled.div<{ $isOpen: boolean }>`
 
 const MainItemsCard = ({ item, } : {item: Item} ) => {
   const [isModalOpen, setIsModalOpen] = useState(false);  
-
+  const [toggleBorderColor, setToggleBorderColor] = useState<boolean>(false);
 
   return (
     <>
-     <MainItemCard key={item.id} onClick={() => {setIsModalOpen(true);}}>
+     <MainItemCard key={item.id} onClick={() => {setIsModalOpen(true);
+    setToggleBorderColor(true); }} 
+     $border={toggleBorderColor}
+      >
               <MainItemCardUpper>
                 <h2>{item.name}</h2>
               </MainItemCardUpper>
@@ -119,7 +121,7 @@ const MainItemsCard = ({ item, } : {item: Item} ) => {
             </MainItemCard>
 
        
-        <ModalOverlay $isOpen={isModalOpen} onClick={() => { setIsModalOpen(false); }}>
+        <ModalOverlay $isOpen={isModalOpen} onClick={() => { setIsModalOpen(false); setToggleBorderColor(false); }}>
         <div onClick={(e) => e.stopPropagation()}>
           <ItemsDetailModal onClose={() => { setIsModalOpen(false);}}
           selectedItem={item} />

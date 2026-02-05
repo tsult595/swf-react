@@ -8,6 +8,65 @@ const MainContainer = styled.div`
   height: 90vh;
 `;
 
+const MainHeader = styled.div`
+  width: 90%;
+  margin: 0 auto;
+  padding: 20px 5px;
+  background-color: #b9b6b6;
+  color: black;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 10px;
+  `;
+
+ const Button = styled.button`
+  background: yellow;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  `;
+
+    const ProfileHover = styled.div`
+    position: absolute;
+    display: inline-block;
+    background: #2a2a2a;
+    margin-top: 5px;
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    height: fit-content;
+    width: 100px;
+    display: none;
+    top: 47px;
+  `;
+
+  const ButtonProfile = styled.button`
+  background: #667eea;
+  position: relative;
+  color: white;
+  border-radius: 50%;
+  border: none;
+  width: 50px;
+  height: 50px;
+  &:hover {
+    background: #2e0954;
+    transform: scale(1.3);
+    transition: transform 1s, background 0.2s;
+    ${ProfileHover} {
+      display: block;
+  }
+    }
+  `;
+
+
+  
+  const HeaderRight = styled.div`
+    display: flex;  
+    gap: 20px;
+    `;
+
 const MainAllUsersWrapper = styled.div`
   width: 90%;
   height: 100%;
@@ -17,6 +76,7 @@ const MainAllUsersWrapper = styled.div`
   align-items: center;
   background-color: #1e1e1e;
   color: white;
+  margin: 0 auto;
 `;
 
 const UsersWrapper = styled.div<{ $selected?: boolean }>`
@@ -63,6 +123,22 @@ const UserFavoritesComponent = () => {
      <MainContainer>
         {isLoading && <div>Loading users...</div>}
         {error && <div>Error loading users: {error.message}</div>}
+        <MainHeader>
+        <HeaderRight>
+        <h1>User Favorites</h1>
+        <Button>Click Me</Button>
+        <Button>Click Me</Button>
+        <Button>Click Me</Button>
+        </HeaderRight>
+          <ButtonProfile>
+            U
+            <ProfileHover>
+              <p>logout</p>
+              <p>logout</p>
+              <p>logout</p>
+            </ProfileHover>
+          </ButtonProfile>
+        </MainHeader>
       <MainAllUsersWrapper>
         <Title>All Users</Title>
         {
