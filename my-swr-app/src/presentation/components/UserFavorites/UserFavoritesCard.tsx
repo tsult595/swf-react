@@ -1,7 +1,9 @@
 import styled from 'styled-components';
-import type {Character } from '../../../Domain/Entities/CharacterTypes';
+import type {Character} from '../../../Domain/Entities/CharacterTypes';
 import { useState } from 'react';
 import UserFavoritesModal from '../../Modals/UserFavoritesModal/UserFavoritesModal';
+import { useUserId } from '../../hooks/useUserId';
+import { CharactersPresenter, FavoritePresenter } from '../..';
 
 
 
@@ -127,8 +129,15 @@ const Card = styled.div`
 `; 
     
 
-const UserFavoritesCard = ({ character, addCharacterIsViewed , isViewed}: { character: Character, addCharacterIsViewed: () => void, isViewed: boolean }) => {
+const UserFavoritesCard = ({ character, addCharacterIsViewed , isViewed , selectedUserId }: { character: Character, addCharacterIsViewed: () => void, isViewed: boolean, selectedUserId: string | null }) => {
+    const userId = useUserId();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    // mutate : mutateCharacters - это глобальный setter для кеша /characters/{userId}.
+     const { mutate : mutateCharacters } = CharactersPresenter.useGetAllCharacters(userId
+        
+     );
+     const {mutate: mutateFavorites } = FavoritePresenter.useGetFavorites(selectedUserId || '');
+
 
   return (
     <>
@@ -136,8 +145,17 @@ const UserFavoritesCard = ({ character, addCharacterIsViewed , isViewed}: { char
                 addCharacterIsViewed();
                 setIsModalOpen(true);
                   }}>
-                    <CardHeader>
+                    <CardHeader> 
                     <h2>Header</h2>
+                    {selectedUserId === userId ? <button  onClick={async(e) => {
+                      e.stopPropagation();
+                      await FavoritePresenter.removeFavorites(userId, character.id);
+                      mutateFavorites();
+                      mutateCharacters();
+                      
+                      window.alert('Character removed from favorites');
+                    }}
+                    >DELETE</button> : null}   
                     </CardHeader>
                     <MainHeaderSection>
                         <MainHeaderSectionLeft>

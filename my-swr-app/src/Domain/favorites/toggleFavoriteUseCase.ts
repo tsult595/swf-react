@@ -12,3 +12,6 @@ export const toggleFavoriteUseCase = async (
     await FavoriteRepository.addToFavorites(userId, heroId);
   }
 };
+
+
+// todo eto v presenter

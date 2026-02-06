@@ -200,14 +200,11 @@ export interface FavoriteCharactersProps {
 const FavoriteCharacters = ({ onClose }: FavoriteCharactersProps) => {
   const userId = useUserId();
   const { data: characters, isLoading, mutate } = CharactersPresenter.useGetAllCharacters(userId);
-
-  // Фильтруем только лайкнутые characters
   const favoriteCharacters = characters?.filter(character => character.isLiked) || [];
 
   const toggleFavorite = async (character: Character) => {
     const newIsLiked = !character.isLiked;
-
-    // Оптимистичное обновление
+   
     mutate(
       (currentCharacters) =>
         currentCharacters?.map((c) =>
@@ -218,9 +215,11 @@ const FavoriteCharacters = ({ onClose }: FavoriteCharactersProps) => {
 
     try {
       await FavoritePresenter.toggleFavorites(userId, character.id, character.isLiked || false);
+     
     } catch (error) {
       // Откат при ошибке
       mutate();
+      
       console.error('Failed to toggle favorite:', error);
     }
   };

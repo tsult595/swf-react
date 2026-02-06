@@ -8,14 +8,11 @@ const MainItemsWrapper = styled.div`
   width: 100%;
   margin-top: 30px;
   gap: 40px;
-  padding-bottom: 50px;
+  padding: 20px 20px 50px 40px;
   overflow-y: auto;
   overflow-x: hidden;
-  margin-left: 40px;
+  
 `;
-
-
-
 
 const LoadingWrapper = styled.div`
   display: flex;
@@ -51,10 +48,6 @@ const ErrorWrapper = styled.div`
     }
   }
 `;
-
-
-
-
 
 const MainItemsComponent = () => {
   const { data: items, error, isLoading, mutate } = ItemsPresenter.useGetAllItems();

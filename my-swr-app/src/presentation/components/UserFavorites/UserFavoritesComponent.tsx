@@ -111,10 +111,10 @@ const Title = styled.h2`
 
 
 
-const UserFavoritesComponent = () => {
+const UserFavoritesComponent = () => {  
  const { data: users, isLoading, error} = UserPresenter.useFetchUsers();
  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
- const { data: favorites, isLoading: favoritesLoading } = FavoritePresenter.useGetFavorites(selectedUserId || '');
+ const { data: favorites, isLoading: favoritesLoading} = FavoritePresenter.useGetFavorites(selectedUserId || '');
  const [selectedCardIds, setSelectedCardIds] = useState<number[]>([]);
 
  return (
@@ -153,23 +153,19 @@ const UserFavoritesComponent = () => {
             ))
         }
         <CardsWrapper>
-          {selectedUserId ? (
-            favoritesLoading ? (
-              <div>Loading favorites...</div>
-            ) : favorites && favorites.length > 0 ? (
-              favorites.map((character) => (
-                <UserFavoritesCard key={character.id}
-                   character={character}
-                   isViewed= {selectedCardIds.includes(character.id)}
-                   addCharacterIsViewed={()=> setSelectedCardIds((prev) => prev.includes(character.id) ? prev.filter(id => id !== character.id) : [...prev, character.id])}
-                    />
-              ))
-            ) : (
-              <div>No favorites for this user</div>
-            )
-          ) : (
-            <div>Select a user to view their favorites</div>
-          )}
+          {!selectedUserId && <div>Select a user to view their favorites</div>}
+          {selectedUserId && favoritesLoading && <div>Loading favorites...</div>}
+          {selectedUserId && !favoritesLoading && (!favorites || favorites.length === 0) && <div>No favorites for this user</div>}
+          {selectedUserId && !favoritesLoading && favorites && favorites.length > 0 && favorites.map((character) => (
+            <UserFavoritesCard key={character.id}
+            //  selectedUserId otpravil v userfavoritecard dlya sravneniya id  
+               selectedUserId={selectedUserId}
+               character={character}
+               isViewed= {selectedCardIds.includes(character.id)}
+               addCharacterIsViewed={()=> setSelectedCardIds((prev) => prev.includes(character.id) ? prev.filter(id => id !== character.id) : [...prev, character.id])}
+
+                />
+          ))}
         </CardsWrapper>
       </MainAllUsersWrapper>
     </MainContainer>

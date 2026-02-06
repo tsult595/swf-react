@@ -49,7 +49,7 @@ const Button = styled.button`
   z-index: 1000;
 `; 
 
-// todo data-dark data-open styled bez propsov
+
 
 const SomethingCard = ({box}: {box: MysteryBox} ) => {
     const [darkMode, setDarkMode] = useState<boolean>(false);

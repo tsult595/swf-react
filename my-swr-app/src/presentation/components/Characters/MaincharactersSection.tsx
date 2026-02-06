@@ -87,7 +87,10 @@ const ErrorWrapper = styled.div`
 
 const MaincharactersSection = () => {
   const userId = useUserId();
-  const { data: characters, error, isLoading: isCharactersLoading, mutate } = CharactersPresenter.useGetAllCharacters(userId);
+  const { data: characters, 
+    error, 
+    isLoading: isCharactersLoading, 
+    mutate } = CharactersPresenter.useGetAllCharacters(userId);
 
   
 
@@ -107,9 +110,9 @@ const MaincharactersSection = () => {
 
       try {
         await FavoritePresenter.toggleFavorites(userId, character.id, character.isLiked || false);
+        mutate();
       } catch (error) {
         console.error('Failed to toggle favorite:', error);
-        // noviy zapros na server i podtanet aktualnie dannie servera
         mutate();
       }
     }, [userId, mutate]);

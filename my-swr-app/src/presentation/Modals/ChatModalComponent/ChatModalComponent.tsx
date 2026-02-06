@@ -147,21 +147,26 @@ const ChatModalComponent = ({ onClose }: ChatModalComponentProps) => {
   const handleCreate = async () => {
     if (clanName.trim() && selectedUsers.length > 0) {
       try {
-        const members = [userId, ...selectedUsers]; 
+        const members = [userId, ...selectedUsers];
         const clan = await ClanPresenter.createClan(clanName.trim(), members, userId);
-    
-        selectedUsers.forEach((memberId) => {
-          if (memberId !== userId) {
+
+        // Отправляем уведомления всем новым участникам
+        const notificationPromises = selectedUsers
+          .filter(memberId => memberId !== userId)
+          .map(memberId =>
             sendMessage({
               text: `Вы были добавлены в клан ${clanName.trim()}!`,
               recipientId: memberId,
               type: 'private',
-            });
-          }
-        });
+            })
+          );
+
+        // Ждем отправки всех уведомлений (если sendMessage асинхронная)
+        await Promise.all(notificationPromises);
+
+        // Обновляем состояние приложения
         mutateClanChatId(clan.id || clan._id, false);
         mutateClanName(clan.name, false);
-        // setSelectedRecipientId == newValue obnulyaem vybranniy chat
         setSelectedRecipientId(null);
         mutate();
         mutateClans();

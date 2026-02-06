@@ -172,13 +172,19 @@ const ChatModifyComponentModul = ({ onClose }: ChatModifyComponentModulProps) =>
               <span style={{ marginLeft: 8, color: '#f0d332ff', fontWeight: 'bold' }}>(Владелец)</span>
             )}
             {isMember && !isOwner && isCurrentUser && (
-              <RemoveButton style={{ marginLeft: 12 }} onClick={e => { e.stopPropagation(); if (clan.id || clan._id) localHandleRemoveUser((clan.id || clan._id) as string, u.id, clan.name); }}>Покинуть</RemoveButton>
+              <RemoveButton style={{ marginLeft: 12 }}
+               onClick={e => { e.stopPropagation(); if (clan.id || clan._id)
+              localHandleRemoveUser((clan.id || clan._id) as string, u.id, clan.name); }}>Покинуть</RemoveButton>
             )}
             {isMember && isCurrentUserOwner && !isCurrentUser && (
-              <RemoveButton style={{ marginLeft: 12 }} onClick={e => { e.stopPropagation(); if (clan.id || clan._id) localHandleRemoveUser((clan.id || clan._id) as string, u.id, clan.name); }}>Удалить</RemoveButton>
+              <RemoveButton style={{ marginLeft: 12 }}
+               onClick={e => { e.stopPropagation(); if (clan.id || clan._id)
+               localHandleRemoveUser((clan.id || clan._id) as string, u.id, clan.name); }}>Удалить</RemoveButton>
             )}
             {!isMember && isCurrentUserOwner && (
-              <Button style={{ marginLeft: 12, background: '#00e676', color: '#232323' }} onClick={e => { e.stopPropagation(); if (clan.id || clan._id) localHandleAddUser((clan.id || clan._id) as string, u.id); }}>Добавить</Button>
+              <Button style={{ marginLeft: 12, background: '#00e676', color: '#232323' }}
+               onClick={e => { e.stopPropagation(); if (clan.id || clan._id)
+               localHandleAddUser((clan.id || clan._id) as string, u.id); }}>Добавить</Button>
             )}
           </MemberItem>
         );
