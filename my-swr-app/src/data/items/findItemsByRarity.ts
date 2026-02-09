@@ -1,5 +1,5 @@
 const API_URL = '/api/items';
-import type { Item } from "../../Domain/Entities/enums/ItemsTypes";
+import type { Item } from "../../Domain/Entities/ItemsTypes";
 
 export async function findItemsByRarity(rarity: string): Promise<Item[]> {
     try {

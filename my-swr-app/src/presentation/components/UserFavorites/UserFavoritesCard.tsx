@@ -133,9 +133,7 @@ const UserFavoritesCard = ({ character, addCharacterIsViewed , isViewed , select
     const userId = useUserId();
     const [isModalOpen, setIsModalOpen] = useState(false);
     // mutate : mutateCharacters - это глобальный setter для кеша /characters/{userId}.
-     const { mutate : mutateCharacters } = CharactersPresenter.useGetAllCharacters(userId
-        
-     );
+     const { mutate : mutateCharacters } = CharactersPresenter.useGetAllCharacters(userId);
      const {mutate: mutateFavorites } = FavoritePresenter.useGetFavorites(selectedUserId || '');
 
 

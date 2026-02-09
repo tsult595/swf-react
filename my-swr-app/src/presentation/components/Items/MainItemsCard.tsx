@@ -1,7 +1,10 @@
 import styled from 'styled-components';
-import type { Item } from '../../../Domain/Entities/enums/ItemsTypes';
+import type { Item } from '../../../Domain/Entities/ItemsTypes';
 import { useState } from 'react';
 import ItemsDetailModal from '../../Modals/ItemsModal/ItemsDetailModal';
+import { ItemsPresenter } from '../..';
+import { useUserId } from '../../hooks/useUserId';
+
 
 const MainItemCard = styled.div<{$border : boolean}>`
   width: 260px;
@@ -100,8 +103,11 @@ const ModalOverlay = styled.div<{ $isOpen: boolean }>`
 
 
 const MainItemsCard = ({ item, } : {item: Item} ) => {
+  
   const [isModalOpen, setIsModalOpen] = useState(false);  
   const [toggleBorderColor, setToggleBorderColor] = useState<boolean>(false);
+  const userId = useUserId();
+  const { mutate } = ItemsPresenter.useGetAllItems(userId);
 
   return (
     <>
@@ -118,7 +124,14 @@ const MainItemsCard = ({ item, } : {item: Item} ) => {
               <MainItemCardLower>
                 <RarityBadge $rarity={item.rarity}>{item.rarity}</RarityBadge>
               </MainItemCardLower>
+              <button onClick={async (e) => {
+                e.stopPropagation();
+                await ItemsPresenter.buyItem(userId, item.id);
+                window.alert('Item bought successfully!');
+                mutate();
+              }}>Buy</button>
             </MainItemCard>
+            
 
        
         <ModalOverlay $isOpen={isModalOpen} onClick={() => { setIsModalOpen(false); setToggleBorderColor(false); }}>

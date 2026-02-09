@@ -1,7 +1,7 @@
 
 
 const API_URL = '/api/items';
-import type { Item } from "../../Domain/Entities/enums/ItemsTypes";
+import type { Item } from "../../Domain/Entities/ItemsTypes";
 
 export async function findItemById(itemId: string): Promise<Item> {
     try {

@@ -1,6 +1,9 @@
 import styled from 'styled-components';
 import { ItemsPresenter } from '../..';
 import MainItemsCard from './MainItemsCard';
+import { useUserId } from '../../hooks/useUserId';
+import BoughtItemsCard from './BoughtItemsCard';
+import { useState } from 'react';
 
 const MainItemsWrapper = styled.div`
   display: flex;
@@ -50,8 +53,11 @@ const ErrorWrapper = styled.div`
 `;
 
 const MainItemsComponent = () => {
-  const { data: items, error, isLoading, mutate } = ItemsPresenter.useGetAllItems();
-  
+  const userId = useUserId(); 
+  const { data: items, error, isLoading, mutate } = ItemsPresenter.useGetAllItems(userId);
+  const [showBoughtItems, setShowBoughtItems] = useState(false);
+  const boughtItems = items?.filter(item => item.ownerId === userId) || [];
+
   
   return (
     <>
@@ -74,13 +80,26 @@ const MainItemsComponent = () => {
             <MainItemsCard
              item={item} key={item.id}
              />
-
           ))}
         </MainItemsWrapper>
       )}
-   
+      
+      <button onClick={() => setShowBoughtItems(!showBoughtItems)}>
+        {showBoughtItems ? 'Hide bought items' : 'Show bought items'}
+      </button>
+      
+      {!isLoading && !error && showBoughtItems && (
+        <MainItemsWrapper>
+          {boughtItems.map((item) => (
+            <BoughtItemsCard
+             item={item} key={item.id} mutate={mutate}
+             />
+          ))}
+        </MainItemsWrapper>
+      )}
+  
     </>
-  );
-};
+  )
+}
 
-export default MainItemsComponent;
+export default MainItemsComponent

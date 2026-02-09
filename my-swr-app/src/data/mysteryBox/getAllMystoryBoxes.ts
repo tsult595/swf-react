@@ -3,9 +3,9 @@ const API_URL = 'http://localhost:3001/api/mystery-boxes';
 
 import type { MysteryBox } from "../../Domain/Entities/MystoryBoxTypes";
 
-export async function getAllMysteryBoxes(): Promise<MysteryBox[]> {
+export async function getAllMysteryBoxes(userId: string): Promise<MysteryBox[]> {
     try {
-        const res = await fetch(`${API_URL}`);
+        const res = await fetch(`${API_URL}?userId=${userId}`);
         if (!res.ok) throw new Error('Failed to fetch all mystery boxes'); 
         return res.json();
     } catch (error) {

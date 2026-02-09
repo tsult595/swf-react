@@ -1,6 +1,6 @@
 
 import { MysteryBoxRepository } from "../../data";
 
-export const  getAllMystoryBoxesUseCase = () => {
-  return MysteryBoxRepository.getAllMysteryBoxes();
+export const  getAllMystoryBoxesUseCase = (userId: string) => {
+  return MysteryBoxRepository.getAllMysteryBoxes(userId);
 }

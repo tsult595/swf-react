@@ -3,6 +3,10 @@ import styled from 'styled-components';
 import { MysteryBoxPresenter } from '../..';
 import { useState } from 'react';
 import SomethingCard from './SomethingCard';
+import { useUserId } from '../../hooks/useUserId';
+import BoughtBoxesCard from './BoughtBoxesCard';
+
+
 
 
 
@@ -64,10 +68,14 @@ const LoadingWrapper = styled.div`
 
 
 const Something = () => {
-  const {data : boxes , error: boxesError, isValidating, isLoading: boxesLoading, mutate: mutateBoxes} = MysteryBoxPresenter.useGetAllMystoryBoxes();
+  const userId = useUserId();
+  const {data : boxes , error: boxesError, isValidating, isLoading: boxesLoading, mutate: mutateBoxes}
+   = MysteryBoxPresenter.useGetAllMystoryBoxes(userId);
    const [inputValue, setInputValue] = useState<string>("");
    const [addNewText, setAddNewText] = useState<string[]>([]);
+   const [showBoughtBoxes, setShowBoughtBoxes] = useState(false);
   
+  const boughtBoxes = boxes?.filter(box => box.ownerId === userId) || [];
 
    const handleAddNew = () => {
     if(inputValue.trim() !== ''){
@@ -89,7 +97,7 @@ const Something = () => {
       <CharacterSection>
       {
         boxes?.map((box)=>(
-          <SomethingCard key={box.id} box={box} />
+          <SomethingCard key={box.id} box={box} mutateBoxes={mutateBoxes} />
         ))
       }
       {isValidating && !boxesLoading && (
@@ -110,7 +118,17 @@ const Something = () => {
        <ul>
         {addNewText.map((text,index)=>(<><button onClick={()=>handleDelete(index)}>delete</button><li key={index}>{text}</li></>))}
        </ul>
+       <button onClick={() => setShowBoughtBoxes(!showBoughtBoxes)}>Show Bought Boxes</button>
+      
     </Container>
+
+     
+    
+      {showBoughtBoxes &&
+        boughtBoxes.map((box)=>(
+          <BoughtBoxesCard key={box.id} box={box} mutateBoxes={mutateBoxes} />
+        ))
+      }
 
     </>
   )

@@ -3,6 +3,9 @@ import styled from 'styled-components';
 import { useState } from 'react';
 import type { MysteryBox } from '../../../Domain/Entities/MystoryBoxTypes';
 import BoxDetailModal from '../../Modals/BoxModal/BoxDetailModal';
+import { useUserId } from '../../hooks/useUserId';
+import { MysteryBoxPresenter } from '../..';
+
 
 const CharacterCard = styled.div`
   width: 250px;
@@ -51,7 +54,8 @@ const Button = styled.button`
 
 
 
-const SomethingCard = ({box}: {box: MysteryBox} ) => {
+const SomethingCard = ({box, mutateBoxes}: {box: MysteryBox, mutateBoxes: () => void} ) => {
+    const userId = useUserId();
     const [darkMode, setDarkMode] = useState<boolean>(false);
     const [selectedBoxId, setSelectedBoxId] = useState<number | null>(null);
     const [shapeMode, setShapeMode] = useState<boolean>(false);
@@ -79,7 +83,14 @@ const SomethingCard = ({box}: {box: MysteryBox} ) => {
             }} data-blue={shapeMode}>shape</Button>
             <p>{box.name}</p>
             <p>Rarity: {box.rarity}</p>
-            
+            <button
+            onClick={async (e) => {
+              e.stopPropagation();
+              await MysteryBoxPresenter.buyBox(userId, box.id);
+              mutateBoxes();
+              window.alert('Box bought successfully!');
+            }}
+            >buy item</button>
           </CharacterCard>
 
         <ModalOverlay $isOpen={isModalOpen} onClick={() => { setIsModalOpen(false); }}>

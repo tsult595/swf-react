@@ -1,6 +1,6 @@
 import useSWR from 'swr';
 import type { Character } from '../../Domain/Entities/CharacterTypes';
-import type { Item } from '../../Domain/Entities/enums/ItemsTypes';
+import type { Item } from '../../Domain/Entities/ItemsTypes';
 import type { MysteryBox } from '../../Domain/Entities/MystoryBoxTypes';
 import { useState } from 'react';
 

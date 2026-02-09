@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import type { Item } from '../../../Domain/Entities/enums/ItemsTypes';
+import type { Item } from '../../../Domain/Entities/ItemsTypes';
 
 
 const ModalContainer = styled.div`
