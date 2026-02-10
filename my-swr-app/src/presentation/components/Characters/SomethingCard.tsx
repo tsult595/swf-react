@@ -86,9 +86,10 @@ const SomethingCard = ({box, mutateBoxes}: {box: MysteryBox, mutateBoxes: () => 
             <button
             onClick={async (e) => {
               e.stopPropagation();
-              await MysteryBoxPresenter.buyBox(userId, box.id);
-              mutateBoxes();
-              window.alert('Box bought successfully!');
+              await MysteryBoxPresenter.buyBox(userId, box.id)
+              .then(() => alert('Box bought successfully!'))
+              .then(() => mutateBoxes())
+              .catch((error) => alert(`Failed to buy box: ${error.message}`));
             }}
             >buy item</button>
           </CharacterCard>

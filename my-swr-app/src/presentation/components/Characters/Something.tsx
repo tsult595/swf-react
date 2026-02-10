@@ -5,6 +5,7 @@ import { useState } from 'react';
 import SomethingCard from './SomethingCard';
 import { useUserId } from '../../hooks/useUserId';
 import BoughtBoxesCard from './BoughtBoxesCard';
+import MysteryBoxPaginationButtons from './MysteryBoxPaginationButtons';
 
 
 
@@ -70,7 +71,7 @@ const LoadingWrapper = styled.div`
 const Something = () => {
   const userId = useUserId();
   const {data : boxes , error: boxesError, isValidating, isLoading: boxesLoading, mutate: mutateBoxes}
-   = MysteryBoxPresenter.useGetAllMystoryBoxes(userId);
+   = MysteryBoxPresenter.useGetAllMystoryBoxes();
    const [inputValue, setInputValue] = useState<string>("");
    const [addNewText, setAddNewText] = useState<string[]>([]);
    const [showBoughtBoxes, setShowBoughtBoxes] = useState(false);
@@ -94,6 +95,7 @@ const Something = () => {
     <Container>
       {boxesLoading && <LoadingWrapper>Loading items...</LoadingWrapper>}
          {boxesLoading && <LoadingWrapper>Loading characters...</LoadingWrapper>}
+         <MysteryBoxPaginationButtons />
       <CharacterSection>
       {
         boxes?.map((box)=>(
@@ -109,6 +111,7 @@ const Something = () => {
         </LoadingOverlay>
       )}
       </CharacterSection>
+       <MysteryBoxPaginationButtons />
        <input type="text" 
         placeholder="Search..."
         value={inputValue}

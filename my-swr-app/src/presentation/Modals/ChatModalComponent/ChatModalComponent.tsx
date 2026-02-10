@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { ClanPresenter } from '../..';
 import { UserPresenter } from '../..';
 import { useDisappearWelcomeButton } from '../../hooks/useDisapearWelcomeButton';
@@ -134,6 +134,11 @@ const ChatModalComponent = ({ onClose }: ChatModalComponentProps) => {
   const { mutateClanChatId, mutateClanName } = useClanChat();
   const { setSelectedRecipientId } = useSelectedOnes();
   const { mutate: mutateClans } = ClanPresenter.useGetClansByUserId(userId);
+  const InputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    InputRef.current?.focus();
+  }, []);
  
 
   const toggleUser = (id: string) => {
@@ -191,6 +196,7 @@ const ChatModalComponent = ({ onClose }: ChatModalComponentProps) => {
         hideButton(); }}>{welcomeText}</button>}
        
         <Input
+          ref={InputRef}
           placeholder="Название клана"
           value={clanName}
           onChange={(e) => setClanName(e.target.value)}

@@ -4,6 +4,7 @@ import { MysteryBoxPresenter } from '../..';
 import { useUserId } from '../../hooks/useUserId';
 
 
+
 const BoughtBoxCard = styled.div`
   width: 250px;
   height: 350px;
@@ -31,9 +32,10 @@ const BoughtBoxesCard = ({box, mutateBoxes }: {box: MysteryBox, mutateBoxes: () 
        <button
        onClick={
         async () => {
-         await MysteryBoxPresenter.deleteBoughtBox(userId, box.id);
-         alert('Box deleted successfully');
-         mutateBoxes();
+         await MysteryBoxPresenter.deleteBoughtBox(userId, box.id)
+         .then(() => alert('Box deleted successfully'))
+         .then(() => mutateBoxes())
+         .catch((error) => alert(`Failed to delete box: ${error.message}`));
         }
        }
        >delete</button>

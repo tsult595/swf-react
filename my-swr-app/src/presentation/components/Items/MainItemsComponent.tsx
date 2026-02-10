@@ -52,9 +52,25 @@ const ErrorWrapper = styled.div`
   }
 `;
 
+const Button = styled.div`
+  margin-top: 20px;
+  padding: 10px 20px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  min-width: 180px;
+  
+  &:hover {
+    background: #764ba2;
+  }
+`;
+
+
 const MainItemsComponent = () => {
   const userId = useUserId(); 
-  const { data: items, error, isLoading, mutate } = ItemsPresenter.useGetAllItems(userId);
+  const { data: items, error, isLoading, mutate } = ItemsPresenter.useGetAllItems();
   const [showBoughtItems, setShowBoughtItems] = useState(false);
   const boughtItems = items?.filter(item => item.ownerId === userId) || [];
 
@@ -84,9 +100,9 @@ const MainItemsComponent = () => {
         </MainItemsWrapper>
       )}
       
-      <button onClick={() => setShowBoughtItems(!showBoughtItems)}>
+      <Button onClick={() => setShowBoughtItems(!showBoughtItems)}>
         {showBoughtItems ? 'Hide bought items' : 'Show bought items'}
-      </button>
+      </Button>
       
       {!isLoading && !error && showBoughtItems && (
         <MainItemsWrapper>

@@ -22,7 +22,8 @@ const BoughtItemsCard = ({item , mutate}: {item: Item, mutate: () => void}) => {
    const userId = useUserId();
   return (
     <BoughtItemsCardWrapper>
-      <button onClick={() => ItemsPresenter.deleteBoughtItem(userId, item.id).then(() => mutate())}>delete</button>
+      <button onClick={async() => await ItemsPresenter.deleteBoughtItem(userId, item.id)
+      .then(() => mutate())}>delete</button>
       <div>{item.name}</div>
       <div>{item.description}</div>
       <div>Rarity: {item.rarity}</div>

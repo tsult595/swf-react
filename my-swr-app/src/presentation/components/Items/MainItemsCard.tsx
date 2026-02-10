@@ -107,7 +107,7 @@ const MainItemsCard = ({ item, } : {item: Item} ) => {
   const [isModalOpen, setIsModalOpen] = useState(false);  
   const [toggleBorderColor, setToggleBorderColor] = useState<boolean>(false);
   const userId = useUserId();
-  const { mutate } = ItemsPresenter.useGetAllItems(userId);
+  const { mutate } = ItemsPresenter.useGetAllItems();
 
   return (
     <>
@@ -126,9 +126,9 @@ const MainItemsCard = ({ item, } : {item: Item} ) => {
               </MainItemCardLower>
               <button onClick={async (e) => {
                 e.stopPropagation();
-                await ItemsPresenter.buyItem(userId, item.id);
-                window.alert('Item bought successfully!');
-                mutate();
+                await ItemsPresenter.buyItem(userId, item.id)
+                .then(() => window.alert('Item bought successfully!')).then(() => mutate())
+                .catch((err) => window.alert('Failed to buy item: ' + err.message));
               }}>Buy</button>
             </MainItemCard>
             
