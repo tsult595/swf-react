@@ -3,9 +3,9 @@ const API_URL = 'http://localhost:3001/api/mystery-boxes';
 
 import type { MysteryBox } from "../../Domain/Entities/MystoryBoxTypes";
 
-export async function getAllMysteryBoxes(): Promise<MysteryBox[]> {
+export async function getAllMysteryBoxes(page: number = 1, limit: number = 4): Promise<{ items: MysteryBox[], total: number }> {
     try {
-        const res = await fetch(`${API_URL}`, {
+        const res = await fetch(`${API_URL}?page=${page}&limit=${limit}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
         });

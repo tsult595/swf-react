@@ -1,6 +1,6 @@
 
 import { ItemRepository } from '../../data';
 
-export const findAllItemsUseCase = () => {
-  return ItemRepository.findAllItems();
+export const findAllItemsUseCase = (currentPage, limit) => {
+  return ItemRepository.findAllItems(currentPage, limit);
 }

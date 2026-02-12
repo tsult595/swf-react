@@ -4,6 +4,7 @@ import MainItemsCard from './MainItemsCard';
 import { useUserId } from '../../hooks/useUserId';
 import BoughtItemsCard from './BoughtItemsCard';
 import { useState } from 'react';
+import ItemPaginationButton from './ItemPaginationButton';
 
 const MainItemsWrapper = styled.div`
   display: flex;
@@ -70,10 +71,13 @@ const Button = styled.div`
 
 const MainItemsComponent = () => {
   const userId = useUserId(); 
-  const { data: items, error, isLoading, mutate } = ItemsPresenter.useGetAllItems();
   const [showBoughtItems, setShowBoughtItems] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const limit = 2; 
+  const { data, error, isLoading, mutate } = ItemsPresenter.useGetAllItems(currentPage, limit);
+  const items = data?.items;
   const boughtItems = items?.filter(item => item.ownerId === userId) || [];
-
+  const totalPages = data ? Math.ceil(data.total / limit) : 1;
   
   return (
     <>
@@ -90,21 +94,29 @@ const MainItemsComponent = () => {
         </ErrorWrapper>
       )}
 
+       <ItemPaginationButton
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+          totalPages={totalPages}
+        />
+
       {!isLoading && !error && items && (
         <MainItemsWrapper>
           {items.map((item) => (
             <MainItemsCard
-             item={item} key={item.id}
+             item={item} key={item.id} mutate={mutate}
              />
           ))}
         </MainItemsWrapper>
-      )}
-      
+        
+      )
+    }
       <Button onClick={() => setShowBoughtItems(!showBoughtItems)}>
         {showBoughtItems ? 'Hide bought items' : 'Show bought items'}
       </Button>
       
       {!isLoading && !error && showBoughtItems && (
+
         <MainItemsWrapper>
           {boughtItems.map((item) => (
             <BoughtItemsCard
@@ -119,3 +131,5 @@ const MainItemsComponent = () => {
 }
 
 export default MainItemsComponent
+
+// todo multi step form

@@ -102,12 +102,12 @@ const ModalOverlay = styled.div<{ $isOpen: boolean }>`
 
 
 
-const MainItemsCard = ({ item, } : {item: Item} ) => {
+const MainItemsCard = ({ item, mutate } : {item: Item, mutate: () => void} ) => {
   
   const [isModalOpen, setIsModalOpen] = useState(false);  
   const [toggleBorderColor, setToggleBorderColor] = useState<boolean>(false);
   const userId = useUserId();
-  const { mutate } = ItemsPresenter.useGetAllItems();
+  
 
   return (
     <>

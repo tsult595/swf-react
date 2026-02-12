@@ -70,8 +70,15 @@ const LoadingWrapper = styled.div`
 
 const Something = () => {
   const userId = useUserId();
-  const {data : boxes , error: boxesError, isValidating, isLoading: boxesLoading, mutate: mutateBoxes}
-   = MysteryBoxPresenter.useGetAllMystoryBoxes();
+  const [currentPage, setCurrentPage] = useState(1);
+  const limit = 4;
+  const {data, error: boxesError, isValidating, isLoading: boxesLoading, mutate: mutateBoxes}
+   = MysteryBoxPresenter.useGetAllMystoryBoxes(currentPage, limit);
+   
+  const boxes = data?.items;
+  console.log(boxes);
+  const totalPages = data ? Math.ceil(data.total / limit) : 1;
+
    const [inputValue, setInputValue] = useState<string>("");
    const [addNewText, setAddNewText] = useState<string[]>([]);
    const [showBoughtBoxes, setShowBoughtBoxes] = useState(false);
@@ -95,7 +102,13 @@ const Something = () => {
     <Container>
       {boxesLoading && <LoadingWrapper>Loading items...</LoadingWrapper>}
          {boxesLoading && <LoadingWrapper>Loading characters...</LoadingWrapper>}
-         <MysteryBoxPaginationButtons />
+
+         <MysteryBoxPaginationButtons 
+           currentPage={currentPage} 
+           totalPages={totalPages} 
+           onPageChange={setCurrentPage} 
+         />
+
       <CharacterSection>
       {
         boxes?.map((box)=>(
@@ -111,7 +124,13 @@ const Something = () => {
         </LoadingOverlay>
       )}
       </CharacterSection>
-       <MysteryBoxPaginationButtons />
+
+       <MysteryBoxPaginationButtons 
+           currentPage={currentPage} 
+           totalPages={totalPages} 
+           onPageChange={setCurrentPage} 
+         />
+
        <input type="text" 
         placeholder="Search..."
         value={inputValue}

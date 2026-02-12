@@ -4,9 +4,9 @@ const API_URL = '/api/items';
 
 import type { Item } from "../../Domain/Entities/ItemsTypes";
 
-export async function findAllItems(): Promise<Item[]> {
+export async function findAllItems(currentPage: number, limit: number): Promise<{ items: Item[], total: number }> {
   try {
-  const res = await fetch(`${API_URL}`, {
+  const res = await fetch(`${API_URL}?page=${currentPage}&limit=${limit}`, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
   });

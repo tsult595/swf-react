@@ -4,7 +4,7 @@ const Container = styled.div`
   width: 80%;
   margin: 0 auto;
   height: 50px;
-  background: #b9a83d;
+
   color: white;
   display: flex;
   align-items: center;
@@ -26,28 +26,24 @@ const Button = styled.div<{ $active?: boolean }>`
     }
 `;
 
-interface MysteryBoxPaginationButtonsProps {
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-}
-
-const MysteryBoxPaginationButtons = ({ currentPage, totalPages, onPageChange }: MysteryBoxPaginationButtonsProps) => {
+const ItemPaginationButton = ({ currentPage, onPageChange, totalPages }: { currentPage: number, onPageChange: (page: number) => void, totalPages: number }) => {
   return (
     <Container>
-      <Button onClick={() => onPageChange(currentPage - 1)} 
+      <Button onClick={() => onPageChange(currentPage - 1)}
         style={{ visibility: currentPage > 1 ? 'visible' : 'hidden' }}>
         ←
       </Button>
-      {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-        <Button 
-          key={page} 
+      {
+      Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+        <Button
+          key={page}
           $active={page === currentPage}
           onClick={() => onPageChange(page)}
         >
           {page}
         </Button>
-      ))}
+      ))
+      }
       <Button onClick={() => onPageChange(currentPage + 1)}
         style={{ visibility: currentPage < totalPages ? 'visible' : 'hidden' }}>
         →
@@ -56,4 +52,4 @@ const MysteryBoxPaginationButtons = ({ currentPage, totalPages, onPageChange }: 
   )
 }
 
-export default MysteryBoxPaginationButtons
+export default ItemPaginationButton
