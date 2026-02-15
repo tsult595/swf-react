@@ -63,6 +63,7 @@ const Button = styled.div`
   cursor: pointer;
   min-width: 180px;
   
+  
   &:hover {
     background: #764ba2;
   }

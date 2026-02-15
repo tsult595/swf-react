@@ -23,7 +23,6 @@ const Container = styled.div`
 const CharacterSection = styled.div`
   width: 90%;
   height: auto;
-  
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
@@ -32,6 +31,7 @@ const CharacterSection = styled.div`
   border-radius: 15px;
   margin-bottom: 30px;
   position: relative;
+  margin: 20px auto;
 `;
 
 const LoadingOverlay = styled.div<{ $isError?: boolean }>`
@@ -51,9 +51,6 @@ const LoadingOverlay = styled.div<{ $isError?: boolean }>`
   z-index: 10;
   cursor: ${props => props.$isError ? 'pointer' : 'default'};
 `;
-
-
-
 
 
 const LoadingWrapper = styled.div`

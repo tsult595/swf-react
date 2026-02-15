@@ -4,7 +4,6 @@ const Container = styled.div`
   width: 80%;
   margin: 0 auto;
   height: 50px;
-  background: #b9a83d;
   color: white;
   display: flex;
   align-items: center;

@@ -7,8 +7,8 @@ import { useUserId } from '../../hooks/useUserId';
 
 
 const MainItemCard = styled.div<{$border : boolean}>`
-  width: 260px;
-  height: 200px;
+  width: 290px;
+  height: 350px;
   display: flex;
   flex-direction: column;
   transition: all 0.3s;
@@ -19,10 +19,7 @@ const MainItemCard = styled.div<{$border : boolean}>`
   border: ${props => props.$border ? '2px solid #ffd700' : 'none'};
   padding: 16px;
   
-  &:hover {
-    transform: scale(1.05) translateY(-5px);
-    background-color: rgba(39, 43, 54, 0.9);
-  }
+ 
 `;
 
 const MainItemCardUpper = styled.div`
@@ -63,12 +60,9 @@ const RarityBadge = styled.span<{ $rarity: string }>`
   color: white;
   font-size: 14px;
   font-weight: 500;
-  transition: all 0.3s ease;
+ 
   
-  &:hover {
-    transform: scale(1.05);
-    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
-  }
+ 
 `;
 
 
@@ -77,10 +71,13 @@ const MainItemInfo = styled.div`
   font-weight: 200;
   font-size: 14px;
   width: 100%;
-  height: fit-content;
   color: rgba(255, 255, 255, 0.9);
   display: flex;
+  text-align: center;
+  justify-content: center;
   flex-direction: column;
+  align-items: center;
+  height: 215px;
   
   p {
     margin: 5px 0;
@@ -100,6 +97,22 @@ const ModalOverlay = styled.div<{ $isOpen: boolean }>`
   z-index: 1000;
 `;
 
+const Button = styled.button`
+  background: none; 
+  border: 2px solid #ffd700;
+  color: #ffd700;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: #ffd700;
+    color: #232323;
+  }
+`;
+
 
 
 const MainItemsCard = ({ item, mutate } : {item: Item, mutate: () => void} ) => {
@@ -116,20 +129,21 @@ const MainItemsCard = ({ item, mutate } : {item: Item, mutate: () => void} ) => 
      $border={toggleBorderColor}
       >
               <MainItemCardUpper>
-                <h2>{item.name}</h2>
+                <Button onClick={async (e) => {
+                e.stopPropagation();
+                await ItemsPresenter.buyItem(userId, item.id)
+                .then(() => window.alert('Item bought successfully!')).then(() => mutate())
+                .catch((err) => window.alert('Failed to buy item: ' + err.message));
+              }}>Buy</Button>
               </MainItemCardUpper>
               <MainItemInfo>
+                <h2>{item.name}</h2>
                 <p>{item.description}</p>
               </MainItemInfo>
               <MainItemCardLower>
                 <RarityBadge $rarity={item.rarity}>{item.rarity}</RarityBadge>
               </MainItemCardLower>
-              <button onClick={async (e) => {
-                e.stopPropagation();
-                await ItemsPresenter.buyItem(userId, item.id)
-                .then(() => window.alert('Item bought successfully!')).then(() => mutate())
-                .catch((err) => window.alert('Failed to buy item: ' + err.message));
-              }}>Buy</button>
+             
             </MainItemCard>
             
 
