@@ -6,6 +6,10 @@ import MainComponentChat from './presentation/components/Chat/MainComponentChat'
 import MainWelcomePage from './presentation/Pages/MainWelcomePage';
 import { useAnonymousUser } from './presentation/hooks/useAnonymousUser';
 import CharacterMultiStepForm from './presentation/Pages/CharacterMultiStepForm';
+import JoinAsWhoSighUp from './presentation/Pages/JoinAsWhoSighUp';
+import SignUp from './presentation/Pages/SignUp';
+import WelcomeSignUp from './presentation/Pages/WelcomeSignUp';
+
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -52,6 +56,9 @@ function App() {
             <Route path="/chat" element={<MainComponentChat />} />
             <Route path="/welcome" element={<MainWelcomePage />} />
             <Route path="/char-form" element={<CharacterMultiStepForm />} />
+            <Route path="/join-as" element={<JoinAsWhoSighUp />} />
+            <Route path="/sign-up" element={<SignUp />} />
+            <Route path="/welcome-sign" element={<WelcomeSignUp />} />
           </Routes>
         </BrowserRouter>
       </SWRConfig>
